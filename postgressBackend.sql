@@ -54,3 +54,23 @@ of a select, like this:*/
 insert into tree (letter, path) (
     select letter, 'A.B.G' || subpath(path, 1) from tree where 'A.C' @> path
 )
+
+
+/* I need to update the path of rootNode and each of its descendants all in
+ a single operation. But how can I do this? Two LTREE functions, NLEVEL() 
+ and SUBPATH(), can help. */ 
+ /*First, NLEVEL.It simply counts the number of levels in each path string; 
+ internally, it parses the path string for period characters.
+  As you might guess, this returns the number of levels 
+ in a given path string: */ 
+select letter, path, nlevel(path) from tree;
+
+
+
+/*LTREE provides another new SQL function that will also help
+ us write a general tree path formula: SUBPATH. As you might
+  guess, this returns a selected substring from a given path. */ 
+  select NODE, subpath(path, OFFSET_FROM_TOPNODE) from tree where path <@ 'SUBPATH';
+
+
+
