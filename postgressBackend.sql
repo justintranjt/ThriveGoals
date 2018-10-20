@@ -1,11 +1,65 @@
+/* Each user id must map to a list of Templates. 
+We must have tuples of form (userId, templateList)
+Where templateList is a list of tuples with the form (templateName, rootNode).
+rootNode references the root node of the tree corresponding to a given template name. 
+
+Each tree consists of a series of sub-trees defined below. 
+*/ 
 
 
-create table tree(
+
+
+/*Must create Tree "objects" each of which contains:
+
+nodeId- an id number for the current node
+goalString - the actual content of the user's goal or sub-goal
+isComplete- a boolean indicating whether the goal is complete or not
+upperTimeBound-  a tuple of ints corresponding to the user's self-set upper time bound (hours, minutes) or an interval(if it will work)
+lowerTimeBound-  a tuple of ints corresponding to the user's self-set lower time bound (hours, minutes) or an interval(if it will work)
+elapsedTime- quadruple of ints corresponding to (days, hours, minutes, seconds) or an interval(if it will work)
+
+
+
+*/ 
+create table Users(
+
+)
+
+create table Tree(
     id serial primary key,
-    letter char,
+    goalString TEXT, 
+    isComplete boolean, 
+    /*interval should be registering as a keyword here */ 
+    upperTimeBound interval, 
+    lowerTimeBound interval, 
+    elapsedTime  interval, 
     path ltree
 );
-create index tree_path_idx on tree using gist (path);
+create index tree_path_idx on Tree using gist (path);
+
+
+
+/*This is the most dangerous location for a bug so far*/ 
+CREATE FUNCTION ins_Id_Into_Path(ltree, int, int/*id*/) RETURNS ltree
+   AS 'select subpath($1,0,$2) || $3 || subpath($1,$2);' 
+   LANGUAGE SQL IMMUTABLE;
+
+
+/*This needs to be re-written in proper SQL */ 
+CREATE FUNCTION ins_Node_Into_Tree(ltree, int, int/*id*/) RETURNS ltree
+
+    BEGIN 
+    parentPath = SELECT path FROM Tree WHERE id = parentId;
+   /* AS 'select subpath($1,0,$2) || $3 || subpath($1,$2);'*/ 
+   INSERT INTO subTree(id, goalString, isComplete,upperTimeBound, lowerTimeBound, elapsedTime, path )
+   VALUES (childId, childGoalString, childIsComplete, childUpperTimeBound, childLowerTimeBound, childElapsedTime,
+      parentPath || childId) 
+
+   END 
+    LANGUAGE SQL IMMUTABLE;
+
+ltreetest=> SELECT ins_label(path,2,'Space') FROM test WHERE path <@ 'Top.Science.Astronomy';
+                ins_label
 
 
 insert into tree (letter, path) values ('A', 'A');
