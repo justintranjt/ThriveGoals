@@ -1,5 +1,5 @@
 # Simply test app with command "python thriveApp.py" and navigate to 
-# http://127.0.0.1:5000/
+# localhost:5000 in your browser
 
 from flask import Flask
 app = Flask(__name__)
