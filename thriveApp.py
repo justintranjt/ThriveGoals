@@ -54,7 +54,7 @@ def prereg():
 
 @app.route('/')
 def login():
-	return render_template('splash.html', netid=cas.username)
+	return render_template('home.html', netid=cas.username)
 
 @app.route('/loginTest', methods=['POST', 'GET'])
 @login_required
