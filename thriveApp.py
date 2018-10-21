@@ -21,7 +21,7 @@ cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'loginTest'
-# This is a secret key for storing sessions. TODO: Store this securely in Heroku environment
+# This is a secret key for storing sessions. TODO: Store this securely as a Heroku environment variable
 app.secret_key = '\xe3\xf9\xae*\xe7,\xf5M\x1fO\xda\xbe'
 
 # source: http://blog.sahildiwan.com/posts/flask-and-postgresql-app-deployed-on-heroku/
@@ -61,7 +61,6 @@ def login():
 def loginTest():
 	# Handle CAS login
 	return render_template('loggedIn.html', netid=cas.username)
-	# return('Think of this as the main page of your application after %s has been authenticated.' % cas.username)
 
 if __name__ == "__main__":
 	app.run()
