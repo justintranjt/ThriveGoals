@@ -25,8 +25,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(Goal, index) in Goals" :key="index">
-              <td>{{  }}</td>
+            <tr v-for="(goal, index) in goals" :key="index">
+              <td>{{ goal }}</td>
               <td>{{  }}</td>
               <td>
                 <button type="button" class="btn btn-warning btn-sm">Update</button>
@@ -81,6 +81,8 @@ export default {
         goalNum: '',
         goalTitle: '',
       },
+      message: '',
+      showMessage: false,
       netid: 'NETID HERE',
     };
   },
@@ -102,7 +104,7 @@ export default {
         });
     },
     getGoals() {
-      const path = 'http://localhost:5000/goals';
+      const path = 'http://localhost:5000/getGoals';
       axios.get(path)
         .then((res) => {
           this.goals = res.data.goals;
@@ -113,7 +115,7 @@ export default {
         });
     },
     addGoal(payload) {
-      const path = 'http://localhost:5000/books';
+      const path = 'http://localhost:5000/getGoals';
       axios.post(path, payload)
         .then(() => {
           this.getGoals();
@@ -127,13 +129,12 @@ export default {
         });
     },
     initForm() {
-      this.addBookForm.goalNum = '';
-      this.addBookForm.goalTitle = '';
+      this.addGoalForm.goalNum = '';
+      this.addGoalForm.goalTitle = '';
     },
     onSubmit(evt) {
       evt.preventDefault();
       this.$refs.addGoalModal.hide();
-      // if (this.addGoalForm.read[0]) read = true;
       const payload = {
         goalNum: this.addGoalForm.goalNum,
         goalTitle: this.addGoalForm.goalTitle,
@@ -143,12 +144,12 @@ export default {
     },
     onReset(evt) {
       evt.preventDefault();
-      this.$refs.addGoalModal.hide();
       this.initForm();
     },
   },
   created() {
     this.onLogin();
-  }
+    this.getGoals();
+  },
 };
 </script>
