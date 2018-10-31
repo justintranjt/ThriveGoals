@@ -54,20 +54,18 @@ def prereg():
 			# return render_template('success.html') # don't have html pages set up
 	# return render_template('index.html')
 
+# Preloaded goals to be displayed
 GOALS = [
 	{
-		'id': uuid.uuid4().hex,
-		'goalNum': '1',
+		'goalNum': 1,
 		'goalTitle': 'Finish basic addition of goals',
 	},
 	{
-		'id': uuid.uuid4().hex,
-		'goalNum': '2',
+		'goalNum': 3,
 		'goalTitle': 'Allow goal editing',
 	},
 	{
-		'id': uuid.uuid4().hex,
-		'goalNum': '3',
+		'goalNum': 2,
 		'goalTitle': 'Allow goal deletion',
 	}
 ]
@@ -89,37 +87,54 @@ def goals():
 	response_object['netid'] = cas.username
 	return jsonify(response_object)
 
-@app.route('/getGoals', methods=['GET', 'POST'])
+# Retrieving all current goals and adding new goals 
+@app.route('/modGoals', methods=['GET', 'POST'])
 def all_goals():
 	response_object = {'status': 'success'}
 	if request.method == 'POST':
 		post_data = request.get_json()
+		# Overwrite existing goal if number is identical
+		remove_goal(post_data.get('goalNum'))
 		GOALS.append({
-			'id': uuid.uuid4().hex,
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 		})
 		response_object['message'] = 'Goal added!'
 	else:
 		response_object['goals'] = GOALS
+
+	# Sort by goal number
+	GOALS.sort(key=lambda goal: goal['goalNum'])
+
 	return jsonify(response_object)
 
-@app.route('/getGoals/<goal_id>', methods=['PUT'])
-def single_goal(goal_id):
+# Updating preexisting goals and deleting goals
+@app.route('/modGoals/<goal_num>', methods=['PUT', 'DELETE'])
+def single_goal(goal_num):
 	response_object = {'status': 'success'}
 	if request.method == 'PUT':
 		post_data = request.get_json()
-		remove_goal(goal_id)
+		# Handles update, overwrites old goal number and overwrites new number
+		remove_goal(goal_num)
+		remove_goal(post_data.get('goalNum'))
+
 		GOALS.append({
-			'id': uuid.uuid4().hex,
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 		})
 		response_object['message'] = 'Goal updated!'
+	elif request.method == 'DELETE':
+		remove_goal(goal_num)
+		response_object['message'] = 'Goal deleted!'
+		
+	# Sort by goal number
+	GOALS.sort(key=lambda goal: goal['goalNum'])
+
 	return jsonify(response_object)
-def remove_goal(goal_id):
+
+def remove_goal(goal_num):
 	for goal in GOALS:
-		if goal['id'] == goal_id:
+		if int(goal['goalNum']) == int(goal_num):
 			GOALS.remove(goal)
 			return True
 	return False
