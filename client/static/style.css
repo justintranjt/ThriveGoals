@@ -1,0 +1,6 @@
+#splashContainer {
+   /*Photo by Sam Mgrdichian on Unsplash: https://unsplash.com/photos/wrfj-SRaB1Q*/
+  background-image: url("background.jpg");
+  height:100vh;
+  background-size: cover;
+}
