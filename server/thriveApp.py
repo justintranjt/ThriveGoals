@@ -71,7 +71,7 @@ goals = [
 ]
 
 # Using this as a global variable
-netID = ''
+netID = None
 
 # TODO Make use of the database and access the netID field instead of using global var!
 @app.route('/loginPage', methods=['GET'])

@@ -10,7 +10,6 @@
 <script>
 import axios from 'axios';
 
-// This isn't firing
 export default {
     data() {
         return {
@@ -30,7 +29,6 @@ export default {
                 });
         },
     },
-    // Change lifecycle hook from beforeMount to something else?
     beforeMount() {
         this.getLoginNetID();
     }

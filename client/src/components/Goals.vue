@@ -1,18 +1,20 @@
 <template>
     <div>
-        <div class="container-fluid p-5">
+        <div class="container p-5">
             <h3>Think of this as the main page of your application after {{ netID }} has been authenticated.</h3>
             <b-form>
                 <b-button href="https://fed.princeton.edu/cas/logout" variant="primary">Log me out of this website and CAS!</b-button>
                 <b-button href="http://localhost:8080/" variant="primary">Home</b-button>
             </b-form>
         </div>
-        <div class="container-fluid">
-            <div class="col-med-12">
-                <br>
+        <div class="container">
+            <div class="col-md-12">
                 <h1>Goals</h1>
-                <hr><br>
+                <hr>
                 <alert :message="message" v-if="showMessage"></alert>
+                <!-- Placeholder progress bar for now, will have meaninful values later when we implement completed goals -->
+                <h5>Overall Goal Progress (placeholder values at the moment)</h5>
+                <b-progress :value=50 :max=100 :precision="2" show-progress class="mb-3" variant="success"></b-progress>
                 <button type="button" class="btn btn-success btn-sm" v-b-modal.goal-modal>Add Goal</button>
                 <br><br>
                 <table class="table table-hover">
@@ -92,7 +94,6 @@ export default {
         alert: Alert,
     },
     methods: {
-        // This isn't firing
         getLoginNetID() {
             const path = 'http://localhost:5000/loginNetID';
             axios.get(path)
