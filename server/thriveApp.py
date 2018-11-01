@@ -19,15 +19,15 @@ db = SQLAlchemy(app)
 cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
-app.config['CAS_AFTER_LOGIN'] = 'goals'
+app.config['CAS_AFTER_LOGIN'] = 'login'
 # This is a secret key for storing sessions. TODO: Store this securely as a Heroku environment variable
 app.secret_key = '\xe3\xf9\xae*\xe7,\xf5M\x1fO\xda\xbe'
 
-# Initialize CORD
+# Initialize CORS
 CORS(app)
 
 # source: http://blog.sahildiwan.com/posts/flask-and-postgresql-app-deployed-on-heroku/
-# Create database model. Right now, only saving the netid's. In future, goals, tasks, etc. will be added.
+# Create database model. Right now, only saving the netID's. In future, goals, tasks, etc. will be added.
 # this may tie into CAS ?
 class User(db.Model):
 	__tablename__ = "users"
@@ -55,7 +55,7 @@ def prereg():
 	# return render_template('index.html')
 
 # Preloaded goals to be displayed
-GOALS = [
+goals = [
 	{
 		'goalNum': 1,
 		'goalTitle': 'Finish basic addition of goals',
@@ -70,21 +70,23 @@ GOALS = [
 	}
 ]
 
-@app.route('/')
-def login():
-	# I want to display the username once logged in but it doesn't work
-	response_object = {'status': 'success'}
-	response_object['netid'] = cas.username
-	return jsonify(response_object)
+# Using this as a global variable
+netID = ''
 
-@app.route('/goals', methods=['POST', 'GET'])
+# TODO Make use of the database and access the netID field instead of using global var!
+@app.route('/loginPage', methods=['GET'])
 @login_required
-def goals():
-	if request.method == 'GET':
-		return redirect("http://localhost:8080/goals", code=302)
-	# Handle CAS login; I want to display the username once logged in but it doesn't work
+def login():
+	global netID
+	netID = cas.username
+	return redirect("http://localhost:8080/goals", code=302)
+
+@app.route('/loginNetID', methods=['GET'])
+def loginNetID():
+	# Handle CAS login
 	response_object = {'status': 'success'}
-	response_object['netid'] = cas.username
+	global netID
+	response_object['netID'] = netID
 	return jsonify(response_object)
 
 # Retrieving all current goals and adding new goals 
@@ -95,16 +97,16 @@ def all_goals():
 		post_data = request.get_json()
 		# Overwrite existing goal if number is identical
 		remove_goal(post_data.get('goalNum'))
-		GOALS.append({
+		goals.append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 		})
 		response_object['message'] = 'Goal added!'
 	else:
-		response_object['goals'] = GOALS
+		response_object['goals'] = goals
 
 	# Sort by goal number
-	GOALS.sort(key=lambda goal: goal['goalNum'])
+	goals.sort(key=lambda goal: goal['goalNum'])
 
 	return jsonify(response_object)
 
@@ -118,7 +120,7 @@ def single_goal(goal_num):
 		remove_goal(goal_num)
 		remove_goal(post_data.get('goalNum'))
 
-		GOALS.append({
+		goals.append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 		})
@@ -128,14 +130,14 @@ def single_goal(goal_num):
 		response_object['message'] = 'Goal deleted!'
 		
 	# Sort by goal number
-	GOALS.sort(key=lambda goal: goal['goalNum'])
+	goals.sort(key=lambda goal: goal['goalNum'])
 
 	return jsonify(response_object)
 
 def remove_goal(goal_num):
-	for goal in GOALS:
+	for goal in goals:
 		if int(goal['goalNum']) == int(goal_num):
-			GOALS.remove(goal)
+			goals.remove(goal)
 			return True
 	return False
 

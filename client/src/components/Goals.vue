@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="container-fluid p-5">
-            <h3>Think of this as the main page of your application after {{ netid }} has been authenticated.</h3>
-            <b-form @login="onLogin">
+            <h3>Think of this as the main page of your application after {{ netID }} has been authenticated.</h3>
+            <b-form>
                 <b-button href="https://fed.princeton.edu/cas/logout" variant="primary">Log me out of this website and CAS!</b-button>
-                <b-button type="login" href="http://localhost:8080/" variant="primary">Home</b-button>
+                <b-button href="http://localhost:8080/" variant="primary">Home</b-button>
             </b-form>
         </div>
         <div class="container-fluid">
@@ -73,6 +73,7 @@ import Alert from './Alert';
 export default {
     data() {
         return {
+            netID: '',
             goals: [],
             addGoalForm: {
                 goalNum: 0,
@@ -85,7 +86,6 @@ export default {
             },
             message: '',
             showMessage: false,
-            netid: 'NETID HERE',
         };
     },
     components: {
@@ -93,12 +93,11 @@ export default {
     },
     methods: {
         // This isn't firing
-        onLogin(evt) {
-            evt.preventDefault();
-            const path = 'http://localhost:5000/';
+        getLoginNetID() {
+            const path = 'http://localhost:5000/loginNetID';
             axios.get(path)
                 .then((res) => {
-                    this.netid = res.data.netid;
+                    this.netID = res.data.netID;
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -201,9 +200,8 @@ export default {
             this.initForm();
         },
     },
-    created() {
-        // It appears that only the first method listed in created() is called. For now, onLogin is commented out so getGoals will load the table first 
-        // this.onLogin();
+    beforeMount() {
+        this.getLoginNetID();
         this.getGoals();
     },
 };
