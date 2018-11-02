@@ -1,5 +1,5 @@
 Click==7.0
-git+git://github.com/cameronbwhite/Flask-CAS/releases/tag/v1.0.1#egg-Flask-CAS
+git+git://github.com/cameronbwhite/Flask-CAS@releases/tag/v1.0.1#egg-Flask-CAS
 flask-sqlalchemy==2.3.2
 flask-sslify==0.1.5
 itsdangerous==0.24
