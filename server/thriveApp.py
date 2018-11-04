@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
-import uuid
 
 app = Flask(__name__)
 app.config.from_object(__name__)
