@@ -1,36 +1,61 @@
 <template>
-    <div class="container-fluid p-5" id="splashContainer">
-        <h3>Welcome to Thrive</h3>
-        <h2>Logged in as {{ netID }}</h2>
+    <div class="container-fluid" id="splashContainer">
+      <b-navbar toggleable fixed="top" variant="light" type="light">
+        <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
+        <b-navbar-brand>Thrive</b-navbar-brand>
+        <b-nav-text>Logged in as {{ netID }}</b-nav-text>
+      </b-navbar>
+      <div class="container-fluid" id="row1">
+        <h3 id="hometitle">THRIVE</h3>
+        <div class="container-fluid" id="row1-1">
+          <h2>Set goals and track <br> your progress every <br> step of the way.</h2>
+        </div>
+<!--         <h2>Logged in as {{ netID }}</h2> -->
+        <div id="loginButton">
         <b-form>
-            <b-button variant="primary" href="http://localhost:5000/loginPage">Login via CAS</b-button>
+            <b-button variant="secondary lg" size="lg" href="http://localhost:5000/loginPage">Login via CAS</b-button>
         </b-form>
+        </div>
+      </div>
+      <div id="row2">
+      <b-container class="bv-row2">
+        <b-row>
+          <b-col class="bv-r2c1">
+            <h1>About Thrive</h1>
+          </b-col>
+          <b-col class="bv-r2c2" cols="7">
+            <!-- eslint-disable -->
+            Our software helps you break down large projects into manageable subgoals in a goal hierarchy, reducing procrastination and making work more enjoyable and intrinsically motivating. Our modifiable templates are created by learning specialists and other students with the purpose of guiding you through major assignments.
+          </b-col>
+        </b-row>
+      </b-container>
+      </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
 
 export default {
-    data() {
-        return {
-            netID: '',
-        };
-    },
-    methods: {
-        getLoginNetID() {
-            const path = 'http://localhost:5000/loginNetID';
-            axios.get(path)
-                .then((res) => {
-                    this.netID = res.data.netID;
-                })
-                .catch((error) => {
-                    // eslint-disable-next-line
+  data() {
+    return {
+      netID: '',
+    };
+  },
+  methods: {
+    getLoginNetID() {
+      const path = 'http://localhost:5000/loginNetID';
+      axios.get(path)
+        .then((res) => {
+          this.netID = res.data.netID;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
                     console.error(error);
-                });
-        },
+        });
     },
-    beforeMount() {
-        this.getLoginNetID();
-    }
+  },
+  beforeMount() {
+    this.getLoginNetID();
+  },
 };
 </script>
