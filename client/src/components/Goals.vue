@@ -49,13 +49,13 @@
                     </thead>
                     <tbody>
                         <tr v-for="(goal, index) in goals" :key="index">
+                            <!-- v-if="goal.completed"  or v-bind -->
                             <td>{{ goal.goalNum }}</td>
                             <td>{{ goal.goalTitle }}</td>
                             <td>
-                                <button type="button" class="btn btn-warning btn-sm"
-                                v-b-modal.goal-update-modal @click="editGoal(goal)">Update</button>
-                                <button type="button" class="btn btn-danger btn-sm"
-                                @click="onDeleteGoal(goal)">Delete</button>
+                                <button type="button" class="btn btn-success btn-sm"@click="onCompleteGoal(goal)">Complete</button>
+                                <button type="button" class="btn btn-warning btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</button>
+                                <button type="button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -161,19 +161,33 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
                     console.log(error);
-          this.getGoals();
-        });
-    },
-    deleteGoal(goalNum) {
-      const path = `http://localhost:5000/modGoals/${goalNum}`;
-      axios.delete(path)
-        .then(() => {
-          this.getGoals();
-          this.message = 'Goal deleted!';
-          this.showMessage = true;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
+                    this.getGoals();
+                });
+        },
+        completeGoal(goalNum) {
+            const path = `http://localhost:5000/completeGoal/${goalNum}`;
+            axios.put(path)
+                .then(() => {
+                    this.getGoals();
+                    this.message = 'Goal completed!';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.getGoals();
+                });
+        },
+        deleteGoal(goalNum) {
+            const path = `http://localhost:5000/modGoals/${goalNum}`;
+            axios.delete(path)
+                .then(() => {
+                    this.getGoals();
+                    this.message = 'Goal deleted!';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
                     console.log(error);
           this.getGoals();
         });
@@ -189,46 +203,54 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
                     console.log(error);
-          this.getGoals();
-        });
-    },
-    editGoal(goal) {
-      this.updateGoalForm = goal;
-      this.updateGoalForm.rowNum = goal.goalNum;
-    },
-    initForm() {
-      this.addGoalForm.goalNum = 0;
-      this.addGoalForm.goalTitle = '';
-      this.updateGoalForm.rowNum = 0;
-      this.updateGoalForm.goalNum = 0;
-      this.updateGoalForm.goalTitle = '';
-    },
-    onDeleteGoal(goal) {
-      this.deleteGoal(goal.goalNum);
-    },
-    onSubmitUpdate(evt) {
-      evt.preventDefault();
-      this.$refs.updateGoalModal.hide();
-      const payload = {
-        goalNum: this.updateGoalForm.goalNum,
-        goalTitle: this.updateGoalForm.goalTitle,
-      };
-      this.updateGoal(payload, this.updateGoalForm.rowNum);
-    },
-    onResetUpdate(evt) {
-      evt.preventDefault();
-      this.initForm();
-      this.getGoals();
-    },
-    onSubmit(evt) {
-      evt.preventDefault();
-      this.$refs.addGoalModal.hide();
-      const payload = {
-        goalNum: this.addGoalForm.goalNum,
-        goalTitle: this.addGoalForm.goalTitle,
-      };
-      this.addGoal(payload);
-      this.initForm();
+                    this.getGoals();
+                });
+        },
+        editGoal(goal) {
+            this.updateGoalForm = goal;
+            this.updateGoalForm.rowNum = goal.goalNum;
+        },
+        initForm() {
+            this.addGoalForm.goalNum = 0;
+            this.addGoalForm.goalTitle = '';
+            this.updateGoalForm.rowNum = 0;
+            this.updateGoalForm.goalNum = 0;
+            this.updateGoalForm.goalTitle = '';
+        },
+        onCompleteGoal(goal) {
+            this.completeGoal(goal.goalNum)
+        },
+        onDeleteGoal(goal) {
+            this.deleteGoal(goal.goalNum);
+        },
+        onSubmitUpdate(evt) {
+            evt.preventDefault();
+            this.$refs.updateGoalModal.hide();
+            const payload = {
+                goalNum: this.updateGoalForm.goalNum,
+                goalTitle: this.updateGoalForm.goalTitle,
+            };
+            this.updateGoal(payload, this.updateGoalForm.rowNum);
+        },
+        onResetUpdate(evt) {
+            evt.preventDefault();
+            this.initForm();
+            this.getGoals();
+        },
+        onSubmit(evt) {
+            evt.preventDefault();
+            this.$refs.addGoalModal.hide();
+            const payload = {
+                goalNum: this.addGoalForm.goalNum,
+                goalTitle: this.addGoalForm.goalTitle,
+            };
+            this.addGoal(payload);
+            this.initForm();
+        },
+        onReset(evt) {
+            evt.preventDefault();
+            this.initForm();
+        },
     },
     onReset(evt) {
       evt.preventDefault();
