@@ -256,10 +256,9 @@ export default {
       evt.preventDefault();
       this.initForm();
     },
-  },
-  beforeMount() {
-    this.getLoginNetID();
-    this.getGoals();
-  },
+    beforeMount() {
+        this.getLoginNetID();
+        this.getGoals();
+    },
 };
 </script>
