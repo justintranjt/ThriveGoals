@@ -1,6 +1,37 @@
-#splashContainer {
-   /*Photo by Sam Mgrdichian on Unsplash: https://unsplash.com/photos/wrfj-SRaB1Q*/
-  background-image: url("background.jpg");
-  height:100vh;
+@import url('https://fonts.googleapis.com/css?family=Cantarell|Muli');
+
+#row1 {
+   /* Photo by Sam Mgrdichian on Unsplash: https://unsplash.com/photos/wrfj-SRaB1Q */
+  padding-top: 15vh;
+  padding-left: 10vw;
+  background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url("plants.jpg");
+  height: 75vh;
+  width: 100vw;
   background-size: cover;
+}
+
+#row1-1 {
+	padding-top: 5vh;
+	padding-bottom: 5vh;
+	color: #ffffff;
+	font-family: 'Muli', sans-serif;
+}
+
+#hometitle {
+	font-family: 'Cantarell', sans-serif;
+	color: #ffffff;
+	font-size: 90px;
+	letter-spacing: 20px;
+}
+
+#loginButton {
+	padding-left: 1vw;
+}
+
+.bv-r2c1 {
+	padding-top: 10vh;
+	text-align: center;
+}
+.bv-r2c2 {
+	padding-top: 5vh;
 }
