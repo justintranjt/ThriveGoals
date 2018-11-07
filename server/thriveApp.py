@@ -58,14 +58,17 @@ goals = [
 	{
 		'goalNum': 1,
 		'goalTitle': 'Finish basic addition of goals',
+		'completed': False,
 	},
 	{
 		'goalNum': 3,
 		'goalTitle': 'Allow goal editing',
+		'completed': False,
 	},
 	{
 		'goalNum': 2,
 		'goalTitle': 'Allow goal deletion',
+		'completed': False,
 	}
 ]
 
@@ -88,6 +91,17 @@ def loginNetID():
 	response_object['netID'] = netID
 	return jsonify(response_object)
 
+# Mark goal as completed
+@app.route('/completeGoal/<goal_num>', methods=['PUT'])
+def cmpl_goal(goal_num):
+	response_object = {'status': 'success', 'message': 'Goal completed!'}
+
+	for goal in goals:
+		if int(goal['goalNum']) == int(goal_num):
+			goal['completed'] = True
+	
+	return jsonify(response_object)
+
 # Retrieving all current goals and adding new goals 
 @app.route('/modGoals', methods=['GET', 'POST'])
 def all_goals():
@@ -99,6 +113,7 @@ def all_goals():
 		goals.append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
+			'completed': post_data.get('completed'),
 		})
 		response_object['message'] = 'Goal added!'
 	else:
@@ -111,7 +126,7 @@ def all_goals():
 
 # Updating preexisting goals and deleting goals
 @app.route('/modGoals/<goal_num>', methods=['PUT', 'DELETE'])
-def single_goal(goal_num):
+def update_rem_goal(goal_num):
 	response_object = {'status': 'success'}
 	if request.method == 'PUT':
 		post_data = request.get_json()
@@ -122,6 +137,7 @@ def single_goal(goal_num):
 		goals.append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
+			'completed': post_data.get('completed'),
 		})
 		response_object['message'] = 'Goal updated!'
 	elif request.method == 'DELETE':
@@ -137,8 +153,6 @@ def remove_goal(goal_num):
 	for goal in goals:
 		if int(goal['goalNum']) == int(goal_num):
 			goals.remove(goal)
-			return True
-	return False
 
 if __name__ == "__main__":
 	app.run()

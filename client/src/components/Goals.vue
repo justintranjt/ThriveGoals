@@ -27,9 +27,11 @@
                     </thead>
                     <tbody>
                         <tr v-for="(goal, index) in goals" :key="index">
+                            <!-- v-if="goal.completed"  or v-bind -->
                             <td>{{ goal.goalNum }}</td>
                             <td>{{ goal.goalTitle }}</td>
                             <td>
+                                <button type="button" class="btn btn-success btn-sm"@click="onCompleteGoal(goal)">Complete</button>
                                 <button type="button" class="btn btn-warning btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</button>
                                 <button type="button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">Delete</button>
                             </td>
@@ -130,6 +132,20 @@ export default {
                     this.getGoals();
                 });
         },
+        completeGoal(goalNum) {
+            const path = `http://localhost:5000/completeGoal/${goalNum}`;
+            axios.put(path)
+                .then(() => {
+                    this.getGoals();
+                    this.message = 'Goal completed!';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.getGoals();
+                });
+        },
         deleteGoal(goalNum) {
             const path = `http://localhost:5000/modGoals/${goalNum}`;
             axios.delete(path)
@@ -168,6 +184,9 @@ export default {
             this.updateGoalForm.rowNum = 0;
             this.updateGoalForm.goalNum = 0;
             this.updateGoalForm.goalTitle = '';
+        },
+        onCompleteGoal(goal) {
+            this.completeGoal(goal.goalNum)
         },
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum);
