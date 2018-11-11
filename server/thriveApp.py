@@ -69,8 +69,10 @@ goals = [
 		'goalNum': 2,
 		'goalTitle': 'Allow goal deletion',
 		'completed': False,
-	}
+	},
 ]
+# Using completed goals as a global variable
+completedGoals = 0
 
 # Using this as a global variable
 netID = None
@@ -99,6 +101,8 @@ def cmpl_goal(goal_num):
 	for goal in goals:
 		if int(goal['goalNum']) == int(goal_num):
 			goal['completed'] = True
+			global completedGoals
+			completedGoals += 1
 	
 	return jsonify(response_object)
 
@@ -115,13 +119,22 @@ def all_goals():
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
 		})
+		if post_data.get('completed'):
+			global completedGoals
+			completedGoals += 1
+
 		response_object['message'] = 'Goal added!'
 	else:
 		response_object['goals'] = goals
 
 	# Sort by goal number
 	goals.sort(key=lambda goal: goal['goalNum'])
+	return jsonify(response_object)
 
+@app.route('/completedGoals', methods=['GET'])
+def completed_goals():
+	response_object = {'status': 'success'}
+	response_object['numCompleted'] = completedGoals
 	return jsonify(response_object)
 
 # Updating preexisting goals and deleting goals
@@ -139,6 +152,10 @@ def update_rem_goal(goal_num):
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
 		})
+		if post_data.get('completed'):
+			global completedGoals
+			completedGoals += 1
+
 		response_object['message'] = 'Goal updated!'
 	elif request.method == 'DELETE':
 		remove_goal(goal_num)
@@ -153,6 +170,9 @@ def remove_goal(goal_num):
 	for goal in goals:
 		if int(goal['goalNum']) == int(goal_num):
 			goals.remove(goal)
+			if goal['completed']:
+				global completedGoals
+				completedGoals -= 1
 
 if __name__ == "__main__":
 	app.run()
