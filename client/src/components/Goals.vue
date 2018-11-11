@@ -35,7 +35,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <draggable v-model="list" :element="'tbody'">
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a green background if goal.completed=True. Perhaps there's a cleaner way to implement this -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">{{ goal.goalNum }}</td>
@@ -69,7 +69,7 @@
                                 </div>
                             </td>
                         </tr>
-                    </tbody>
+                    </draggable>
                 </table>
             </div>
         </div>
@@ -113,6 +113,7 @@
 </template>
 <script>
 import axios from 'axios';
+import draggable from 'vuedraggable';
 import Alert from './Alert';
 
 export default {
@@ -138,6 +139,7 @@ export default {
     },
     components: {
         alert: Alert,
+        draggable,
     },
     methods: {
         getLoginNetID() {
