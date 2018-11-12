@@ -25,34 +25,6 @@ app.secret_key = '\xe3\xf9\xae*\xe7,\xf5M\x1fO\xda\xbe'
 # Initialize CORS
 CORS(app)
 
-# source: http://blog.sahildiwan.com/posts/flask-and-postgresql-app-deployed-on-heroku/
-# Create database model. Right now, only saving the netID's. In future, goals, tasks, etc. will be added.
-# this may tie into CAS ?
-class User(db.Model):
-	__tablename__ = "users"
-	id = db.Column(db.Integer, primary_key=True)
-	email = db.Column(db.String(120), unique=True)
-
-	def __init__(self, email):
-		self.email = email
-
-	def __repr__(self):
-		return '<E-mail %r>' % self.email
-
-# Save e-mail to database and send to success page
-@app.route('/register', methods=['POST'])
-def prereg():
-	email = None
-	if request.method == 'POST':
-		email = request.form['email'] # may not be needed
-		# Check that email does not already exist (not a great query, but works)
-		if not db.session.query(User).filter(User.email == email).count():
-			reg = User(email)
-			db.session.add(reg)
-			db.session.commit()
-			# return render_template('success.html') # don't have html pages set up
-	# return render_template('index.html')
-
 # Preloaded goals to be displayed
 goals = [
 	{
