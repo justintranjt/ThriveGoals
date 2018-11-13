@@ -13,7 +13,7 @@
 <!--         <h2>Logged in as {{ netID }}</h2> -->
         <div id="loginButton">
         <b-form>
-            <b-button variant="secondary lg" size="lg" href="http://localhost:5000/loginPage">Login via CAS</b-button>
+            <b-button variant="secondary lg" size="lg" v-bind:href="serverURI + '/loginPage'">Login via CAS</b-button>
         </b-form>
         </div>
       </div>
@@ -39,18 +39,19 @@ export default {
   data() {
     return {
       netID: '',
+      serverURI: process.env.URI_SERVER_ROOT,
     };
   },
   methods: {
     getLoginNetID() {
-      const path = 'http://localhost:5000/loginNetID';
+      const path = process.env.URI_SERVER_ROOT + '/loginNetID';
       axios.get(path)
         .then((res) => {
           this.netID = res.data.netID;
         })
         .catch((error) => {
           // eslint-disable-next-line
-                    console.error(error);
+          console.error(error);
         });
     },
   },

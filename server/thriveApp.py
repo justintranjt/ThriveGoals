@@ -3,8 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize database
@@ -19,8 +20,10 @@ cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'login'
-# This is a secret key for storing sessions. TODO: Store this securely as a Heroku environment variable
-app.secret_key = '\xe3\xf9\xae*\xe7,\xf5M\x1fO\xda\xbe'
+
+# This is a secret key for storing sessions. 
+secret_key = os.environ.get('SECRET_KEY', "developmentsecretkey")
+app.secret_key = secret_key
 
 # Initialize CORS
 CORS(app)
@@ -49,13 +52,22 @@ completedGoals = 0
 # Using this as a global variable
 netID = None
 
+# See here for more info: http://flask.pocoo.org/snippets/57/
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+	return render_template("index.html")
+
 # TODO Make use of the database and access the netID field instead of using global var!
 @app.route('/loginPage', methods=['GET'])
 @login_required
 def login():
 	global netID
 	netID = cas.username
-	return redirect("http://localhost:8080/goals", code=302)
+	
+	# Bind to URIROOT if defined, otherwise default to localhost
+	uriRoot = os.environ.get('URIROOT', "http://localhost:8080")
+	return redirect(uriRoot + "/goals", code=302)
 
 @app.route('/loginNetID', methods=['GET'])
 def loginNetID():
@@ -147,4 +159,6 @@ def remove_goal(goal_num):
 				completedGoals -= 1
 
 if __name__ == "__main__":
-	app.run()
+	# Bind to PORT if defined, otherwise default to 5000.
+	port = int(os.environ.get('PORT', 5000))
+	app.run(host='0.0.0.0', port=port)

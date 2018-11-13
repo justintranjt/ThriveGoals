@@ -5,7 +5,7 @@
             <b-navbar-brand>Thrive</b-navbar-brand>
             <b-nav-text>Logged in as {{ netID }}</b-nav-text>
             <b-navbar-nav class="ml-auto">
-                <b-nav-item href="http://localhost:8080/">Home</b-nav-item>
+                <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
                 <b-nav-item-dropdown right>
                     <!-- Using button-content slot -->
                     <template slot="button-content">
@@ -135,6 +135,7 @@ export default {
             message: '',
             showMessage: false,
             numCompleted: 0,
+            clientURI: process.env.URI_CLIENT_ROOT,
         };
     },
     components: {
@@ -143,7 +144,7 @@ export default {
     },
     methods: {
         getLoginNetID() {
-            const path = 'http://localhost:5000/loginNetID';
+            const path = process.env.URI_SERVER_ROOT + '/loginNetID';
             axios.get(path)
                 .then((res) => {
                     this.netID = res.data.netID;
@@ -154,9 +155,9 @@ export default {
                 });
         },
         getGoals() {
-            const path = 'http://localhost:5000/modGoals';
+            const path = process.env.URI_SERVER_ROOT + '/modGoals';
             axios.get(path)
-                .then((res) => {
+                .then((res) => {                    
                     this.goals = res.data.goals;
                 })
                 .catch((error) => {
@@ -165,11 +166,10 @@ export default {
                 });
         },
         getNumCompleted() {
-            const path = 'http://localhost:5000/completedGoals';
+            const path = process.env.URI_SERVER_ROOT + '/completedGoals';
             axios.get(path)
                 .then((res) => {
                     this.numCompleted = res.data.numCompleted;
-                    console.log(this.numCompleted);
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -177,7 +177,7 @@ export default {
                 });
         },
         addGoal(payload) {
-            const path = 'http://localhost:5000/modGoals';
+            const path = process.env.URI_SERVER_ROOT + '/modGoals';
             axios.post(path, payload)
                 .then(() => {
                     this.getGoals();
@@ -193,7 +193,7 @@ export default {
                 });
         },
         completeGoal(goalNum) {
-            const path = `http://localhost:5000/completeGoal/${goalNum}`;
+            const path = `${process.env.URI_SERVER_ROOT}/completeGoal/${goalNum}`;
             axios.put(path)
                 .then(() => {
                     this.getGoals();
@@ -209,7 +209,7 @@ export default {
                 });
         },
         deleteGoal(goalNum) {
-            const path = `http://localhost:5000/modGoals/${goalNum}`;
+            const path = `${process.env.URI_SERVER_ROOT}/modGoals/${goalNum}`;
             axios.delete(path)
                 .then(() => {
                     this.getGoals();
@@ -225,7 +225,7 @@ export default {
                 });
         },
         updateGoal(payload, goalNum) {
-            const path = `http://localhost:5000/modGoals/${goalNum}`;
+            const path = `${process.env.URI_SERVER_ROOT}/modGoals/${goalNum}`;
             axios.put(path, payload)
                 .then(() => {
                     this.getGoals();
