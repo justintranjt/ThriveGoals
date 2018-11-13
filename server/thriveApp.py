@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # crea
 db = SQLAlchemy(app)
 
 # Initialize HTTPS redirection. TODO: UNCOMMENT THIS IN DEPLOYED HEROKU VERSION
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
