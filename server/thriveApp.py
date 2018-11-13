@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
-import os
+from os import environ
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
@@ -12,7 +12,7 @@ app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # createdb register (in postgress.app)
 db = SQLAlchemy(app)
 
-# Initialize HTTPS redirection. TODO: UNCOMMENT THIS IN DEPLOYED HEROKU VERSION
+# Initialize HTTPS redirection.
 sslify = SSLify(app)
 
 # Initialize CAS login
@@ -22,7 +22,7 @@ app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'login'
 
 # This is a secret key for storing sessions. 
-secret_key = os.environ.get('SECRET_KEY', "developmentsecretkey")
+secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
 app.secret_key = secret_key
 
 # Initialize CORS
@@ -66,7 +66,7 @@ def login():
 	netID = cas.username
 	
 	# Bind to URIROOT if defined, otherwise default to localhost
-	uriRoot = os.environ.get('URIROOT', "http://localhost:8080")
+	uriRoot = environ.get('URIROOT', "http://localhost:8080")
 	return redirect(uriRoot + "/goals", code=302)
 
 @app.route('/loginNetID', methods=['GET'])
@@ -160,5 +160,5 @@ def remove_goal(goal_num):
 
 if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
-	port = int(os.environ.get('PORT', 5000))
+	port = int(environ.get('PORT', 5000))
 	app.run(host='0.0.0.0', port=port)

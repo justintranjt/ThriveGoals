@@ -1,1 +1,1 @@
-web: python server/thriveApp.py
+web: gunicorn server/thriveApp:app
