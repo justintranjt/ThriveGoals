@@ -4,7 +4,7 @@ Flask-CAS-fork==1.0.1
 Flask-Cors==3.0.6
 flask-sqlalchemy==2.3.2
 flask-sslify==0.1.5
-gunicorn==19.9.0
+waitress==1.1.0
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
