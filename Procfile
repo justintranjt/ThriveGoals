@@ -1,1 +1,1 @@
-web: gunicorn server/thriveApp.py:app
+web: gunicorn --chdir server/ thriveApp:app
