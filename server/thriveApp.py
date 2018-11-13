@@ -4,6 +4,7 @@ from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
 from os import environ
+from waitress import serve
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
@@ -161,4 +162,4 @@ def remove_goal(goal_num):
 if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
-	app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)

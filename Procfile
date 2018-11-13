@@ -1,1 +1,1 @@
-web: waitress-serve server.thriveApp:app
+web: python server/thriveApp.py
