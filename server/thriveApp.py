@@ -85,9 +85,13 @@ def cmpl_goal(goal_num):
 
 	for goal in goals:
 		if int(goal['goalNum']) == int(goal_num):
-			goal['completed'] = True
 			global completedGoals
-			completedGoals += 1
+			if goal['completed']:
+				goal['completed'] = False
+				completedGoals -= 1
+			else:
+				goal['completed'] = True
+				completedGoals += 1
 	
 	return jsonify(response_object)
 

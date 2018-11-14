@@ -45,7 +45,7 @@
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <div class="btn-group mr-2" role="group">
-                                        <button type="button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">Complete</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">Not Complete</button>
                                     </div>
                                     <div class="btn-group mr-2" role="group">
                                         <button type="button" class="btn btn-warning btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</button>
@@ -157,7 +157,7 @@ export default {
         getGoals() {
             const path = process.env.URI_SERVER_ROOT + '/modGoals';
             axios.get(path)
-                .then((res) => {                    
+                .then((res) => {
                     this.goals = res.data.goals;
                 })
                 .catch((error) => {
