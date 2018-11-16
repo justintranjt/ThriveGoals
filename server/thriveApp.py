@@ -30,6 +30,7 @@ app.secret_key = secret_key
 CORS(app)
 
 # Preloaded goals to be displayed
+allGoals = {}
 goals = [
 	{
 		'goalNum': 1,
@@ -47,8 +48,15 @@ goals = [
 		'completed': False,
 	},
 ]
-# Using completed goals as a global variable
-completedGoals = 0
+goals2 = [
+	{
+		'goalNum': 1,
+		'goalTitle': 'Alternate template!',
+		'completed': False,
+	},
+]
+allGoals["Template 1"] = goals
+allGoals["Template 2"] = goals2
 
 # Using this as a global variable
 netID = None
@@ -79,89 +87,89 @@ def loginNetID():
 	return jsonify(response_object)
 
 # Mark goal as completed
-@app.route('/completeGoal/<goal_num>', methods=['PUT'])
-def cmpl_goal(goal_num):
-	response_object = {'status': 'success', 'message': 'Goal completed!'}
+@app.route('/completeGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
+def cmpl_goal(goal_num, goal_template_id):
+	response_object = {'status': 'success'}
 
-	for goal in goals:
+	for goal in allGoals[goal_template_id]:
 		if int(goal['goalNum']) == int(goal_num):
-			global completedGoals
 			if goal['completed']:
 				goal['completed'] = False
-				completedGoals -= 1
+				response_object['message'] = 'Goal not completed.'
 			else:
 				goal['completed'] = True
-				completedGoals += 1
+				response_object['message'] = 'Goal completed!'
 	
 	return jsonify(response_object)
 
 # Retrieving all current goals and adding new goals 
-@app.route('/modGoals', methods=['GET', 'POST'])
-def all_goals():
+@app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
+def all_goals(goal_template_id):
 	response_object = {'status': 'success'}
 	if request.method == 'POST':
 		post_data = request.get_json()
 		# Overwrite existing goal if number is identical
-		remove_goal(post_data.get('goalNum'))
-		goals.append({
+		remove_goal(post_data.get('goalNum'), goal_template_id)
+		allGoals[goal_template_id].append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
 		})
-		if post_data.get('completed'):
-			global completedGoals
-			completedGoals += 1
 
 		response_object['message'] = 'Goal added!'
 	else:
-		response_object['goals'] = goals
+		response_object['goals'] = allGoals[goal_template_id]
 
 	# Sort by goal number
-	goals.sort(key=lambda goal: goal['goalNum'])
+	allGoals[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 	return jsonify(response_object)
 
-@app.route('/completedGoals', methods=['GET'])
-def completed_goals():
+@app.route('/completedGoals/<goal_template_id>', methods=['GET'])
+def completed_goals(goal_template_id):
 	response_object = {'status': 'success'}
-	response_object['numCompleted'] = completedGoals
+	response_object['numCompleted'] = count_completed_goals(goal_template_id)
 	return jsonify(response_object)
 
 # Updating preexisting goals and deleting goals
-@app.route('/modGoals/<goal_num>', methods=['PUT', 'DELETE'])
-def update_rem_goal(goal_num):
+@app.route('/modGoals/<goal_num>/<goal_template_id>', methods=['PUT', 'DELETE'])
+def update_rem_goal(goal_num, goal_template_id):
 	response_object = {'status': 'success'}
 	if request.method == 'PUT':
 		post_data = request.get_json()
-		# Handles update, overwrites old goal number and overwrites new number
-		remove_goal(goal_num)
-		remove_goal(post_data.get('goalNum'))
 
-		goals.append({
+		# Handles update, overwrites old goal number and overwrites new number
+		remove_goal(goal_num, goal_template_id)
+		remove_goal(post_data.get('goalNum'), goal_template_id)
+
+		allGoals[goal_template_id].append({
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
 		})
-		if post_data.get('completed'):
-			global completedGoals
-			completedGoals += 1
 
 		response_object['message'] = 'Goal updated!'
 	elif request.method == 'DELETE':
-		remove_goal(goal_num)
+		remove_goal(goal_num, goal_template_id)
 		response_object['message'] = 'Goal deleted!'
 		
 	# Sort by goal number
-	goals.sort(key=lambda goal: goal['goalNum'])
+	allGoals[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 
 	return jsonify(response_object)
 
-def remove_goal(goal_num):
-	for goal in goals:
+def count_completed_goals(goal_template_id):
+	completedGoalCount = 0
+
+	for goal in allGoals[goal_template_id]:
+		if goal['completed']:
+			completedGoalCount += 1
+
+	return completedGoalCount
+
+def remove_goal(goal_num, goal_template_id):
+	for goal in allGoals[goal_template_id]:
 		if int(goal['goalNum']) == int(goal_num):
-			goals.remove(goal)
-			if goal['completed']:
-				global completedGoals
-				completedGoals -= 1
+			allGoals[goal_template_id].remove(goal)
 
 if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
