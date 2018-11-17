@@ -6,6 +6,8 @@
             <b-nav-text>Logged in as {{ netID }}</b-nav-text>
             <b-navbar-nav class="ml-auto">
                 <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
+                <!-- Allow this template creation to change the template name -->
+                <b-nav-item><em>Create Template</em></b-nav-item>
                 <b-nav-item-dropdown right>
                     <!-- Using button-content slot -->
                     <template slot="button-content">
@@ -39,33 +41,98 @@
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a green background if goal.completed=True. No bg color if False -->
                             <th scope="row" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">{{ goal.goalNum }}</th>
+                            <th scope="row" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">{{ goal.goalNum }}</th>
                             <th scope="row" v-else>{{ goal.goalNum }}</th>
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">{{ goal.goalTitle }}</td>
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">{{ goal.goalTitle }}</td>
                             <td v-else>{{ goal.goalTitle }}</td>
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
+                                                Not Complete
+                                            </b-button>
+                                            <b-button v-else type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
+                                                <v-icon>undo</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
                                     <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">Not Complete</b-button>
+                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
                                     </div>
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                Delete
+                                            </b-button>
+                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                <v-icon>delete_forever</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
+                                </div>
+                            </td>
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <div class="btn-toolbar float-right" role="toolbar">
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
+                                                Not In Progress
+                                            </b-button>
+                                            <b-button v-else type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
+                                                <v-icon>undo</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
                                     <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-warning btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
+                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
                                     </div>
-                                    <div class="btn-group" role="group">
-                                        <b-button type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">Delete</b-button>
-                                    </div>
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                Delete
+                                            </b-button>
+                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                <v-icon>delete_forever</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
                                 </div>
                             </td>
                             <td v-else>
                                 <div class="btn-toolbar float-right" role="toolbar">
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">Complete</b-button>
+                                            <b-button v-else type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">
+                                                <v-icon>done</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
+                                                In Progress
+                                            </b-button>
+                                            <b-button v-else type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
+                                                <v-icon>schedule</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
                                     <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">Complete</b-button>
+                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
                                     </div>
-                                    <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-warning btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
-                                    </div>
-                                    <div class="btn-group" role="group">
-                                        <b-button type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">Delete</b-button>
-                                    </div>
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group" role="group">
+                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                Delete
+                                            </b-button>
+                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                                <v-icon>delete_forever</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
                                 </div>
                             </td>
                         </tr>
@@ -229,6 +296,23 @@ export default {
                     this.getNumCompleted(goalTemplateID);
                 });
         },
+        inProgGoal(goalNum, goalTemplateID) {
+            const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalNum + '/' + goalTemplateID;
+            axios.put(path)
+                .then((res) => {
+                    this.getGoals(goalTemplateID);
+                    this.getNumCompleted(goalTemplateID);
+                    this.message = res.data.message;
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.getGoals(goalTemplateID);
+                    this.getNumCompleted(goalTemplateID);
+                    this.showMessage = true;
+                });
+        },
         updateGoal(payload, goalNum, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID;
             axios.put(path, payload)
@@ -264,6 +348,9 @@ export default {
         },
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum, this.goalTemplateID);
+        },
+        onInProgGoal(goal) {
+            this.inProgGoal(goal.goalNum, this.goalTemplateID);
         },
         onSubmitUpdate(evt) {
             evt.preventDefault();

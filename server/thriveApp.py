@@ -36,16 +36,19 @@ goals = [
 		'goalNum': 1,
 		'goalTitle': 'Finish basic addition of goals',
 		'completed': False,
+		'inProgress': False,
 	},
 	{
 		'goalNum': 3,
 		'goalTitle': 'Allow goal editing',
 		'completed': False,
+		'inProgress': False,
 	},
 	{
 		'goalNum': 2,
 		'goalTitle': 'Allow goal deletion',
 		'completed': False,
+		'inProgress': False,
 	},
 ]
 goals2 = [
@@ -53,6 +56,7 @@ goals2 = [
 		'goalNum': 1,
 		'goalTitle': 'Alternate template!',
 		'completed': False,
+		'inProgress': False,
 	},
 ]
 allGoals["Template 1"] = goals
@@ -102,6 +106,25 @@ def cmpl_goal(goal_num, goal_template_id):
 	
 	return jsonify(response_object)
 
+# Mark goal as inProgress
+@app.route('/inProgGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
+def in_prog_goal(goal_num, goal_template_id):
+	response_object = {'status': 'success'}
+
+	for goal in allGoals[goal_template_id]:
+		if int(goal['goalNum']) == int(goal_num):
+			if goal['completed']:
+				goal['completed'] = False
+				response_object['message'] = 'Goal is in progress.'
+			if goal['inProgress']:
+				goal['inProgress'] = False
+				response_object['message'] = 'Goal is not in progress.'
+			else:
+				goal['inProgress'] = True
+				response_object['message'] = 'Goal is in progress.'
+	
+	return jsonify(response_object)
+
 # Retrieving all current goals and adding new goals 
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
@@ -114,6 +137,7 @@ def all_goals(goal_template_id):
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
+			'inProgress': post_data.get('inProgress'),
 		})
 
 		response_object['message'] = 'Goal added!'
@@ -157,6 +181,12 @@ def update_rem_goal(goal_num, goal_template_id):
 
 	return jsonify(response_object)
 
+# Create new, blank template designated with goal_template_id
+def create_template(goal_template_id):
+	new_template = []
+	allGoals[goal_template_id] = new_template
+
+# Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
 	completedGoalCount = 0
 
@@ -166,6 +196,7 @@ def count_completed_goals(goal_template_id):
 
 	return completedGoalCount
 
+# Helper fjunction to remove goal from a template
 def remove_goal(goal_num, goal_template_id):
 	for goal in allGoals[goal_template_id]:
 		if int(goal['goalNum']) == int(goal_num):
@@ -174,4 +205,6 @@ def remove_goal(goal_num, goal_template_id):
 if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
-	serve(app, host='0.0.0.0', port=port)
+	# Run with Flask dev server or with Waitress WSGI server
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
