@@ -24,7 +24,7 @@
                 <h1>Goals</h1>
                 <hr>
                 <alert :message="message" v-if="showMessage"></alert>
-                <h1>{{goalTemplateID}}</h1>
+                <h1 v-b-tooltip.hover.left title="Double-click to edit">{{goalTemplateID}}</h1>
                 <h5>Overall Goal Progress</h5>
                 <prog :value="numCompleted/goals.length"></prog>
                 <b-button type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
@@ -39,13 +39,34 @@
                     </thead>
                     <draggable v-model="list" :element="'tbody'">
                         <tr v-for="(goal, index) in goals" :key="index">
-                            <!-- Every cell has a green background if goal.completed=True. No bg color if False -->
-                            <th scope="row" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">{{ goal.goalNum }}</th>
-                            <th scope="row" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">{{ goal.goalNum }}</th>
-                            <th scope="row" v-else>{{ goal.goalNum }}</th>
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">{{ goal.goalTitle }}</td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">{{ goal.goalTitle }}</td>
-                            <td v-else>{{ goal.goalTitle }}</td>
+                            <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
+                            <!-- Goal Number -->
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
+                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            </td>
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
+                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            </td>
+                            <td v-else @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
+                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            </td>
+                            <!-- Goal title -->
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit"v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit"v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <!-- Buttons -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
@@ -58,9 +79,6 @@
                                             </b-button>
                                         </div>
                                     </v-hover>
-                                    <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
-                                    </div>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
                                             <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
@@ -85,9 +103,6 @@
                                             </b-button>
                                         </div>
                                     </v-hover>
-                                    <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
-                                    </div>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
                                             <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
@@ -120,9 +135,6 @@
                                             </b-button>
                                         </div>
                                     </v-hover>
-                                    <div class="btn-group mr-2" role="group">
-                                        <b-button type="b-button" class="btn btn-primary btn-sm" v-b-modal.goal-update-modal @click="editGoal(goal)">Update</b-button>
-                                    </div>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
                                             <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
@@ -159,24 +171,6 @@
                 <b-button type="reset" variant="danger">Reset</b-button>
             </b-form>
         </b-modal>
-        <b-modal ref="updateGoalModal" id="goal-update-modal" title="Update this goal" hide-footer>
-            <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
-                <b-form-group label="Goal Number:" label-for="form-goalNumber-update-input">
-                    <b-form-input id="form-goalNumber-update-input" type="number" v-model.number="updateGoalForm.goalNum" required placeholder="Enter goal number">
-                    </b-form-input>
-                </b-form-group>
-                <b-form-group label="Goal Title:" label-for="form-goalTitle-update-input">
-                    <b-form-input id="form-goalTitle-update-input" type="text" v-model="updateGoalForm.goalTitle" required placeholder="Enter goal title">
-                    </b-form-input>
-                </b-form-group>
-                <b-form-checkbox class="mb-3" label="Completed?" label-for="form-goalTitle-update-input" v-model="updateGoalForm.completed">
-                    Completed?
-                </b-form-checkbox>
-                <br>
-                <b-button type="submit" variant="primary">Save Updates</b-button>
-                <b-button type="reset" variant="danger">Reset</b-button>
-            </b-form>
-        </b-modal>
     </div>
 </template>
 <script>
@@ -196,16 +190,14 @@ export default {
                 goalTitle: '',
                 completed: false,
             },
-            updateGoalForm: {
-                rowNum: 0, // This is the goal number BEFORE we update it
-                goalNum: 0, // This is the goal number we are updating it TO
-                goalTitle: '',
-                completed: false,
-            },
             message: '',
             showMessage: false,
             numCompleted: 0,
             clientURI: process.env.URI_CLIENT_ROOT,
+            updatedGoalTitle: null,
+            newGoalTitle: null,
+            updatedGoalNum: null,
+            newGoalNum: null,
         };
     },
     components: {
@@ -313,35 +305,60 @@ export default {
                     this.showMessage = true;
                 });
         },
-        updateGoal(payload, goalNum, goalTemplateID) {
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID;
+        updateGoalNum(goal) {
+            this.updatedGoalNum = '';
+
+            const payload = {
+                goalNum: parseInt(this.newGoalNum),
+                goalTitle: goal.goalTitle,
+                completed: goal.completed,
+                inProgress: goal.inProgress,
+            };
+
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.goalTemplateID;
             axios.put(path, payload)
                 .then(() => {
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
+                    this.getGoals(this.goalTemplateID);
+                    this.getNumCompleted(this.goalTemplateID);
                     this.message = 'Goal updated!';
                     this.showMessage = true;
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
+                    this.getGoals(this.goalTemplateID);
+                    this.getNumCompleted(this.goalTemplateID);
                 });
         },
-        editGoal(goal) {
-            this.updateGoalForm = goal;
-            this.updateGoalForm.rowNum = goal.goalNum;
-            this.updateGoalForm.completed = goal.completed;
+        updateGoalTitle(goal) {
+            this.updatedGoalTitle = '';
+
+            const payload = {
+                goalNum: goal.goalNum,
+                goalTitle: this.newGoalTitle,
+                completed: goal.completed,
+                inProgress: goal.inProgress,
+            };
+
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.goalTemplateID;
+            axios.put(path, payload)
+                .then(() => {
+                    this.getGoals(this.goalTemplateID);
+                    this.getNumCompleted(this.goalTemplateID);
+                    this.message = 'Goal updated!';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.getGoals(this.goalTemplateID);
+                    this.getNumCompleted(this.goalTemplateID);
+                });
         },
         initForm() {
             this.addGoalForm.goalNum = 0;
             this.addGoalForm.goalTitle = '';
             this.addGoalForm.completed = false;
-            this.updateGoalForm.rowNum = 0;
-            this.updateGoalForm.goalNum = 0;
-            this.updateGoalForm.goalTitle = '';
-            this.updateGoalForm.completed = false;
         },
         onCompleteGoal(goal) {
             this.completeGoal(goal.goalNum, this.goalTemplateID);
@@ -351,23 +368,6 @@ export default {
         },
         onInProgGoal(goal) {
             this.inProgGoal(goal.goalNum, this.goalTemplateID);
-        },
-        onSubmitUpdate(evt) {
-            evt.preventDefault();
-            this.$refs.updateGoalModal.hide();
-            const payload = {
-                goalNum: this.updateGoalForm.goalNum,
-                goalTitle: this.updateGoalForm.goalTitle,
-                completed: this.updateGoalForm.completed,
-            };
-            this.updateGoal(payload, this.updateGoalForm.rowNum, this.goalTemplateID);
-        },
-        onResetUpdate(evt) {
-            evt.preventDefault();
-            this.$refs.updateGoalModal.hide();
-            this.initForm();
-            this.getGoals(this.goalTemplateID);
-            this.getNumCompleted(this.goalTemplateID);
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -388,7 +388,7 @@ export default {
             this.goalTemplateID = goalTemplateID;
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
-        }
+        },
     },
     beforeMount() {
         this.getLoginNetID();

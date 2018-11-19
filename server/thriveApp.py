@@ -169,6 +169,7 @@ def update_rem_goal(goal_num, goal_template_id):
 			'goalNum': post_data.get('goalNum'),
 			'goalTitle': post_data.get('goalTitle'),
 			'completed': post_data.get('completed'),
+			'inProgress': post_data.get('inProgress'),
 		})
 
 		response_object['message'] = 'Goal updated!'
@@ -206,5 +207,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
