@@ -13,8 +13,9 @@
                     <template slot="button-content">
                         <em>Templates</em>
                     </template>
-                    <b-dropdown-item @click="onSetTemplate('Template 1')">Template 1</b-dropdown-item>
-                    <b-dropdown-item @click="onSetTemplate('Template 2')">Template 2</b-dropdown-item>
+                    <b-dropdown-item v-for="(template, index) in goalTemplateIDs" :key="index" @click="onSetTemplate(template)">
+                        {{ template }}
+                    </b-dropdown-item>
                 </b-nav-item-dropdown>
                 <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
             </b-navbar-nav>
@@ -219,7 +220,6 @@ export default {
             axios.get(path)
                 .then((res) => {
                     this.netID = res.data.netID;
-                    console.log(this.netID); // Output: the user's netID
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -248,12 +248,11 @@ export default {
                     console.error(error);
                 });
         },
-        getTemplates() {
+        async getTemplates() {
             const path = process.env.URI_SERVER_ROOT + '/getTemplates';
-            axios.get(path)
+            await axios.get(path)
                 .then((res) => {
                     this.goalTemplateIDs = res.data.goalTemplateIDs;
-                    this.currGoalTemplateID = this.goalTemplateIDs[0];
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -382,6 +381,7 @@ export default {
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
             axios.put(path, payload)
                 .then(() => {
+                    this.getTemplates();
                     this.currGoalTemplateID = this.newTemplateID;
                     this.getGoals(this.newTemplateID);
                     this.getNumCompleted(this.newTemplateID);
@@ -431,11 +431,9 @@ export default {
             this.getNumCompleted(goalTemplateID);
         },
     },
-    created() {
-        console.log(this.netID); // Empty output
+    async created() {
         this.getLoginNetID();
-        console.log(this.netID); // Empty output
-        this.getTemplates();
+        await this.getTemplates();
         this.getGoals(this.currGoalTemplateID);
         this.getNumCompleted(this.currGoalTemplateID);
     },

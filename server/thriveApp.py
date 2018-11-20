@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # crea
 db = SQLAlchemy(app)
 
 # Initialize HTTPS redirection.
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -221,7 +221,7 @@ def count_completed_goals(goal_template_id):
 
 	return completedGoalCount
 
-# Helper fjunction to remove goal from a template
+# Helper function to remove goal from a template
 def remove_goal(goal_num, goal_template_id):
 	for goal in allGoals[goal_template_id]:
 		if int(goal['goalNum']) == int(goal_num):
@@ -231,5 +231,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
