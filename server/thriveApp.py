@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # crea
 db = SQLAlchemy(app)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -148,6 +148,7 @@ def all_goals(goal_template_id):
 	allGoals[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 	return jsonify(response_object)
 
+# Retrieve number of completed goals
 @app.route('/completedGoals/<goal_template_id>', methods=['GET'])
 def completed_goals(goal_template_id):
 	response_object = {'status': 'success'}
@@ -159,17 +160,17 @@ def completed_goals(goal_template_id):
 def update_rem_goal(goal_num, goal_template_id):
 	response_object = {'status': 'success'}
 	if request.method == 'PUT':
-		post_data = request.get_json()
+		put_data = request.get_json()
 
 		# Handles update, overwrites old goal number and overwrites new number
 		remove_goal(goal_num, goal_template_id)
-		remove_goal(post_data.get('goalNum'), goal_template_id)
+		remove_goal(put_data.get('goalNum'), goal_template_id)
 
 		allGoals[goal_template_id].append({
-			'goalNum': post_data.get('goalNum'),
-			'goalTitle': post_data.get('goalTitle'),
-			'completed': post_data.get('completed'),
-			'inProgress': post_data.get('inProgress'),
+			'goalNum': put_data.get('goalNum'),
+			'goalTitle': put_data.get('goalTitle'),
+			'completed': put_data.get('completed'),
+			'inProgress': put_data.get('inProgress'),
 		})
 
 		response_object['message'] = 'Goal updated!'
@@ -182,10 +183,33 @@ def update_rem_goal(goal_num, goal_template_id):
 
 	return jsonify(response_object)
 
+# Get all existing template IDs
+@app.route('/getTemplates', methods=['GET'])
+def get_templates():
+	response_object = {'status': 'success'}
+
+	response_object['goalTemplateIDs'] = list(allGoals.keys())
+
+	return jsonify(response_object)
+
 # Create new, blank template designated with goal_template_id
-def create_template(goal_template_id):
-	new_template = []
-	allGoals[goal_template_id] = new_template
+@app.route('/modTemplates/<goal_template_id>', methods=['PUT', 'POST'])
+def update_template(goal_template_id):
+	response_object = {'status': 'success'}
+
+	# Update existing template name and remove old entry ID
+	if request.method == 'PUT':
+		put_data = request.get_json()
+		new_template_id = put_data.get('newTemplateID')
+		allGoals[new_template_id] = allGoals[goal_template_id]
+		del allGoals[goal_template_id]
+
+	# TODO Create new template with specified name
+	if request.method == 'POST':
+		new_template = []
+		allGoals[goal_template_id] = new_template
+
+	return jsonify(response_object)
 
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
@@ -207,5 +231,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)

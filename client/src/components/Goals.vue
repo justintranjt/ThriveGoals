@@ -24,7 +24,11 @@
                 <h1>Goals</h1>
                 <hr>
                 <alert :message="message" v-if="showMessage"></alert>
-                <h1 v-b-tooltip.hover.left title="Double-click to edit">{{goalTemplateID}}</h1>
+                <!-- Editable template name -->
+                <h1 @dblclick="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID">
+                    <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedTemplate!=(currGoalTemplateID)"> {{ currGoalTemplateID }} </label>
+                    <input v-if="updatedTemplate==(currGoalTemplateID)" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
+                </h1>
                 <h5>Overall Goal Progress</h5>
                 <prog :value="numCompleted/goals.length"></prog>
                 <b-button type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
@@ -55,11 +59,11 @@
                             </td>
                             <!-- Goal title -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit"v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit"v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <td v-else @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
@@ -183,7 +187,8 @@ export default {
     data() {
         return {
             netID: '',
-            goalTemplateID: 'Template 1', // Default template ID
+            goalTemplateIDs: [],
+            currGoalTemplateID: 'Template 1', // Default template ID
             goals: [],
             addGoalForm: {
                 goalNum: 0,
@@ -194,10 +199,13 @@ export default {
             showMessage: false,
             numCompleted: 0,
             clientURI: process.env.URI_CLIENT_ROOT,
-            updatedGoalTitle: null,
-            newGoalTitle: null,
+            // Double click to edit boolean and new entry fields
             updatedGoalNum: null,
+            updatedGoalTitle: null,
+            updatedTemplate: null,
             newGoalNum: null,
+            newGoalTitle: null,
+            newTemplateID: null,
         };
     },
     components: {
@@ -211,6 +219,7 @@ export default {
             axios.get(path)
                 .then((res) => {
                     this.netID = res.data.netID;
+                    console.log(this.netID); // Output: the user's netID
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -233,6 +242,18 @@ export default {
             axios.get(path)
                 .then((res) => {
                     this.numCompleted = res.data.numCompleted;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.error(error);
+                });
+        },
+        getTemplates() {
+            const path = process.env.URI_SERVER_ROOT + '/getTemplates';
+            axios.get(path)
+                .then((res) => {
+                    this.goalTemplateIDs = res.data.goalTemplateIDs;
+                    this.currGoalTemplateID = this.goalTemplateIDs[0];
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
@@ -307,52 +328,72 @@ export default {
         },
         updateGoalNum(goal) {
             this.updatedGoalNum = '';
-
             const payload = {
                 goalNum: parseInt(this.newGoalNum),
                 goalTitle: goal.goalTitle,
                 completed: goal.completed,
                 inProgress: goal.inProgress,
             };
-
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.goalTemplateID;
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID;
             axios.put(path, payload)
                 .then(() => {
-                    this.getGoals(this.goalTemplateID);
-                    this.getNumCompleted(this.goalTemplateID);
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
                     this.message = 'Goal updated!';
                     this.showMessage = true;
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(this.goalTemplateID);
-                    this.getNumCompleted(this.goalTemplateID);
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
                 });
         },
         updateGoalTitle(goal) {
             this.updatedGoalTitle = '';
-
             const payload = {
                 goalNum: goal.goalNum,
                 goalTitle: this.newGoalTitle,
                 completed: goal.completed,
                 inProgress: goal.inProgress,
             };
-
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.goalTemplateID;
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID;
             axios.put(path, payload)
                 .then(() => {
-                    this.getGoals(this.goalTemplateID);
-                    this.getNumCompleted(this.goalTemplateID);
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
                     this.message = 'Goal updated!';
                     this.showMessage = true;
                 })
                 .catch((error) => {
                     // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(this.goalTemplateID);
-                    this.getNumCompleted(this.goalTemplateID);
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
+                });
+        },
+        updateTemplate(goalTemplateID) {
+            const payload = {
+                newTemplateID: this.newTemplateID,
+            };
+
+            this.updatedTemplate = '';
+
+            const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
+            axios.put(path, payload)
+                .then(() => {
+                    this.currGoalTemplateID = this.newTemplateID;
+                    this.getGoals(this.newTemplateID);
+                    this.getNumCompleted(this.newTemplateID);
+                    this.message = 'Template updated!';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.currGoalTemplateID = this.newTemplateID;
+                    this.getGoals(this.newTemplateID);
+                    this.getNumCompleted(this.newTemplateID);
                 });
         },
         initForm() {
@@ -361,13 +402,13 @@ export default {
             this.addGoalForm.completed = false;
         },
         onCompleteGoal(goal) {
-            this.completeGoal(goal.goalNum, this.goalTemplateID);
+            this.completeGoal(goal.goalNum, this.currGoalTemplateID);
         },
         onDeleteGoal(goal) {
-            this.deleteGoal(goal.goalNum, this.goalTemplateID);
+            this.deleteGoal(goal.goalNum, this.currGoalTemplateID);
         },
         onInProgGoal(goal) {
-            this.inProgGoal(goal.goalNum, this.goalTemplateID);
+            this.inProgGoal(goal.goalNum, this.currGoalTemplateID);
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -377,7 +418,7 @@ export default {
                 goalTitle: this.addGoalForm.goalTitle,
                 completed: this.addGoalForm.completed,
             };
-            this.addGoal(payload, this.goalTemplateID);
+            this.addGoal(payload, this.currGoalTemplateID);
             this.initForm();
         },
         onReset(evt) {
@@ -385,15 +426,18 @@ export default {
             this.initForm();
         },
         onSetTemplate(goalTemplateID) {
-            this.goalTemplateID = goalTemplateID;
+            this.currGoalTemplateID = goalTemplateID;
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
     },
-    beforeMount() {
+    created() {
+        console.log(this.netID); // Empty output
         this.getLoginNetID();
-        this.getGoals(this.goalTemplateID);
-        this.getNumCompleted(this.goalTemplateID);
+        console.log(this.netID); // Empty output
+        this.getTemplates();
+        this.getGoals(this.currGoalTemplateID);
+        this.getNumCompleted(this.currGoalTemplateID);
     },
 };
 </script>
