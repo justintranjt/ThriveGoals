@@ -7,7 +7,8 @@
             <b-navbar-nav class="ml-auto">
                 <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
                 <!-- Allow this template creation to change the template name -->
-                <b-nav-item><em>Create Template</em></b-nav-item>
+                <b-nav-item @click="addTemplate()"><em>Create Template</em></b-nav-item>
+                <b-nav-item @click="deleteTemplate()"><em>Delete Current Template</em></b-nav-item>
                 <b-nav-item-dropdown right>
                     <!-- Using button-content slot -->
                     <template slot="button-content">
@@ -28,11 +29,15 @@
                 <!-- Editable template name -->
                 <h1 @dblclick="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID">
                     <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedTemplate!=(currGoalTemplateID)"> {{ currGoalTemplateID }} </label>
-                    <input v-if="updatedTemplate==(currGoalTemplateID)" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
+                    <!-- Disable template input if no templates exist -->
+                    <input v-if="updatedTemplate==(currGoalTemplateID) && goalTemplateIDs.length!==0" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
                 </h1>
                 <h5>Overall Goal Progress</h5>
-                <prog :value="numCompleted/goals.length"></prog>
-                <b-button type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
+                <prog v-if="goalTemplateIDs.length===0" :value="0"></prog>
+                <prog v-else :value="numCompleted/goals.length"></prog>
+                <!-- Disable "add goal" button if template is untitled -->
+                <b-button v-if="this.currGoalTemplateID==='Enter Your Template Title Here'" type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal disabled>Add Goal</b-button>
+                <b-button v-else type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
                 <br><br>
                 <table class="table table-hover">
                     <thead>
@@ -187,16 +192,16 @@ import prog from './Progress';
 export default {
     data() {
         return {
-            netID: '',
+            netID: null,
             goalTemplateIDs: [],
-            currGoalTemplateID: 'Template 1', // Default template ID
+            currGoalTemplateID: null, // Default template ID
             goals: [],
             addGoalForm: {
                 goalNum: 0,
                 goalTitle: '',
                 completed: false,
             },
-            message: '',
+            message: null,
             showMessage: false,
             numCompleted: 0,
             clientURI: process.env.URI_CLIENT_ROOT,
@@ -275,6 +280,24 @@ export default {
                     this.getNumCompleted(goalTemplateID);
                 });
         },
+        addTemplate() {
+            const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + 'Enter Your Template Title Here';
+            axios.post(path)
+                .then(() => {
+                    this.getGoals('Enter Your Template Title Here');
+                    this.currGoalTemplateID = 'Enter Your Template Title Here';
+                    this.numCompleted = 0;
+                    this.message = 'Template created. Please title your template.';
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    this.getGoals('Enter Your Template Title Here');
+                    this.currGoalTemplateID = 'Enter Your Template Title Here';
+                    this.numCompleted = 0;
+                });
+        },
         completeGoal(goalNum, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completeGoal/' + goalNum + '/' + goalTemplateID;
             axios.put(path)
@@ -306,6 +329,41 @@ export default {
                     console.log(error);
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
+                });
+        },
+        deleteTemplate() {
+            const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
+            axios.delete(path)
+                .then(async () => {
+                    // Wait to get the new template list before setting fields
+                    await this.getTemplates();
+
+                    // Display template at top of list, if no templates, show blank screen
+                    if (this.goalTemplateIDs.length === 0) {
+                        this.goals = [];
+                        this.currGoalTemplateID = null;
+                    }
+                    else {
+                        this.getGoals(this.goalTemplateIDs[0]);
+                        this.getNumCompleted(this.goalTemplateIDs[0]);
+                        this.currGoalTemplateID = this.goalTemplateIDs[0];
+                    }
+                    this.message = 'Template deleted!';
+                    this.showMessage = true;
+                })
+                .catch(async (error) => {
+                    // eslint-disable-next-line
+                    console.log(error);
+                    await this.getTemplates();
+                    if (this.goalTemplateIDs.length === 0) {
+                        this.goals = [];
+                        this.currGoalTemplateID = null;
+                    }
+                    else {
+                        this.getGoals(this.goalTemplateIDs[0]);
+                        this.getNumCompleted(this.goalTemplateIDs[0]);
+                        this.currGoalTemplateID = this.goalTemplateIDs[0];
+                    }
                 });
         },
         inProgGoal(goalNum, goalTemplateID) {
@@ -434,6 +492,8 @@ export default {
     async created() {
         this.getLoginNetID();
         await this.getTemplates();
+        // Update current goal template if user reloads page
+        this.currGoalTemplateID = this.goalTemplateIDs[0];
         this.getGoals(this.currGoalTemplateID);
         this.getNumCompleted(this.currGoalTemplateID);
     },

@@ -193,21 +193,26 @@ def get_templates():
 	return jsonify(response_object)
 
 # Create new, blank template designated with goal_template_id
-@app.route('/modTemplates/<goal_template_id>', methods=['PUT', 'POST'])
+@app.route('/modTemplates/<goal_template_id>', methods=['DELETE', 'PUT', 'POST'])
 def update_template(goal_template_id):
 	response_object = {'status': 'success'}
 
+	# Delete current template
+	if request.method == 'DELETE':
+		del allGoals[goal_template_id]
+
 	# Update existing template name and remove old entry ID
-	if request.method == 'PUT':
+	# TODO retain order of dictionary
+	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
 		allGoals[new_template_id] = allGoals[goal_template_id]
 		del allGoals[goal_template_id]
 
-	# TODO Create new template with specified name
-	if request.method == 'POST':
-		new_template = []
-		allGoals[goal_template_id] = new_template
+	# Create new template with specified name
+	elif request.method == 'POST':
+		new_template_id = goal_template_id
+		allGoals[new_template_id] = []
 
 	return jsonify(response_object)
 
