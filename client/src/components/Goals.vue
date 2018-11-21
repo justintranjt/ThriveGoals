@@ -30,13 +30,13 @@
                 <h1 @dblclick="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID">
                     <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedTemplate!=(currGoalTemplateID)"> {{ currGoalTemplateID }} </label>
                     <!-- Disable template input if no templates exist -->
-                    <input v-if="updatedTemplate==(currGoalTemplateID) && goalTemplateIDs.length!==0" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
+                    <input v-if="updatedTemplate==(currGoalTemplateID) && (goalTemplateIDs.length!==0 || this.currGoalTemplateID==='Enter Your Template Title Here')" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
                 </h1>
                 <h5>Overall Goal Progress</h5>
                 <prog v-if="goalTemplateIDs.length===0" :value="0"></prog>
                 <prog v-else :value="numCompleted/goals.length"></prog>
                 <!-- Disable "add goal" button if template is untitled -->
-                <b-button v-if="this.currGoalTemplateID==='Enter Your Template Title Here'" type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal disabled>Add Goal</b-button>
+                <b-button v-if="this.currGoalTemplateID==='Enter Your Template Title Here' || goalTemplateIDs.length===0" type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal disabled>Add Goal</b-button>
                 <b-button v-else type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
                 <br><br>
                 <table class="table table-hover">
@@ -227,7 +227,6 @@ export default {
                     this.netID = res.data.netID;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.error(error);
                 });
         },
@@ -238,7 +237,6 @@ export default {
                     this.goals = res.data.goals;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.error(error);
                 });
         },
@@ -249,7 +247,6 @@ export default {
                     this.numCompleted = res.data.numCompleted;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.error(error);
                 });
         },
@@ -274,10 +271,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
                 });
         },
         addTemplate() {
@@ -291,11 +285,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals('Enter Your Template Title Here');
-                    this.currGoalTemplateID = 'Enter Your Template Title Here';
-                    this.numCompleted = 0;
                 });
         },
         completeGoal(goalNum, goalTemplateID) {
@@ -308,11 +298,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
-                    this.showMessage = true;
                 });
         },
         deleteGoal(goalNum, goalTemplateID) {
@@ -325,10 +311,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
                 });
         },
         deleteTemplate() {
@@ -351,19 +334,8 @@ export default {
                     this.message = 'Template deleted!';
                     this.showMessage = true;
                 })
-                .catch(async (error) => {
-                    // eslint-disable-next-line
+                .catch((error) => {
                     console.log(error);
-                    await this.getTemplates();
-                    if (this.goalTemplateIDs.length === 0) {
-                        this.goals = [];
-                        this.currGoalTemplateID = null;
-                    }
-                    else {
-                        this.getGoals(this.goalTemplateIDs[0]);
-                        this.getNumCompleted(this.goalTemplateIDs[0]);
-                        this.currGoalTemplateID = this.goalTemplateIDs[0];
-                    }
                 });
         },
         inProgGoal(goalNum, goalTemplateID) {
@@ -376,11 +348,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
-                    this.showMessage = true;
                 });
         },
         updateGoalNum(goal) {
@@ -400,10 +368,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(this.currGoalTemplateID);
-                    this.getNumCompleted(this.currGoalTemplateID);
                 });
         },
         updateGoalTitle(goal) {
@@ -423,10 +388,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.getGoals(this.currGoalTemplateID);
-                    this.getNumCompleted(this.currGoalTemplateID);
                 });
         },
         updateTemplate(goalTemplateID) {
@@ -447,11 +409,7 @@ export default {
                     this.showMessage = true;
                 })
                 .catch((error) => {
-                    // eslint-disable-next-line
                     console.log(error);
-                    this.currGoalTemplateID = this.newTemplateID;
-                    this.getGoals(this.newTemplateID);
-                    this.getNumCompleted(this.newTemplateID);
                 });
         },
         initForm() {
