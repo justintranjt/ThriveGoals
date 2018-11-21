@@ -202,7 +202,6 @@ def update_template(goal_template_id):
 		del allGoals[goal_template_id]
 
 	# Update existing template name and remove old entry ID
-	# TODO retain order of dictionary
 	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
