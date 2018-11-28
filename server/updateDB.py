@@ -16,14 +16,6 @@ from sqlalchemy.sql import exists
 import json
 import jsonpickle
 
-<<<<<<< HEAD
-=======
-
-
-
-
-
->>>>>>> added working database files
 db_uri = "postgres://wrlppbbvqcauzp:764db7ff9a698abcadb0ecf37e5d3f6405fb5acf6a1f1802f2febad6f6e52dfe@ec2-50-16-196-138.compute-1.amazonaws.com:5432/d7p8464rd276rt"
 #conn = psycopg2.connect(db_uri, sslmode='require')
 #os.environ['DATABASE_URL']
@@ -40,9 +32,6 @@ template_table = metadata.tables['templates']
 # NOTE: EDIT TO INCORPORATE CORRECT USERNAME!!!!
 # updates blob of goals (templateBlob), necessary for changes in any one goal
 def updateTemplate(username, templateName, newTemplateJSON):
-
-
-<<<<<<< HEAD
 	try:
 	   
 
@@ -67,39 +56,11 @@ def updateTemplate(username, templateName, newTemplateJSON):
 
 	except Exception as e:
 		# print "Oh fuck........."
-		print(str(e))
+		print (str(e))
 		return (True, str(e))
 
 	# print "End of update Call no exceptions thrown "
 	return (False, "The template has been successfully updated.")
-=======
-    try:
-       
-
-        select_st = select([template_table]).where((template_table.c.username == username) & (template_table.c.templateName == templateName))
-        res = conn.execute(select_st)
-        #.fetchone()
-        # print(res)
-
-        # if template doesn't already exist, insert it in new row 
-        if res is None:
-            ins = template_table.insert().values(username = username, templateName = templateName, templateJSON = newTemplateJSON)
-            conn.execute(ins)
-            print("new row created")
-        else: # if template exists, update template 
-
-            update = template_table.update().where(
-                (template_table.c.username == username) & (template_table.c.templateName == templateName)).values(templateJSON = newTemplateJSON)
-            conn.execute(update)
-
-    except Exception, e:
-        # print "Oh fuck........."
-        print str(e)
-        return (True, str(e))
-
-    # print "End of update Call no exceptions thrown "
-    return (False, "The template has been successfully updated.")
->>>>>>> added working database files
 
 # updateTemplateBlob("soniajoseph", "mytemplate", "newTemplateBlob")
 
@@ -108,8 +69,7 @@ def updateTemplate(username, templateName, newTemplateJSON):
 # function takes a string userName and returns a list of lists where each sublist is of length 3 
 # and contains username, template name, and the blob object for each template for a given user
 # The larger list is ordered alphabetically by template name 
-def getTemplateList(userName): 
-<<<<<<< HEAD
+def getTemplateList(userName):
 	try:
 		select_st = select([template_table]).where(
 				template_table.c.username == userName).order_by(
@@ -127,27 +87,7 @@ def getTemplateList(userName):
 	except Exception as e:
 			#conn.rollback()
 			return ("True", str(e), listOfLists)
-	return (False, "If this message prints, you should have a template list.", listOfLists)
-=======
-    try:
-        select_st = select([template_table]).where(
-                template_table.c.username == userName).order_by(
-                template_table.c.templateName.asc())
-        res = conn.execute(select_st)
-        listOfLists =[]
-        for row in res: 
-            username = row[0]
-            tempName = row[1]
-            jsonStr = row[2]
-            oneList = [username, tempName, jsonStr]
-            listOfLists.append(oneList)
-
-
-    except Exception, e:
-            #conn.rollback()
-            return ("True", str(e), listOfLists)
-    return (False, "If this message prints, the goal has been successfully inserted.", listOfLists)
->>>>>>> added working database files
+	return (False, "If this message prints, the goal has been successfully inserted.", listOfLists)
 
 
 ####################################################################################################
@@ -171,35 +111,19 @@ def getTemplateList(userName):
 # This function must take the json version of goal object
 # any other input will cause an exception to be thrown. 
 def fromJSONtoTemplate(json_input): 
-<<<<<<< HEAD
 		try:
 			decoded = jsonpickle.decode(json_input)
-		 
 		   # newTemplate = _buildTemplateRecursively(decoded)
-
 			return decoded 
 		 
 		except (ValueError, KeyError, TypeError):
-			print("JSON format error")
-=======
-        try:
-            decoded = jsonpickle.decode(json_input)
-         
-           # newTemplate = _buildTemplateRecursively(decoded)
-
-            return decoded 
-         
-        except (ValueError, KeyError, TypeError):
-            print "JSON format error"
->>>>>>> added working database files
-
+			print ("JSON format error")
 
 #given a template name and username, this function returns the corresponding template
 #this function considers having any more than one template meeting these criteria 
 #to be a programmer error. Having only one template per user with the same name
 #is an invariant that should be enforced across the application. 
 def getTemplate(templateName, userName): 
-<<<<<<< HEAD
 	try:
 		select_st = select([template_table]).where(
 			 (template_table.c.templateName == templateName) & (template_table.c.username == userName))
@@ -220,14 +144,8 @@ def getTemplate(templateName, userName):
 			return ("True", str(e), None)
 	return (False, "If this message prints, the template has been successfully retireved.", template)
 
-
-
 def deleteTemplate(username, templateName):
-
-
 	try:
-	   
-
 		del_st = template_table.delete().where((template_table.c.username == username) & (template_table.c.templateName == templateName))
 		res = conn.execute(del_st)
 
@@ -240,48 +158,16 @@ def deleteTemplate(username, templateName):
 	# print "End of update Call no exceptions thrown "
 	return (False, "The template has been successfully updated.")
 
-
-
 def updateTemplateName(username, newName, templateJSON):
-
-
 	try:
-	   
-
 		update = template_table.update().where(
 			(template_table.c.username == username) & (template_table.c.templateJSON == templateJSON)).values(templateName = newName)
 		conn.execute(update)
 
 	except Exception as e:
 		# print "Oh fuck........."
-		print(str(e))
+		print (str(e))
 		return (True, str(e))
 
 	# print "End of update Call no exceptions thrown "
 	return (False, "The template has been successfully updated.")
-=======
-    try:
-        select_st = select([template_table]).where(
-             (template_table.c.templateName == templateName) & (template_table.c.username == userName))
-          
-        res = conn.execute(select_st)
-        goalsList =[]
-        # if (len(res) is not 1):
-        #     return (True, "Programmer Error: More than one template with same username and template name, or no matching template")
-        # else: 
-        for row in res:
-            username = row[0]
-            tempName = row[1]
-            jsonStr = row[2]
-            template = fromJSONtoTemplate(jsonStr)
-
-    except Exception, e:
-            #conn.rollback()
-            return ("True", str(e), None)
-    return (False, "If this message prints, the template has been successfully retireved.", template)
-
-
-
-
-
->>>>>>> added working database files

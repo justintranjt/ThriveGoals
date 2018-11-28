@@ -279,22 +279,22 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	isSubgoal = False
 	if currTemplate.getParent() is currTemplate.getTemplate():
 		isSubgoal = False
-	else: 
-		isSubgoal = True 
+	else:
+		isSubgoal = True
 
 	if isFirst:
 		curlist = []
 	else: 
 		curlist = [{
-				'goalID': time(),
-				'goalNum': 0,
-				'goalTitle': currTemplate.getGoalContent(),
-				'completed': currTemplate.getCompletionStatus(),
-				'inProgress': currTemplate.getInProgress(),
-				'isSubgoal': isSubgoal,
-				'nestLevel': nestLevel, # should be 0,1,2
-				'parentID': currTemplate.getParent().getGoalContent(),
-			}]
+			'goalID': time(),
+			'goalNum': 0,
+			'goalTitle': currTemplate.getGoalContent(),
+			'completed': currTemplate.getCompletionStatus(),
+			'inProgress': currTemplate.getInProgress(),
+			'isSubgoal': isSubgoal,
+			'nestLevel': nestLevel, # should be 0,1,2
+			'parentID': currTemplate.getParent().getGoalContent(),
+		}]
 
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
