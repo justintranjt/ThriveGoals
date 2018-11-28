@@ -51,17 +51,14 @@
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
                             <!-- Goal Number -->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
-                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <label> {{ goal.goalNum }} </label>
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
-                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <label> {{ goal.goalNum }} </label>
                             </td>
-                            <td v-else @dblclick="updatedGoalNum=(goal); newGoalNum=goal.goalNum">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalNum!=(goal)"> {{ goal.goalNum }} </label>
-                                <input v-if="updatedGoalNum==(goal)" v-model="newGoalNum" @keyup.enter="updateGoalNum(goal);">
+                            <td v-else>
+                                <label> {{ goal.goalNum }} </label>
                             </td>
                             <!-- Goal title -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
@@ -81,20 +78,14 @@
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
-                                                Not Complete
-                                            </b-button>
-                                            <b-button v-else type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Not Complete" type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
                                                 <v-icon>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
-                                                Delete
-                                            </b-button>
-                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
                                         </div>
@@ -105,20 +96,14 @@
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
-                                                Not In Progress
-                                            </b-button>
-                                            <b-button v-else type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Not Complete" type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
                                                 <v-icon>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
-                                                Delete
-                                            </b-button>
-                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
                                         </div>
@@ -129,28 +114,21 @@
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">Complete</b-button>
-                                            <b-button v-else type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Complete" type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">
                                                 <v-icon>done</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
-                                                In Progress
-                                            </b-button>
-                                            <b-button v-else type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="In Progress" type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
                                                 <v-icon>schedule</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-if="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
-                                                Delete
-                                            </b-button>
-                                            <b-button v-else="hover" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
                                         </div>
@@ -202,7 +180,6 @@ export default {
             numCompleted: 0,
             clientURI: process.env.URI_CLIENT_ROOT,
             // Double click to edit boolean and new entry fields
-            updatedGoalNum: null,
             updatedGoalTitle: null,
             updatedTemplate: null,
             newGoalNum: null,
@@ -321,8 +298,7 @@ export default {
                     if (this.goalTemplateIDs.length === 0) {
                         this.goals = [];
                         this.currGoalTemplateID = null;
-                    }
-                    else {
+                    } else {
                         this.getGoals(this.goalTemplateIDs[0]);
                         this.getNumCompleted(this.goalTemplateIDs[0]);
                         this.currGoalTemplateID = this.goalTemplateIDs[0];
@@ -341,26 +317,6 @@ export default {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
                     this.message = res.data.message;
-                    this.showMessage = true;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-        updateGoalNum(goal) {
-            this.updatedGoalNum = '';
-            const payload = {
-                goalNum: parseInt(this.newGoalNum),
-                goalTitle: goal.goalTitle,
-                completed: goal.completed,
-                inProgress: goal.inProgress,
-            };
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID;
-            axios.put(path, payload)
-                .then(() => {
-                    this.getGoals(this.currGoalTemplateID);
-                    this.getNumCompleted(this.currGoalTemplateID);
-                    this.message = 'Goal updated!';
                     this.showMessage = true;
                 })
                 .catch((error) => {
