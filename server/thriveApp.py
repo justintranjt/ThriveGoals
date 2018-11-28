@@ -1,21 +1,18 @@
 from flask import Flask, jsonify, render_template, request, redirect
-from flask_sqlalchemy import SQLAlchemy
 from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
 from os import environ
 from time import time
 from waitress import serve
+import updateDB
+from goalObject import *
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
-# Initialize database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # createdb register (in postgress.app)
-db = SQLAlchemy(app)
-
 # Initialize HTTPS redirection.
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -30,56 +27,11 @@ app.secret_key = secret_key
 # Initialize CORS
 CORS(app)
 
-# Preloaded goals to be displayed
-allGoals = {}
-goals = [
-	{
-		'goalID': time(),
-		'goalNum': 1,
-		'goalTitle': 'Finish basic addition of goals',
-		'completed': False,
-		'inProgress': False,
-		'isSubgoal': False,
-		'nestLevel': 0, # should be 0,1,2
-		'parentID': None,
-	},
-	{
-		'goalID': time(),
-		'goalNum': 3,
-		'goalTitle': 'Allow goal editing',
-		'completed': False,
-		'inProgress': False,
-		'isSubgoal': False,
-		'nestLevel': 0, # should be 0,1,2
-		'parentID': None,
-	},
-	{
-		'goalID': time(),
-		'goalNum': 2,
-		'goalTitle': 'Allow goal deletion',
-		'completed': False,
-		'inProgress': False,
-		'isSubgoal': False,
-		'nestLevel': 0, # should be 0,1,2
-		'parentID': None,
-	},
-]
-goals2 = [
-	{
-		'goalID': time(),
-		'goalNum': 1,
-		'goalTitle': 'Alternate template!',
-		'completed': False,
-		'inProgress': False,
-		'isSubgoal': False,
-		'nestLevel': 0, # should be 0,1,2
-		'parentID': None,
-	},
-]
-allGoals["Template 1"] = goals
-allGoals["Template 2"] = goals2
+# Templates with references to objects and JSON representation
+allTemplateRefs = {}
+allTemplates = {}
 
-# Using this as a global variable
+# Username
 netID = None
 
 # See here for more info: http://flask.pocoo.org/snippets/57/
@@ -111,15 +63,22 @@ def loginNetID():
 @app.route('/completeGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_num, goal_template_id):
 	response_object = {'status': 'success'}
+	global allTemplateRefs
+	global allTemplates
 
-	for goal in allGoals[goal_template_id]:
+	for index, goal in enumerate(allTemplates[goal_template_id]):
 		if int(goal['goalNum']) == int(goal_num):
 			if goal['completed']:
-				goal['completed'] = False
+				# Goal nums are 1-indexed, so substract 1
+				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
 				response_object['message'] = 'Goal not completed.'
 			else:
-				goal['completed'] = True
+				# Goal nums are 1-indexed, so substract 1
+				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(True)
 				response_object['message'] = 'Goal completed!'
+
+	# Update local templates from database
+	get_templates()
 	
 	return jsonify(response_object)
 
@@ -127,42 +86,53 @@ def cmpl_goal(goal_num, goal_template_id):
 @app.route('/inProgGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
 def in_prog_goal(goal_num, goal_template_id):
 	response_object = {'status': 'success'}
+	global allTemplateRefs
+	global allTemplates
 
-	for goal in allGoals[goal_template_id]:
+	for goal in allTemplates[goal_template_id]:
 		if int(goal['goalNum']) == int(goal_num):
 			if goal['completed']:
-				goal['completed'] = False
+				# Goal nums are 1-indexed, so substract 1
+				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
 				response_object['message'] = 'Goal is in progress.'
 			if goal['inProgress']:
-				goal['inProgress'] = False
+				# Goal nums are 1-indexed, so substract 1
+				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setInProgress(False)
 				response_object['message'] = 'Goal is not in progress.'
 			else:
-				goal['inProgress'] = True
+				# Goal nums are 1-indexed, so substract 1
+				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setInProgress(True)
 				response_object['message'] = 'Goal is in progress.'
 	
+	# Update local templates from database
+	get_templates()
+
 	return jsonify(response_object)
 
 # Retrieving all current goals and adding new goals 
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
 	response_object = {'status': 'success'}
+	global allTemplates
+	global allTemplateRefs
+
 	if request.method == 'POST':
 		post_data = request.get_json()
-		# Overwrite existing goal if number is identical
-		remove_goal(post_data.get('goalNum'), goal_template_id)
-		allGoals[goal_template_id].append({
-			'goalNum': post_data.get('goalNum'),
-			'goalTitle': post_data.get('goalTitle'),
-			'completed': post_data.get('completed'),
-			'inProgress': post_data.get('inProgress'),
-		})
 
+		allTemplateRefs[goal_template_id].addSubgoal(
+			post_data.get('goalTitle'),
+			post_data.get('completed'),
+		)
 		response_object['message'] = 'Goal added!'
 	else:
-		response_object['goals'] = allGoals[goal_template_id]
+		response_object['goals'] = allTemplates[goal_template_id]
 
 	# Sort by goal number
-	allGoals[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+
+	# Update local templates from database
+	get_templates()
+
 	return jsonify(response_object)
 
 # Retrieve number of completed goals
@@ -176,6 +146,9 @@ def completed_goals(goal_template_id):
 @app.route('/modGoals/<goal_num>/<goal_template_id>', methods=['PUT', 'DELETE'])
 def update_rem_goal(goal_num, goal_template_id):
 	response_object = {'status': 'success'}
+	global allTemplateRefs
+	global allTemplates
+
 	if request.method == 'PUT':
 		put_data = request.get_json()
 
@@ -183,7 +156,7 @@ def update_rem_goal(goal_num, goal_template_id):
 		remove_goal(goal_num, goal_template_id)
 		remove_goal(put_data.get('goalNum'), goal_template_id)
 
-		allGoals[goal_template_id].append({
+		allTemplates[goal_template_id].append({
 			'goalNum': put_data.get('goalNum'),
 			'goalTitle': put_data.get('goalTitle'),
 			'completed': put_data.get('completed'),
@@ -196,7 +169,10 @@ def update_rem_goal(goal_num, goal_template_id):
 		response_object['message'] = 'Goal deleted!'
 		
 	# Sort by goal number
-	allGoals[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+
+	# Update local templates from database
+	get_templates()
 
 	return jsonify(response_object)
 
@@ -204,8 +180,19 @@ def update_rem_goal(goal_num, goal_template_id):
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
 	response_object = {'status': 'success'}
+	global allTemplateRefs
+	global allTemplates
+	global netID
 
-	response_object['goalTemplateIDs'] = list(allGoals.keys())
+	# Start template refs from clean slate each time
+	allTemplateRefs = {}
+	allTemplates = {}
+	# Get templates and load into template list
+	for currTemplate in updateDB.getTemplateList(netID)[2]:
+		allTemplateRefs[currTemplate[1]] = currTemplate[2]
+		allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
+
+	response_object['goalTemplateIDs'] = list(allTemplates.keys())
 
 	return jsonify(response_object)
 
@@ -213,30 +200,40 @@ def get_templates():
 @app.route('/modTemplates/<goal_template_id>', methods=['DELETE', 'PUT', 'POST'])
 def update_template(goal_template_id):
 	response_object = {'status': 'success'}
+	global allTemplates
+	global allTemplateRefs
+	global netID
 
 	# Delete current template
 	if request.method == 'DELETE':
-		del allGoals[goal_template_id]
+		updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Update existing template name and remove old entry ID
 	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
-		allGoals[new_template_id] = allGoals[goal_template_id]
-		del allGoals[goal_template_id]
+		# TODO must fix the line below to use updateTemplateName()
+		allTemplates[new_template_id] = allTemplates[goal_template_id]
+		updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
-		allGoals[new_template_id] = []
+		Goal(new_template_id, False, [], None, netID, False)
+
+	# Update local templates from database
+	get_templates()
 
 	return jsonify(response_object)
 
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
+	get_templates()
+	global allTemplates
+
 	completedGoalCount = 0
 
-	for goal in allGoals[goal_template_id]:
+	for goal in allTemplates[goal_template_id]:
 		if goal['completed']:
 			completedGoalCount += 1
 
@@ -244,13 +241,79 @@ def count_completed_goals(goal_template_id):
 
 # Helper function to remove goal from a template
 def remove_goal(goal_num, goal_template_id):
-	for goal in allGoals[goal_template_id]:
-		if int(goal['goalNum']) == int(goal_num):
-			allGoals[goal_template_id].remove(goal)
+	global allTemplates
+	global allTemplateRefs
+
+	for goal in allTemplates[goal_template_id]:
+		removed = False
+		# Remove using removeSubgoalAtIndex() method
+		if goal['goalNum'] == int(goal_num):
+			allTemplates[goal_template_id].remove(goal)
+			# Goal nums are 1-indexed, so substract 1
+			allTemplateRefs[goal_template_id].removeSubgoalAtIndex(int(goal_num) - 1)
+			removed = True
+		# Decrement all goalNums greater than removed goalNum
+		if removed:
+			for goal in allTemplates[goal_template_id]:
+				if goal['goalNum'] > int(goal_num):
+					goal['goalNum'] -= 1
+		
+def initTestTemplates():
+	global netID
+	# Make empty templates
+	templateOne = Goal('Template 1', False, [], None, netID, False)
+	templateTwo = Goal('Template 2', False, [], None, netID, False)
+
+	# Add goals to templates
+	templateOne.addSubgoal("Finish basic addition of goals", False)
+	templateOne.addSubgoal("Allow goal editing", False)
+	templateOne.addSubgoal("Allow goal deletion", False)
+	templateTwo.addSubgoal("Alternate template!", False)
+
+	# Delete templates
+	# updateDB.deleteTemplate(netID, 'Template 1')
+	# updateDB.deleteTemplate(netID, 'Template 2')
+
+# Helper function to create JSON representation from template obj reference
+def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):  
+	isSubgoal = False
+	if currTemplate.getParent() is currTemplate.getTemplate():
+		isSubgoal = False
+	else: 
+		isSubgoal = True 
+
+	if isFirst:
+		curlist = []
+	else: 
+		curlist = [{
+				'goalID': time(),
+				'goalNum': 0,
+				'goalTitle': currTemplate.getGoalContent(),
+				'completed': currTemplate.getCompletionStatus(),
+				'inProgress': currTemplate.getInProgress(),
+				'isSubgoal': isSubgoal,
+				'nestLevel': nestLevel, # should be 0,1,2
+				'parentID': currTemplate.getParent().getGoalContent(),
+			}]
+
+	retList = []
+	if currTemplate.getSubgoalList() is not None:
+		for subgoal in currTemplate.getSubgoalList():
+			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False ))
+
+	curlist.extend(retList)
+
+	numCounter = 1
+	for each in curlist:
+		each['goalNum'] = numCounter
+		numCounter += 1
+
+	return curlist
 
 if __name__ == "__main__":
+	initTestTemplates()
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
