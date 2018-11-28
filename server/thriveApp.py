@@ -4,6 +4,7 @@ from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
 from os import environ
+from time import time
 from waitress import serve
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
@@ -14,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/register' # crea
 db = SQLAlchemy(app)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -33,30 +34,46 @@ CORS(app)
 allGoals = {}
 goals = [
 	{
+		'goalID': time(),
 		'goalNum': 1,
 		'goalTitle': 'Finish basic addition of goals',
 		'completed': False,
 		'inProgress': False,
+		'isSubgoal': False,
+		'nestLevel': 0, # should be 0,1,2
+		'parentID': None,
 	},
 	{
+		'goalID': time(),
 		'goalNum': 3,
 		'goalTitle': 'Allow goal editing',
 		'completed': False,
 		'inProgress': False,
+		'isSubgoal': False,
+		'nestLevel': 0, # should be 0,1,2
+		'parentID': None,
 	},
 	{
+		'goalID': time(),
 		'goalNum': 2,
 		'goalTitle': 'Allow goal deletion',
 		'completed': False,
 		'inProgress': False,
+		'isSubgoal': False,
+		'nestLevel': 0, # should be 0,1,2
+		'parentID': None,
 	},
 ]
 goals2 = [
 	{
+		'goalID': time(),
 		'goalNum': 1,
 		'goalTitle': 'Alternate template!',
 		'completed': False,
 		'inProgress': False,
+		'isSubgoal': False,
+		'nestLevel': 0, # should be 0,1,2
+		'parentID': None,
 	},
 ]
 allGoals["Template 1"] = goals
@@ -235,5 +252,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
