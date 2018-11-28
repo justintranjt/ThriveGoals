@@ -209,12 +209,12 @@ def update_template(goal_template_id):
 		updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Update existing template name and remove old entry ID
-	elif request.method == 'PUT':
-		put_data = request.get_json()
-		new_template_id = put_data.get('newTemplateID')
-		# TODO must fix the line below to use updateTemplateName()
-		allTemplates[new_template_id] = allTemplates[goal_template_id]
-		updateDB.deleteTemplate(netID, goal_template_id)
+	# elif request.method == 'PUT':
+	# 	put_data = request.get_json()
+	# 	new_template_id = put_data.get('newTemplateID')
+	# 	# TODO must fix the line below to use updateTemplateName()
+	# 	allTemplates[new_template_id] = allTemplates[goal_template_id]
+	# 	updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
