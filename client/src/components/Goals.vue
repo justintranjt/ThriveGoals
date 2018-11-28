@@ -165,10 +165,6 @@
         <!-- Pop-up modals -->
         <b-modal ref="addGoalModal" id="goal-modal" title="Add a new goal" hide-footer>
             <b-form @submit="onSubmit" @reset="onReset" class="w-100">
-                <b-form-group label="Goal Number:" label-for="form-goalNumber-input">
-                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addGoalForm.goalNum" required placeholder="Enter goal number">
-                    </b-form-input>
-                </b-form-group>
                 <b-form-group label="Goal Title:" label-for="form-goalTitle-input">
                     <b-form-input id="form-goalTitle-input" type="text" v-model="addGoalForm.goalTitle" required placeholder="Enter goal title">
                     </b-form-input>
@@ -220,9 +216,9 @@ export default {
         prog,
     },
     methods: {
-        getLoginNetID() {
+        async getLoginNetID() {
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
-            axios.get(path)
+            await axios.get(path)
                 .then((res) => {
                     this.netID = res.data.netID;
                 })
@@ -430,7 +426,6 @@ export default {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
             const payload = {
-                goalNum: this.addGoalForm.goalNum,
                 goalTitle: this.addGoalForm.goalTitle,
                 completed: this.addGoalForm.completed,
             };
@@ -448,7 +443,7 @@ export default {
         },
     },
     async created() {
-        this.getLoginNetID();
+        await this.getLoginNetID();
         await this.getTemplates();
         // Update current goal template if user reloads page
         this.currGoalTemplateID = this.goalTemplateIDs[0];
