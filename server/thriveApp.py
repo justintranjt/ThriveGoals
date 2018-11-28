@@ -12,7 +12,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -216,8 +216,8 @@ def update_template(goal_template_id):
 
 	# Update existing template name and remove old entry ID
 	elif request.method == 'PUT':
-		put_data = request.get_json()
-		new_template_id = put_data.get('newTemplateID')
+		# put_data = request.get_json()
+		# new_template_id = put_data.get('newTemplateID')
 
 
 		# TODO must fix the line below to use updateTemplateName()
@@ -225,7 +225,7 @@ def update_template(goal_template_id):
 		# updateDB.updateTemplateName('jctran', new_template_id, ???)
 
 
-		updateDB.deleteTemplate(netID, goal_template_id)
+		# updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
@@ -326,5 +326,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
