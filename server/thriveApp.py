@@ -150,46 +150,27 @@ def update_rem_goal(goal_num, goal_template_id):
 	global allTemplateRefs
 	global allTemplates
 
+	# Update goal title
 	if request.method == 'PUT':
 		put_data = request.get_json()
 
-		print(allTemplates['Template 1'])
-		print()
-		# Handles update, overwrites old goal number and overwrites new number
-		remove_goal(goal_num, goal_template_id)
-		# print(allTemplates['Template 1'])
-		# print()
-		allTemplates[goal_template_id].append({
-			'goalNum': put_data.get('goalNum'),
-			'goalTitle': put_data.get('goalTitle'),
-			'completed': put_data.get('completed'),
-			'inProgress': put_data.get('inProgress'),
-		})
-		for goal in allTemplates[goal_template_id]:
-			if int(goal_num) == (put_data.get('goalNum')):
-				print(goal)
+		for index, goal in enumerate(allTemplates[goal_template_id]):
+			if int(goal_num) == (goal['goalNum']):
+				goal['goalTitle'] = put_data.get('goalTitle')
+				prevRef = allTemplateRefs[goal_template_id].removeSubgoalAtIndex(index)
 
-		allTemplateRefs[goal_template_id].addSubgoal(
-			# put_data.get('goalNum'),
-			put_data.get('goalTitle'),
-			put_data.get('completed'),
-			put_data.get('inProgress'),
-		)
-# allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
-		# allTemplateRefs[goal_template_id].insertSubgoalAtIndex(int(goal_num) - 1, put_data.get('goalTitle'))
+				# TODO Keep this handy piece of code in mind for future methods
+				parent = prevRef.getParent()
+				subgoals = prevRef.getSubgoalList()
+				
+				newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID, put_data.get('inProgress'))
+				allTemplateRefs[goal_template_id].insertSubgoalAtIndex(index, newGoal)
 
 		response_object['message'] = 'Goal updated!'
+
 	elif request.method == 'DELETE':
 		remove_goal(goal_num, goal_template_id)
 		response_object['message'] = 'Goal deleted!'
-
-	# # print(allTemplateRefs)
-	# print(allTemplates['Template 1'])
-	# print()
-	# print(updateDB.getTemplateList(netID)[2][0][2].getSubgoalList())
-	# for goal in updateDB.getTemplateList(netID)[2][0][2].getSubgoalList():
-	# 	print(goal.getGoalContent())
-	# print(allTemplates['Template 1'])
 
 	# Sort by goal number
 	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
