@@ -153,15 +153,21 @@ def update_rem_goal(goal_num, goal_template_id):
 	if request.method == 'PUT':
 		put_data = request.get_json()
 
+		print(allTemplates['Template 1'])
+		print()
 		# Handles update, overwrites old goal number and overwrites new number
 		remove_goal(goal_num, goal_template_id)
-
+		# print(allTemplates['Template 1'])
+		# print()
 		allTemplates[goal_template_id].append({
 			'goalNum': put_data.get('goalNum'),
 			'goalTitle': put_data.get('goalTitle'),
 			'completed': put_data.get('completed'),
 			'inProgress': put_data.get('inProgress'),
 		})
+		for goal in allTemplates[goal_template_id]:
+			if int(goal_num) == (put_data.get('goalNum')):
+				print(goal)
 
 		allTemplateRefs[goal_template_id].addSubgoal(
 			# put_data.get('goalNum'),
@@ -177,10 +183,14 @@ def update_rem_goal(goal_num, goal_template_id):
 		remove_goal(goal_num, goal_template_id)
 		response_object['message'] = 'Goal deleted!'
 
-	# print(allTemplateRefs)
-	print(allTemplates)
-	print(updateDB.getTemplateList(netID)[2][0][2].getSubgoalList())
-		
+	# # print(allTemplateRefs)
+	# print(allTemplates['Template 1'])
+	# print()
+	# print(updateDB.getTemplateList(netID)[2][0][2].getSubgoalList())
+	# for goal in updateDB.getTemplateList(netID)[2][0][2].getSubgoalList():
+	# 	print(goal.getGoalContent())
+	# print(allTemplates['Template 1'])
+
 	# Sort by goal number
 	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 
@@ -225,14 +235,10 @@ def update_template(goal_template_id):
 	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
-
-
-		# TODO must fix the line below to use updateTemplateName()
-		# allTemplates[new_template_id] = allTemplates[goal_template_id]
-		# updateDB.updateTemplateName('jctran', new_template_id, ???)
-
-
-		updateDB.deleteTemplate(netID, goal_template_id)
+		
+		allTemplates.pop(goal_template_id) 
+		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
+		allTemplateRefs[new_template_id] = allTemplateRefs.pop(goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
@@ -334,4 +340,4 @@ if __name__ == "__main__":
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
 	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
