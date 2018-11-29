@@ -8,7 +8,7 @@
 
 import jsonpickle
 import psycopg2
-from updateDB import updateTemplate 
+from updateDB import updateTemplate, updateTemplateName
 
 class Goal (object):
 
@@ -104,6 +104,10 @@ class Goal (object):
 
 	#updates the string containing goal content for the current goal
 	def setGoalContent(self, newContent):
+		if self.getParent() is None:
+			user = self._user
+			json = self.toJSON()
+			updateTemplateName(user, newContent, json)
 		self._goalContent = newContent
 		self.updateDatabase()
 		
@@ -143,10 +147,10 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString, goalComplete):
-		newGoal = Goal(goalString, goalComplete, [], self, self._user, False)
+	def addSubgoal(self, goalString, goalComplete, inProgress):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress)
 		self._addSubgoal(newGoal)
-		return newGoal 
+		return newGoal
 
 
 
