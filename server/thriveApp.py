@@ -7,12 +7,13 @@ from time import time
 from waitress import serve
 import updateDB
 from goalObject import *
+import jsonpickle
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -116,6 +117,11 @@ def all_goals(goal_template_id):
 	global allTemplates
 	global allTemplateRefs
 
+	print("Printing out contents of allTemplates")
+	for each in allTemplates:
+		 print(str(each))
+
+
 	if request.method == 'POST':
 		post_data = request.get_json()
 
@@ -188,9 +194,24 @@ def get_templates():
 	allTemplateRefs = {}
 	allTemplates = {}
 	# Get templates and load into template list
+	print("\n\n\n\n\n\n\n")
+	print("get_templates has been called:  ")
+	print("Here are the contents of the templateList from the database: ")
+	print(updateDB.getTemplateList(netID)[2])
+	print("")
 	for currTemplate in updateDB.getTemplateList(netID)[2]:
 		allTemplateRefs[currTemplate[1]] = currTemplate[2]
 		allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
+
+	print("\n\n")
+	print("Printing out contents of allTemplateRefs")
+	for each in allTemplateRefs:
+		print("Key: "+str(each) + "| Value: "+ str(allTemplateRefs[each]))
+	print("\n\n")
+	print("Printing out contents of allTemplates")
+	for each in allTemplates:
+		print("Key: "+str(each) + "| Value: "+ str(allTemplates[each]))
+	print("\n\n\n\n\n\n\n")
 
 	response_object['goalTemplateIDs'] = list(allTemplates.keys())
 
@@ -204,25 +225,46 @@ def update_template(goal_template_id):
 	global allTemplateRefs
 	global netID
 
+	# print("We are in the modify templates method")
+
 	# Delete current template
 	if request.method == 'DELETE':
 		updateDB.deleteTemplate(netID, goal_template_id)
 
-	# Update existing template name and remove old entry ID
-	# elif request.method == 'PUT':
-	# 	put_data = request.get_json()
-	# 	new_template_id = put_data.get('newTemplateID')
-	# 	# TODO must fix the line below to use updateTemplateName()
-	# 	allTemplates[new_template_id] = allTemplates[goal_template_id]
-	# 	updateDB.deleteTemplate(netID, goal_template_id)
+	#Update existing template name and remove old entry ID
+	elif request.method == 'PUT':
+		print("made it into the elif")
+		put_data = request.get_json()
+		new_template_id = put_data.get('newTemplateID')
+		# TODO must fix the line below to use updateTemplateName()
+		allTemplates.pop(goal_template_id) 
+		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
+		allTemplateRefs[str(new_template_id)] = allTemplateRefs.pop(goal_template_id)
+		# allTemplateRefs[str(new_template_id)] = new_ref
+		#allTemplates[new_template_id] 
+		# print("Printing out contents of allTemplateRefs")
+		# for each in allTemplateRefs:
+		#  	print(str(each))
+		# print(updateDB.getTemplateList(netID)[2])
+		# updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
 		Goal(new_template_id, False, [], None, netID, False)
 
+
 	# Update local templates from database
 	get_templates()
+	# print("Printing out contents of allTemplateRefs")
+	# for each in allTemplateRefs:
+	# 	print(str(each))
+	# print("Printing out contents of database for this user: ")
+	# print(updateDB.getTemplateList(netID)[2])
+	# print("Printing out contents of allTemplates")
+	# for each in allTemplates:
+	# 	 print(str(each))
+
 
 	return jsonify(response_object)
 
@@ -233,6 +275,26 @@ def count_completed_goals(goal_template_id):
 
 	completedGoalCount = 0
 
+	print("\n\n\n\n\n\n\n")
+	print("count_completed_goals has been called:  ")
+	print("Here are the contents of the templateList from the database: ")
+	print(updateDB.getTemplateList(netID)[2])
+	print("")
+	print("\n\n")
+	print("Printing out contents of allTemplateRefs")
+	for each in allTemplateRefs:
+		print("Key: "+str(each) + "| Value: "+ str(allTemplateRefs[each]))
+	print("\n\n")
+	print("Printing out contents of allTemplates")
+	for each in allTemplates:
+		print(each)
+		print("Key: "+str(each) + "| Value: "+ str(allTemplates[each]))
+	print("\n\n\n\n\n\n\n")
+
+
+	# strQuery = jsonpickle.encode("Template")
+	# strQuery = jsonpickle.decode(strQuery)
+	# print("Testing line 275: "+str(allTemplates[strQuery]))
 	for goal in allTemplates[goal_template_id]:
 		if goal['completed']:
 			completedGoalCount += 1
@@ -315,5 +377,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
