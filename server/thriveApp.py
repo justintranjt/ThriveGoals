@@ -122,6 +122,7 @@ def all_goals(goal_template_id):
 		allTemplateRefs[goal_template_id].addSubgoal(
 			post_data.get('goalTitle'),
 			post_data.get('completed'),
+			False,
 		)
 		response_object['message'] = 'Goal added!'
 	else:
@@ -153,8 +154,7 @@ def update_rem_goal(goal_num, goal_template_id):
 		put_data = request.get_json()
 
 		# Handles update, overwrites old goal number and overwrites new number
-		# remove_goal(goal_num, goal_template_id)
-		# remove_goal(put_data.get('goalNum'), goal_template_id)
+		remove_goal(goal_num, goal_template_id)
 
 		allTemplates[goal_template_id].append({
 			'goalNum': put_data.get('goalNum'),
@@ -163,22 +163,29 @@ def update_rem_goal(goal_num, goal_template_id):
 			'inProgress': put_data.get('inProgress'),
 		})
 
-		allTemplateRefs[goal_template_id].insertSubgoalAtIndex(int(goal_num) - 1, put_data.get('goalTitle'))
+		allTemplateRefs[goal_template_id].addSubgoal(
+			# put_data.get('goalNum'),
+			put_data.get('goalTitle'),
+			put_data.get('completed'),
+			put_data.get('inProgress'),
+		)
+# allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
+		# allTemplateRefs[goal_template_id].insertSubgoalAtIndex(int(goal_num) - 1, put_data.get('goalTitle'))
 
 		response_object['message'] = 'Goal updated!'
 	elif request.method == 'DELETE':
 		remove_goal(goal_num, goal_template_id)
 		response_object['message'] = 'Goal deleted!'
+
+	# print(allTemplateRefs)
+	print(allTemplates)
+	print(updateDB.getTemplateList(netID)[2][0][2].getSubgoalList())
 		
 	# Sort by goal number
 	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 
 	# Update local templates from database
 	get_templates()
-
-	# print(allTemplateRefs)
-	print(allTemplates)
-	# print(updateDB.getTemplateList(netID)[2])
 
 	return jsonify(response_object)
 
@@ -216,8 +223,8 @@ def update_template(goal_template_id):
 
 	# Update existing template name and remove old entry ID
 	elif request.method == 'PUT':
-		# put_data = request.get_json()
-		# new_template_id = put_data.get('newTemplateID')
+		put_data = request.get_json()
+		new_template_id = put_data.get('newTemplateID')
 
 
 		# TODO must fix the line below to use updateTemplateName()
@@ -225,7 +232,7 @@ def update_template(goal_template_id):
 		# updateDB.updateTemplateName('jctran', new_template_id, ???)
 
 
-		# updateDB.deleteTemplate(netID, goal_template_id)
+		updateDB.deleteTemplate(netID, goal_template_id)
 
 	# Create new template with specified name
 	elif request.method == 'POST':
@@ -276,10 +283,10 @@ def initTestTemplates():
 	templateTwo = Goal('Template 2', False, [], None, netID, False)
 
 	# Add goals to templates
-	templateOne.addSubgoal("Finish basic addition of goals", False)
-	templateOne.addSubgoal("Allow goal editing", False)
-	templateOne.addSubgoal("Allow goal deletion", False)
-	templateTwo.addSubgoal("Alternate template!", False)
+	templateOne.addSubgoal("Finish basic addition of goals", False, False)
+	templateOne.addSubgoal("Allow goal editing", False, False)
+	templateOne.addSubgoal("Allow goal deletion", False, False)
+	templateTwo.addSubgoal("Alternate template!", False, False)
 
 	# Delete templates
 	# updateDB.deleteTemplate(netID, 'Template 1')

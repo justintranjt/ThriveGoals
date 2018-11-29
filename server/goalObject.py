@@ -143,10 +143,10 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString, goalComplete):
-		newGoal = Goal(goalString, goalComplete, [], self, self._user, False)
+	def addSubgoal(self, goalString, goalComplete, inProgress):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress)
 		self._addSubgoal(newGoal)
-		return newGoal 
+		return newGoal
 
 
 
