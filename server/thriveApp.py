@@ -340,4 +340,4 @@ if __name__ == "__main__":
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
 	# app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
