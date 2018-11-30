@@ -217,7 +217,7 @@ def update_template(goal_template_id):
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
 		
-		allTemplates.pop(goal_template_id) 
+		allTemplates.pop(goal_template_id)
 		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
 		allTemplateRefs[new_template_id] = allTemplateRefs.pop(goal_template_id)
 

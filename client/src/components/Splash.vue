@@ -16,7 +16,7 @@
                 </b-form>
             </div>
         </b-container>
-        <div id="row2">
+        <b-container fluid id="row2">
             <b-container class="bv-row2">
                 <b-row>
                     <b-col class="bv-r2c1">
@@ -28,7 +28,7 @@
                     </b-col>
                 </b-row>
             </b-container>
-        </div>
+        </b-container>
     </b-container>
 </template>
 <script>
