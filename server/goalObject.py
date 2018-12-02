@@ -178,9 +178,10 @@ class Goal (object):
 	#takes an integer named index, removes the subgoal at that index
 	def removeSubgoalAtIndex(self, index):   # what exactly is the index ...
 		current = self._subgoals
-		current.pop(index)
+		ret = current.pop(index)
 		self._subgoals = current
 		self.updateDatabase()
+		return ret
 
 	#takes an integer named index, returns the subgoal at that index
 	def getSubgoalAtIndex(self, index):
