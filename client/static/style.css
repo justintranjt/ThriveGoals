@@ -28,6 +28,10 @@
 	padding-left: 1vw;
 }
 
+#goalsContainerBackground {
+	background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url("plants.jpg");
+}
+
 .bv-r2c1 {
 	padding-top: 10vh;
 	text-align: center;
