@@ -44,48 +44,163 @@
                         <tr>
                             <th scope="col">Goal #</th>
                             <th scope="col">Goal</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
                             <th scope="col" class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <draggable v-model="list" :element="'tbody'">
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
-                            <!-- Goal Number -->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <!-- Goal Number/ Col 1 -->
+                            <!-- completed color with goal # -->
+                            <td v-if="goal.completed && !goal.isSubgoal" v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <label> {{ goal.goalNum }} </label>
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                            <!-- just completed color -->
+                            <td v-else-if="goal.completed && goal.isSubgoal" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <!-- progress color with # -->
+                            <td v-else-if="goal.inProgress && !goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}">
                                 <label> {{ goal.goalNum }} </label>
                             </td>
+                            <!-- just progress color-->
+                            <td v-else-if="goal.inProgress && goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <!-- if subgoal, empty cell 1-->
+                            <td v-else-if="goal.isSubgoal">
+                            </td>
+                            <!-- default: goal #-->
                             <td v-else>
                                 <label> {{ goal.goalNum }} </label>
                             </td>
-                            <!-- Goal title -->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <!-- Goal title/ Col 2 -->
+                            <!-- completed color with title -->
+                            <td v-if="goal.completed && !goal.isSubgoal" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <!-- completed color with # -->
+                            <td v-else-if="goal.completed && goal.nestLevel==1" v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <!-- just completed color -->
+                            <td v-else-if="goal.completed && goal.nestLevel != 1" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <!-- progress color w title -->
+                            <td v-else-if="goal.inProgress && !goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
+                            <!-- progress color w # -->
+                            <td v-else-if="goal.inProgress && goal.nestLevel==1" v-bind:style="{backgroundColor: '#e0a800'}">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <!-- progress color -->
+                            <td v-else-if="goal.inProgress && goal.nestLevel != 1" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <!-- subgoal -->
+                            <td v-else-if="goal.isSubgoal && goal.nestLevel == 1">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <td v-else-if="goal.isSubgoal && nestLevel != 1">
+                            </td>
+                            <!-- default title -->
                             <td v-else @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <!-- Buttons -->
+                            <!-- Added Col 3-->
+                            <td v-if="goal.completed && !goal.isSubgoal" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 1" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <!-- POSSIBLE BUG HERE WITH GOAL TITLE DISPLAY -->
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 1" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel != 1 && goal.nestLevel != 2" v-bind:style="{backgroundColor: '#e0a800'}"></td>
+                            <td v-else-if="goal.nestLevel == 1 && goal.isSubgoal" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.nestLevel == 2 && goal.isSubgoal">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <td v-else></td>
+                            <!-- Added Col 4-->
+                            <td v-if="goal.completed && goal.nestLevel != 3 && goal.nestLevel != 2" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <label> {{ goal.goalNum }} </label>
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            <td v-else-if="goal.inProgress && goal.nestLevel != 2 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel==3" v-bind:style="{backgroundColor: '#e0a800'}">
+                                <label> {{ goal.goalNum }} </label>>
+                            <td v-else-if="goal.isSubgoal && goal.nestLevel == 2" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.isSubgoal && goal.nestLevel == 3">
+                                <label> {{ goal.goalNum }} </label>>
+                            </td>
+                            </td>
+                            <td v-else></td>
+                            <!-- Added Col 5-->
+                            <td v-if="goal.completed && !goal.isSubgoal" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            </td>
+                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else-if="goal.inProgress && !goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <td v-else-if="goal.inProgress && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <td v-else-if="goal.isSubgoal && goal.nestLevel==3" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td v-else></td>
+                            <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-b-tooltip.hover title="Not Complete" type="b-button" class="btn btn-secondary btn-sm" @click="onCompleteGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not Complete" @click="onCompleteGoal(goal)">
                                                 <v-icon>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="Delete" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
                                         </div>
@@ -96,14 +211,14 @@
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-b-tooltip.hover title="Not Complete" type="b-button" class="btn btn-secondary btn-sm" @click="onInProgGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" @click="onInProgGoal(goal)">
                                                 <v-icon>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="Delete" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
                                         </div>
@@ -114,27 +229,38 @@
                                 <div class="btn-toolbar float-right" role="toolbar">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-b-tooltip.hover title="Complete" type="b-button" class="btn btn-success btn-sm" @click="onCompleteGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-success btn-sm" v-b-tooltip.hover title="Complete" @click="onCompleteGoal(goal)">
                                                 <v-icon>done</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                            <b-button v-b-tooltip.hover title="In Progress" type="b-button" class="btn btn-warning btn-sm" @click="onInProgGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" @click="onInProgGoal(goal)">
                                                 <v-icon>schedule</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
+                                    <!-- mr-2 for spacing -->
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group" role="group">
-                                            <b-button v-b-tooltip.hover title="Delete" type="b-button" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button type="b-button" v-b-tooltip.hover title="Delete" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
                                                 <v-icon>delete_forever</v-icon>
+                                            </b-button>
+                                        </div>
+                                    </v-hover>
+                                    <!-- added subgoal form -->
+                                    <v-hover>
+                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                            <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover title="Add Subgoal" v-b-modal.subgoal-modal>
+                                                <v-icon>add</v-icon>
+                                            </b-button>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                 </div>
                             </td>
+                            <br>
                         </tr>
                     </draggable>
                 </table>
@@ -148,6 +274,28 @@
                     </b-form-input>
                 </b-form-group>
                 <b-form-checkbox class="mb-3" label="Completed?" v-model="addGoalForm.completed">
+                    Completed?
+                </b-form-checkbox>
+                <br>
+                <b-button type="submit" variant="primary">Submit</b-button>
+                <b-button type="reset" variant="danger">Reset</b-button>
+            </b-form>
+        </b-modal>
+        <b-modal ref="addSubGoalModal" id="subgoal-modal" title="Add a new subgoal" hide-footer>
+            <b-form @submit="onSubmitSubgoal" @reset="onReset" class="w-100">
+                <b-form-group label="Goal Number:" label-for="form-goalNumber-input">
+                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.goalNum" required placeholder="Enter goal number">
+                    </b-form-input>
+                </b-form-group>
+                <b-form-group label="Level of Nesting:" label-for="form-goalNumber-input">
+                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.nestLevel" required placeholder="Enter nesting level">
+                    </b-form-input>
+                </b-form-group>
+                <b-form-group label="Subgoal Title:" label-for="form-goalTitle-input">
+                    <b-form-input id="form-goalTitle-input" type="text" v-model="addSubgoalForm.goalTitle" required placeholder="Enter subgoal title">
+                    </b-form-input>
+                </b-form-group>
+                <b-form-checkbox class="mb-3" label="Completed?" v-model="addSubgoalForm.completed">
                     Completed?
                 </b-form-checkbox>
                 <br>
@@ -174,6 +322,12 @@ export default {
                 goalNum: 0,
                 goalTitle: '',
                 completed: false,
+            },
+            addSubgoalForm: {
+                nestLevel: 0,
+                goalTitle: '',
+                completed: false,
+                goalNum: 0,
             },
             message: null,
             showMessage: false,
@@ -203,9 +357,9 @@ export default {
                     console.error(error);
                 });
         },
-        getGoals(goalTemplateID) {
+        async getGoals(goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
-            axios.get(path)
+            await axios.get(path)
                 .then((res) => {
                     this.goals = res.data.goals;
                 })
@@ -213,9 +367,9 @@ export default {
                     console.error(error);
                 });
         },
-        getNumCompleted(goalTemplateID) {
+        async getNumCompleted(goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
-            axios.get(path)
+            await axios.get(path)
                 .then((res) => {
                     this.numCompleted = res.data.numCompleted;
                 })
@@ -234,9 +388,19 @@ export default {
                     console.error(error);
                 });
         },
-        addGoal(payload, goalTemplateID) {
+        async update(goalTemplateID) {
+            const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
+            await axios.get(path)
+                .then((res) => {
+                    this.numCompleted = res.data.numCompleted;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+        async addGoal(payload, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
-            axios.post(path, payload)
+            await axios.post(path, payload)
                 .then(() => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -247,9 +411,9 @@ export default {
                     console.log(error);
                 });
         },
-        addTemplate() {
+        async addTemplate() {
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + 'Enter Your Template Title Here';
-            axios.post(path)
+            await axios.post(path)
                 .then(() => {
                     this.getGoals('Enter Your Template Title Here');
                     this.currGoalTemplateID = 'Enter Your Template Title Here';
@@ -261,9 +425,9 @@ export default {
                     console.log(error);
                 });
         },
-        completeGoal(goalNum, goalTemplateID) {
+        async completeGoal(goalNum, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completeGoal/' + goalNum + '/' + goalTemplateID;
-            axios.put(path)
+            await axios.put(path)
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -274,9 +438,9 @@ export default {
                     console.log(error);
                 });
         },
-        deleteGoal(goalNum, goalTemplateID) {
+        async deleteGoal(goalNum, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID;
-            axios.delete(path)
+            await axios.delete(path)
                 .then(() => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -287,9 +451,9 @@ export default {
                     console.log(error);
                 });
         },
-        deleteTemplate() {
+        async deleteTemplate() {
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
-            axios.delete(path)
+            await axios.delete(path)
                 .then(async () => {
                     // Wait to get the new template list before setting fields
                     await this.getTemplates();
@@ -310,9 +474,9 @@ export default {
                     console.log(error);
                 });
         },
-        inProgGoal(goalNum, goalTemplateID) {
+        async inProgGoal(goalNum, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalNum + '/' + goalTemplateID;
-            axios.put(path)
+            await axios.put(path)
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -323,7 +487,7 @@ export default {
                     console.log(error);
                 });
         },
-        updateGoalTitle(goal) {
+        async updateGoalTitle(goal) {
             this.updatedGoalTitle = '';
             const payload = {
                 goalNum: goal.goalNum,
@@ -332,7 +496,7 @@ export default {
                 inProgress: goal.inProgress,
             };
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID;
-            axios.put(path, payload)
+            await axios.put(path, payload)
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
                     this.getNumCompleted(this.currGoalTemplateID);
@@ -343,7 +507,7 @@ export default {
                     console.log(error);
                 });
         },
-        updateTemplate(goalTemplateID) {
+        async updateTemplate(goalTemplateID) {
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
@@ -351,7 +515,7 @@ export default {
             this.updatedTemplate = '';
 
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
-            axios.put(path, payload)
+            await axios.put(path, payload)
                 .then(() => {
                     this.getTemplates();
                     this.currGoalTemplateID = this.newTemplateID;
@@ -369,6 +533,12 @@ export default {
             this.addGoalForm.goalTitle = '';
             this.addGoalForm.completed = false;
         },
+        initSubgoalForm() {
+            this.addSubgoalForm.goalNum = 0;
+            this.addSubgoalForm.goalTitle = '';
+            this.addSubgoalForm.completed = false;
+            this.addSubgoalForm.isSubgoal = true;
+        },
         onCompleteGoal(goal) {
             this.completeGoal(goal.goalNum, this.currGoalTemplateID);
         },
@@ -382,8 +552,28 @@ export default {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
             const payload = {
+                goalID: '',
+                goalNum: this.addGoalForm.goalNum,
                 goalTitle: this.addGoalForm.goalTitle,
                 completed: this.addGoalForm.completed,
+                isSubgoal: false,
+                nestLevel: 0,
+                parentID: '',
+            };
+            this.addGoal(payload, this.currGoalTemplateID);
+            this.initForm();
+        },
+        onSubmitSubgoal(evt) {
+            evt.preventDefault();
+            this.$refs.addSubGoalModal.hide();
+            const payload = {
+                goalID: '',
+                goalNum: this.addSubgoalForm.goalNum,
+                goalTitle: this.addSubgoalForm.goalTitle,
+                completed: this.addSubgoalForm.completed,
+                isSubgoal: true,
+                nestLevel: this.addSubgoalForm.nestLevel,
+                parentID: '',
             };
             this.addGoal(payload, this.currGoalTemplateID);
             this.initForm();
