@@ -509,6 +509,9 @@ export default {
                 });
         },
         updateTemplate(goalTemplateID) {
+            // Strip spaces from ends of changed template name
+            this.newTemplateID = this.newTemplateID.trim();
+
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
