@@ -3,7 +3,6 @@
         <b-navbar toggleable fixed="top" variant="light" type="light">
             <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
             <b-navbar-brand>Thrive</b-navbar-brand>
-            <b-nav-text>Logged in as {{ netID }}</b-nav-text>
         </b-navbar>
         <b-container fluid id="row1">
             <h3 id="hometitle">THRIVE</h3>
