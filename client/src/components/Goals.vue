@@ -289,7 +289,7 @@
                     </b-form-input>
                 </b-form-group>
                 <b-form-group label="Level of Nesting:" label-for="form-goalNumber-input">
-                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.nestLevel" required placeholder="Enter nesting level">
+                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.nestLevel" required placeholder="Enter nesting level" :min=1 :max=3 value=1>
                     </b-form-input>
                 </b-form-group>
                 <b-form-group label="Subgoal Title:" label-for="form-goalTitle-input">
