@@ -291,8 +291,8 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 def initTestTemplates():
 	global netID
 	# Make empty templates
-	templateOne = Goal('Template 1', False, [], None, netID, False, time())
-	templateTwo = Goal('Template 2', False, [], None, netID, False, time())
+	templateOne = Goal('Template 1', False, [], None, netID, False, '')
+	templateTwo = Goal('Template 2', False, [], None, netID, False, '')
 
 	# Add goals to templates
 	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
