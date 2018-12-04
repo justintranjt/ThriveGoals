@@ -47,6 +47,7 @@
                                 <th>3</th>
                                 <th>4</th>
                                 <th>5</th>
+                                <th scope="col" class="text-right">Time Spent</th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -188,7 +189,19 @@
                                     <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                                 </td>
                                 <td v-else></td>
-                                <!-- Buttons/ Col 6 -->
+                                <!-- Time Spent / Col 6 -->
+                                <td>
+                                    <b-button type="b-button" class="btn btn-success btn-sm" v-b-tooltip.hover title="Play" @click="startStopwatch(goal)">
+                                        <v-icon>play_circle_filled</v-icon>
+                                    </b-button>
+                                    <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="Pause" @click="pauseStopwatch(goal)">
+                                        <v-icon>pause_circle_outline</v-icon>
+                                    </b-button>
+                                    <b-button type="b-button" class="btn btn-sm" v-b-tooltip.hover title="Reset" @click="resetStopwatch(goal)">
+                                        <v-icon>replay</v-icon>
+                                    </b-button>
+                                </td>
+                                <!-- Buttons/ Col 7 -->
                                 <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                     <div class="btn-toolbar float-right" role="toolbar">
                                         <v-hover>
