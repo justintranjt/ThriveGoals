@@ -3,11 +3,15 @@
 #row1 {
   padding-top: 15vh;
   padding-left: 10vw;
-  background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url("plants.jpg");
+  background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url("plants.jpg");
   height: 75vh;
   /*width: 100vw;*/
   max-width: 100%;
   background-size: cover;
+}
+
+#row2 {
+	color: #ffffff;
 }
 
 #row1-1 {
