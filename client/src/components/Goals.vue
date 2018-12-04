@@ -608,6 +608,33 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
+
+        createNewStopwatch(goal) {
+            var timer = require('./Timer.vue');
+            timer.data();
+            return timer;
+        },
+
+        getExistingStopwatch(goal) {},
+
+        startStopwatch(goal) {
+            console.log('start clicked');
+            goal.timer.methods.resume();
+        },
+
+        pauseStopwatch(goal) {
+            console.log('pause clicked');
+            var timer = this.createNewStopwatch(goal);
+            console.log(timer);
+            timer.methods.pause();
+            // write function to save time to backend
+        },
+
+        resetStopwatch(goal) {
+            console.log('reset clicked');
+            Timer.methods.reset();
+        },
+
     },
     async created() {
         await this.getLoginNetID();
