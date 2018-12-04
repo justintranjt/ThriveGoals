@@ -7,12 +7,13 @@ from time import time
 from waitress import serve
 import updateDB
 from goalObject import *
+import difflib
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -121,12 +122,36 @@ def all_goals(goal_template_id):
 	if request.method == 'POST':
 		post_data = request.get_json()
 
-		allTemplateRefs[goal_template_id].addSubgoal(
-			post_data.get('goalTitle'),
-			post_data.get('completed'),
-			False,
-		)
-		response_object['message'] = 'Goal added!'
+
+		parent = post_data.get('parentID')
+
+		print("\n\n\n\nIn add Subgoal, parent id is: "+str(parent))
+		root = allTemplateRefs[goal_template_id]
+		print()
+		print("rootnode is: "+str(root))
+		print()
+
+		if parent is not None:
+
+			curGoal = getGoalUsingTime(root, parent)
+
+			print(str(curGoal))
+			curGoal.addSubgoal(
+				post_data.get('goalTitle'),
+				post_data.get('completed'),
+				False,
+				time(),
+			)
+			response_object['message'] = 'Goal added!'
+		else:
+			root.addSubgoal(
+				post_data.get('goalTitle'),
+				post_data.get('completed'),
+				False,
+				time(),
+			)
+			response_object['message'] = 'Goal added!'
+
 	else:
 		response_object['goals'] = allTemplates[goal_template_id]
 
@@ -229,7 +254,7 @@ def update_template(goal_template_id):
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
-		Goal(new_template_id, False, [], None, netID, False, time())
+		Goal(new_template_id, False, [], None, netID, False, '')
 
 	# Update local templates from database
 	get_templates()
@@ -271,8 +296,8 @@ def remove_goal(goal_num, goal_template_id):
 def initTestTemplates():
 	global netID
 	# Make empty templates
-	templateOne = Goal('Template 1', False, [], None, netID, False, time())
-	templateTwo = Goal('Template 2', False, [], None, netID, False, time())
+	templateOne = Goal('Template 1', False, [], None, netID, False, '')
+	templateTwo = Goal('Template 2', False, [], None, netID, False, '')
 
 	# Add goals to templates
 	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
@@ -296,15 +321,21 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 		curlist = []
 	else: 
 		curlist = [{
-			'goalID': currTemplate.getUniqueID(),
+			'goalID':  str(currTemplate.getUniqueID()),
 			'goalNum': 0,
 			'goalTitle': currTemplate.getGoalContent(),
 			'completed': currTemplate.getCompletionStatus(),
 			'inProgress': currTemplate.getInProgress(),
 			'isSubgoal': isSubgoal,
 			'nestLevel': nestLevel, # should be 0,1,2
-			'parentID': currTemplate.getParent().getUniqueID(),
+			'parentID': str(currTemplate.getParent().getUniqueID()),
 		}]
+		print()
+		print("Inside loop in makeGoalDict_fromTemplate ")
+		print("Goal Content: "+str(currTemplate.getGoalContent()))
+		print("Goal Id: "+str(currTemplate.getUniqueID()))
+		print("parentID: "+str(currTemplate.getParent().getUniqueID()))
+		print()
 
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
@@ -321,15 +352,29 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	return curlist
 
 #function for mapping frontend goal representations to backend object references
-def getGoalUsingTime(rootNode, time): 
+def getGoalUsingTime(curNode, var): 
 	#note that the rootnode is just refferring to the template 
 	retNode = None 
-	for eachNode in rootNode.getSubgoalList
-		if eachNode.getUniqueID() = time:
-			retNode = eachNode 
+	print("\n\ncurNode's ID number in getGoalUsingTime: ")
+	print(str(curNode.getGoalContent()))
+	print(str(curNode.getUniqueID()).strip())
+	print(str(var).strip())
+	print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
+
+	case_a = str(var).strip()
+	case_b = str(curNode.getUniqueID()).strip()
+
+	output_list = [li for li in difflib.ndiff(case_a, case_b) if li[0] != ' ']
+	for each in output_list:
+		print(each)
+	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
+			print("We found a matching node in getGoalUsingTime!!!")
+			retNode = curNode 
 			return retNode
-		else:
-			retNode = getGoalUsingTime(eachNode, time)
+	for eachNode in curNode.getSubgoalList():
+		potentialVal = getGoalUsingTime(eachNode, var)
+		if potentialVal is not None:
+			retNode = potentialVal
 	return retNode 
 
 
@@ -338,5 +383,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
