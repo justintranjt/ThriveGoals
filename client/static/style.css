@@ -30,6 +30,8 @@
 
 #goalsContainerBackground {
 	background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.1)), url("plants.jpg");
+	background-size: cover;
+	height: 97vh;
 }
 
 .bv-r2c1 {

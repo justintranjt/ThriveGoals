@@ -21,7 +21,7 @@
                 <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
             </b-navbar-nav>
         </b-navbar>
-        <div id="goalsContainerBackground">
+        <b-container fluid id="goalsContainerBackground">
             <div class="container mt-4 pt-5 pb-2">
                 <div class="shadow-lg col-lg-12 bg-white">
                     <br>
@@ -266,7 +266,7 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </b-container fluid>
         <!-- Pop-up modals -->
         <b-modal ref="addGoalModal" id="goal-modal" title="Add a new goal" hide-footer>
             <b-form @submit="onSubmit" @reset="onReset" class="w-100">
