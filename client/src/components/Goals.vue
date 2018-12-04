@@ -23,7 +23,7 @@
         </b-navbar>
         <b-container fluid id="goalsContainerBackground">
             <div class="container mt-4 pt-5 pb-2">
-                <div class="shadow-lg col-lg-12 bg-white">
+                <div class="shadow-lg col-lg-12 bg-white" id="goalTable">
                     <br>
                     <alert :message="message" v-if="showMessage"></alert>
                     <!-- Editable template name -->
