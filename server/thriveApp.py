@@ -12,7 +12,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -119,11 +119,21 @@ def all_goals(goal_template_id):
 	if request.method == 'POST':
 		post_data = request.get_json()
 
-		allTemplateRefs[goal_template_id].addSubgoal(
-			post_data.get('goalTitle'),
-			post_data.get('completed'),
-			False,
-		)
+		this_parent = post_data.get('goalParent')
+
+		if this_parent != '':
+			getGoalUsingTime(allTemplateRefs[goal_template_id],this_parent).addSubgoal(
+				post_data.get('goalTitle'),
+				post_data.get('completed'),
+				False,
+			)
+
+		else :
+			allTemplateRefs[goal_template_id].addSubgoal(
+				post_data.get('goalTitle'),
+				post_data.get('completed'),
+				False,
+			)
 		response_object['message'] = 'Goal added!'
 	else:
 		response_object['goals'] = allTemplates[goal_template_id]
@@ -135,6 +145,33 @@ def all_goals(goal_template_id):
 	get_templates()
 
 	return jsonify(response_object)
+
+# # Retrieving all current goals and adding new goals 
+# @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
+# def all_goals(goal_template_id):
+# 	response_object = {'status': 'success'}
+# 	global allTemplates
+# 	global allTemplateRefs
+
+# 	if request.method == 'POST':
+# 		post_data = request.get_json()
+
+# 		allTemplateRefs[goal_template_id].addSubgoal(
+# 			post_data.get('goalTitle'),
+# 			post_data.get('completed'),
+# 			False,
+# 		)
+# 		response_object['message'] = 'Goal added!'
+# 	else:
+# 		response_object['goals'] = allTemplates[goal_template_id]
+
+# 	# Sort by goal number
+# 	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+
+# 	# Update local templates from database
+# 	get_templates()
+
+# 	return jsonify(response_object)
 
 # Retrieve number of completed goals
 @app.route('/completedGoals/<goal_template_id>', methods=['GET'])
@@ -320,5 +357,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)

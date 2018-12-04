@@ -69,7 +69,7 @@
                                 <td v-else-if="goal.inProgress && goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}">
                                 </td>
                                 <!-- if subgoal, empty cell 1-->
-                                <td v-else-if="goal.isSubgoal">
+                                <td v-else-if="goal.goalParent != ''">
                                 </td>
                                 <!-- default: goal #-->
                                 <td v-else>
@@ -577,14 +577,17 @@ export default {
             this.initForm();
         },
         setCurrGoalClicked(goal) {
-            this.currGoalClicked = goal['goalNum'];
+            this.currGoalClicked = goal['goalID'];
         },
         onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
 
             // TODO: Add logic that allows us to set the goalNum without user input
-            var goalNumVal = this.currGoalClicked + this.addSubgoalForm.nestLevel;
+
+            var goalParent = this.currGoalClicked
+
+            // var goalNumVal = this.currGoalClicked + (this.addSubgoalForm.nestLevel/4);
 
             const payload = {
                 goalID: '',
@@ -594,7 +597,7 @@ export default {
                 completed: this.addSubgoalForm.completed,
                 isSubgoal: true,
                 nestLevel: this.addSubgoalForm.nestLevel,
-                parentID: '',
+                parentID: goalParent,
             };
             this.addGoal(payload, this.currGoalTemplateID);
             this.initSubgoalForm();
