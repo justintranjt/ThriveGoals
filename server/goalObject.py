@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+`#!/usr/bin/env python
 
 #-----------------------------------------------------------------------
 # goalObject.py
@@ -8,13 +8,13 @@
 
 import jsonpickle
 import psycopg2
-from updateDB import updateTemplate, updateTemplateName 
+from updateDB import updateTemplate, updateTemplateName
 
 class Goal (object):
 
 	#initializes a new goal
 	#adding additional fields to allow for easier evolution
-	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress):
+	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress, time):
 		#string containing the actual content of a goal
 		self._goalContent = goalContent
 		#boolean: true if goal complete, else false
@@ -29,6 +29,9 @@ class Goal (object):
 
 		#in progress status 
 		self._inProgress = inProgress
+
+		#unique identifier using time 
+		self._uniqueID = time 
 
 		
 		#Not sure why we have these, but Dr. Dondero recommended we have them for some reason
@@ -52,6 +55,11 @@ class Goal (object):
 	# returns the parent, which should be another goal Object
 	def getParent(self):
 		return self._parent
+
+
+	# returns the parent, which should be another goal Object
+	def getUniqueID(self):
+		return self._uniqueID
 
 	# updates the string containing goal content for the current goal
 	def setParent(self, newParent):
@@ -104,9 +112,7 @@ class Goal (object):
 
 	#updates the string containing goal content for the current goal
 	def setGoalContent(self, newContent):
-		print("setGoalContent called")
-		if self.getParent() is None: 
-			print("We made it to db code")
+		if self.getParent() is None:
 			user = self._user
 			json = self.toJSON()
 			updateTemplateName(user, newContent, json)
@@ -149,10 +155,10 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString, goalComplete):
-		newGoal = Goal(goalString, goalComplete, [], self, self._user, False)
+	def addSubgoal(self, goalString, goalComplete, inProgress, time):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress, time)
 		self._addSubgoal(newGoal)
-		return newGoal 
+		return newGoal
 
 
 
@@ -180,9 +186,10 @@ class Goal (object):
 	#takes an integer named index, removes the subgoal at that index
 	def removeSubgoalAtIndex(self, index):   # what exactly is the index ...
 		current = self._subgoals
-		current.pop(index)
+		ret = current.pop(index)
 		self._subgoals = current
 		self.updateDatabase()
+		return ret
 
 	#takes an integer named index, returns the subgoal at that index
 	def getSubgoalAtIndex(self, index):
