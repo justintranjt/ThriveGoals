@@ -7,6 +7,7 @@ from time import time
 from waitress import serve
 import updateDB
 from goalObject import *
+import difflib
 
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
@@ -109,6 +110,8 @@ def in_prog_goal(goal_num, goal_template_id):
 
 	return jsonify(response_object)
 
+
+
 # Retrieving all current goals and adding new goals 
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
@@ -119,22 +122,36 @@ def all_goals(goal_template_id):
 	if request.method == 'POST':
 		post_data = request.get_json()
 
-		this_parent = post_data.get('goalParent')
 
-		if this_parent != '':
-			getGoalUsingTime(allTemplateRefs[goal_template_id],this_parent).addSubgoal(
+		parent = post_data.get('parentID')
+
+		print("\n\n\n\nIn add Subgoal, parent id is: "+str(parent))
+		root = allTemplateRefs[goal_template_id]
+		print()
+		print("rootnode is: "+str(root))
+		print()
+
+		if parent is not None:
+
+			curGoal = getGoalUsingTime(root, parent)
+
+			print(str(curGoal))
+			curGoal.addSubgoal(
 				post_data.get('goalTitle'),
 				post_data.get('completed'),
 				False,
+				time(),
 			)
-
-		else :
-			allTemplateRefs[goal_template_id].addSubgoal(
+			response_object['message'] = 'Goal added!'
+		else:
+			root.addSubgoal(
 				post_data.get('goalTitle'),
 				post_data.get('completed'),
 				False,
+				time(),
 			)
-		response_object['message'] = 'Goal added!'
+			response_object['message'] = 'Goal added!'
+
 	else:
 		response_object['goals'] = allTemplates[goal_template_id]
 
@@ -146,32 +163,7 @@ def all_goals(goal_template_id):
 
 	return jsonify(response_object)
 
-# # Retrieving all current goals and adding new goals 
-# @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
-# def all_goals(goal_template_id):
-# 	response_object = {'status': 'success'}
-# 	global allTemplates
-# 	global allTemplateRefs
 
-# 	if request.method == 'POST':
-# 		post_data = request.get_json()
-
-# 		allTemplateRefs[goal_template_id].addSubgoal(
-# 			post_data.get('goalTitle'),
-# 			post_data.get('completed'),
-# 			False,
-# 		)
-# 		response_object['message'] = 'Goal added!'
-# 	else:
-# 		response_object['goals'] = allTemplates[goal_template_id]
-
-# 	# Sort by goal number
-# 	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
-
-# 	# Update local templates from database
-# 	get_templates()
-
-# 	return jsonify(response_object)
 
 # Retrieve number of completed goals
 @app.route('/completedGoals/<goal_template_id>', methods=['GET'])
@@ -200,7 +192,8 @@ def update_rem_goal(goal_num, goal_template_id):
 				parent = prevRef.getParent()
 				subgoals = prevRef.getSubgoalList()
 				
-				newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID, put_data.get('inProgress'))
+				newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
+					put_data.get('inProgress'), put_data.get('goalID'))
 				allTemplateRefs[goal_template_id].insertSubgoalAtIndex(index, newGoal)
 
 		response_object['message'] = 'Goal updated!'
@@ -261,7 +254,7 @@ def update_template(goal_template_id):
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
-		Goal(new_template_id, False, [], None, netID, False)
+		Goal(new_template_id, False, [], None, netID, False, '')
 
 	# Update local templates from database
 	get_templates()
@@ -303,14 +296,14 @@ def remove_goal(goal_num, goal_template_id):
 def initTestTemplates():
 	global netID
 	# Make empty templates
-	templateOne = Goal('Template 1', False, [], None, netID, False)
-	templateTwo = Goal('Template 2', False, [], None, netID, False)
+	templateOne = Goal('Template 1', False, [], None, netID, False, '')
+	templateTwo = Goal('Template 2', False, [], None, netID, False, '')
 
 	# Add goals to templates
-	templateOne.addSubgoal("Finish basic addition of goals", False, False)
-	templateOne.addSubgoal("Allow goal editing", False, False)
-	templateOne.addSubgoal("Allow goal deletion", False, False)
-	templateTwo.addSubgoal("Alternate template!", False, False)
+	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
+	templateOne.addSubgoal("Allow goal editing", False, False, time())
+	templateOne.addSubgoal("Allow goal deletion", False, False, time())
+	templateTwo.addSubgoal("Alternate template!", False, False, time())
 
 	# Delete templates
 	# updateDB.deleteTemplate(netID, 'Template 1')
@@ -328,15 +321,21 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 		curlist = []
 	else: 
 		curlist = [{
-			'goalID': time(),
+			'goalID':  str(currTemplate.getUniqueID()),
 			'goalNum': 0,
 			'goalTitle': currTemplate.getGoalContent(),
 			'completed': currTemplate.getCompletionStatus(),
 			'inProgress': currTemplate.getInProgress(),
 			'isSubgoal': isSubgoal,
 			'nestLevel': nestLevel, # should be 0,1,2
-			'parentID': currTemplate.getParent().getGoalContent(),
+			'parentID': str(currTemplate.getParent().getUniqueID()),
 		}]
+		print()
+		print("Inside loop in makeGoalDict_fromTemplate ")
+		print("Goal Content: "+str(currTemplate.getGoalContent()))
+		print("Goal Id: "+str(currTemplate.getUniqueID()))
+		print("parentID: "+str(currTemplate.getParent().getUniqueID()))
+		print()
 
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
@@ -351,6 +350,33 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 		numCounter += 1
 
 	return curlist
+
+#function for mapping frontend goal representations to backend object references
+def getGoalUsingTime(curNode, var): 
+	#note that the rootnode is just refferring to the template 
+	retNode = None 
+	print("\n\ncurNode's ID number in getGoalUsingTime: ")
+	print(str(curNode.getGoalContent()))
+	print(str(curNode.getUniqueID()).strip())
+	print(str(var).strip())
+	print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
+
+	case_a = str(var).strip()
+	case_b = str(curNode.getUniqueID()).strip()
+
+	output_list = [li for li in difflib.ndiff(case_a, case_b) if li[0] != ' ']
+	for each in output_list:
+		print(each)
+	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
+			print("We found a matching node in getGoalUsingTime!!!")
+			retNode = curNode 
+			return retNode
+	for eachNode in curNode.getSubgoalList():
+		potentialVal = getGoalUsingTime(eachNode, var)
+		if potentialVal is not None:
+			retNode = potentialVal
+	return retNode 
+
 
 if __name__ == "__main__":
 	initTestTemplates()

@@ -69,7 +69,7 @@
                                 <td v-else-if="goal.inProgress && goal.isSubgoal" v-bind:style="{backgroundColor: '#e0a800'}">
                                 </td>
                                 <!-- if subgoal, empty cell 1-->
-                                <td v-else-if="goal.goalParent != ''">
+                                <td v-else-if="goal.parentID != ''">
                                 </td>
                                 <!-- default: goal #-->
                                 <td v-else>
@@ -312,7 +312,6 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 import alert from './Alert';
 import prog from './Progress';
-
 export default {
     data() {
         return {
@@ -459,7 +458,6 @@ export default {
                 .then(async () => {
                     // Wait to get the new template list before setting fields
                     await this.getTemplates();
-
                     // Display template at top of list, if no templates, show blank screen
                     if (this.goalTemplateIDs.length === 0) {
                         this.goals = [];
@@ -512,13 +510,10 @@ export default {
         updateTemplate(goalTemplateID) {
             // Strip spaces from ends of changed template name
             this.newTemplateID = this.newTemplateID.trim();
-
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
-
             this.updatedTemplate = '';
-
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
             axios.put(path, payload)
                 .then(() => {
@@ -556,14 +551,12 @@ export default {
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
-
             // Set goalNum without user input
             var goalNumVal = null;
             if (this.goals.length == 0)
                 goalNumVal = 0;
             else
                 goalNumVal = this.goals[this.goals.length - 1]['goalNum'] + 1;
-
             const payload = {
                 goalID: '',
                 goalNum: goalNumVal,
@@ -582,13 +575,9 @@ export default {
         onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
-
             // TODO: Add logic that allows us to set the goalNum without user input
-
             var goalParent = this.currGoalClicked
-
             // var goalNumVal = this.currGoalClicked + (this.addSubgoalForm.nestLevel/4);
-
             const payload = {
                 goalID: '',
                 goalNum: this.addSubgoalForm.goalNum,

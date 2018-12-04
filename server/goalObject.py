@@ -14,7 +14,7 @@ class Goal (object):
 
 	#initializes a new goal
 	#adding additional fields to allow for easier evolution
-	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress):
+	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress, time):
 		#string containing the actual content of a goal
 		self._goalContent = goalContent
 		#boolean: true if goal complete, else false
@@ -29,6 +29,9 @@ class Goal (object):
 
 		#in progress status 
 		self._inProgress = inProgress
+
+		#unique identifier using time 
+		self._uniqueID = time 
 
 		
 		#Not sure why we have these, but Dr. Dondero recommended we have them for some reason
@@ -52,6 +55,11 @@ class Goal (object):
 	# returns the parent, which should be another goal Object
 	def getParent(self):
 		return self._parent
+
+
+	# returns the parent, which should be another goal Object
+	def getUniqueID(self):
+		return self._uniqueID
 
 	# updates the string containing goal content for the current goal
 	def setParent(self, newParent):
@@ -147,8 +155,8 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString, goalComplete, inProgress):
-		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress)
+	def addSubgoal(self, goalString, goalComplete, inProgress, time):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress, time)
 		self._addSubgoal(newGoal)
 		return newGoal
 
@@ -304,10 +312,3 @@ class Goal (object):
 	#   self.delRecursive()
 	#   del self
 	#   template.updateDatabase()
-
-
-
-
-
-
-
