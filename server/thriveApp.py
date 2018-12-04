@@ -303,7 +303,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 			'inProgress': currTemplate.getInProgress(),
 			'isSubgoal': isSubgoal,
 			'nestLevel': nestLevel, # should be 0,1,2
-			'parentID': currTemplate.getParent().getGoalContent(),
+			'parentID': currTemplate.getParent().getUniqueID(),
 		}]
 
 	retList = []
