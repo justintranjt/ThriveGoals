@@ -252,7 +252,7 @@
                                         <!-- added subgoal form -->
                                         <v-hover>
                                             <div slot-scope="{hover}" class="btn-group mr-2" role="group">
-                                                <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover title="Add Subgoal" v-b-modal.subgoal-modal>
+                                                <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover @click="setCurrGoalClicked(goal)" title="Add Subgoal" v-b-modal.subgoal-modal>
                                                     <v-icon>add</v-icon>
                                                 </b-button>
                                                 </b-button>
@@ -284,12 +284,13 @@
         </b-modal>
         <b-modal ref="addSubGoalModal" id="subgoal-modal" title="Add a new subgoal" hide-footer>
             <b-form @submit="onSubmitSubgoal" @reset="onReset" class="w-100">
+                <!-- TODO: REMOVE THIS so we don't need user goalNum input -->
                 <b-form-group label="Goal Number:" label-for="form-goalNumber-input">
                     <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.goalNum" required placeholder="Enter goal number">
                     </b-form-input>
                 </b-form-group>
                 <b-form-group label="Level of Nesting:" label-for="form-goalNumber-input">
-                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.nestLevel" required placeholder="Enter nesting level">
+                    <b-form-input id="form-goalNumber-input" type="number" v-model.number="addSubgoalForm.nestLevel" required placeholder="Enter nesting level" :min=1 :max=3 value=1>
                     </b-form-input>
                 </b-form-group>
                 <b-form-group label="Subgoal Title:" label-for="form-goalTitle-input">
@@ -318,6 +319,7 @@ export default {
             netID: null,
             goalTemplateIDs: [],
             currGoalTemplateID: null, // Default template ID
+            currGoalClicked: null, // Row of current goal clicked
             goals: [],
             addGoalForm: {
                 goalNum: 0,
@@ -337,7 +339,6 @@ export default {
             // Double click to edit boolean and new entry fields
             updatedGoalTitle: null,
             updatedTemplate: null,
-            newGoalNum: null,
             newGoalTitle: null,
             newTemplateID: null,
         };
@@ -509,6 +510,9 @@ export default {
                 });
         },
         updateTemplate(goalTemplateID) {
+            // Strip spaces from ends of changed template name
+            this.newTemplateID = this.newTemplateID.trim();
+
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
@@ -535,10 +539,10 @@ export default {
             this.addGoalForm.completed = false;
         },
         initSubgoalForm() {
-            this.addSubgoalForm.goalNum = 0;
+            this.addSubgoalForm.goalNum = null;
             this.addSubgoalForm.goalTitle = '';
-            this.addSubgoalForm.completed = false;
-            this.addSubgoalForm.isSubgoal = true;
+            this.addSubgoalForm.nestLevel = null;
+            this.addSubgoalForm.completed = 0;
         },
         onCompleteGoal(goal) {
             this.completeGoal(goal.goalNum, this.currGoalTemplateID);
@@ -552,9 +556,17 @@ export default {
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
+
+            // Set goalNum without user input
+            var goalNumVal = null;
+            if (this.goals.length == 0)
+                goalNumVal = 0;
+            else
+                goalNumVal = this.goals[this.goals.length - 1]['goalNum'] + 1;
+
             const payload = {
                 goalID: '',
-                goalNum: this.addGoalForm.goalNum,
+                goalNum: goalNumVal,
                 goalTitle: this.addGoalForm.goalTitle,
                 completed: this.addGoalForm.completed,
                 isSubgoal: false,
@@ -564,12 +576,20 @@ export default {
             this.addGoal(payload, this.currGoalTemplateID);
             this.initForm();
         },
+        setCurrGoalClicked(goal) {
+            this.currGoalClicked = goal['goalNum'];
+        },
         onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
+
+            // TODO: Add logic that allows us to set the goalNum without user input
+            var goalNumVal = this.currGoalClicked + this.addSubgoalForm.nestLevel;
+
             const payload = {
                 goalID: '',
                 goalNum: this.addSubgoalForm.goalNum,
+                // goalNum: goalNumVal,
                 goalTitle: this.addSubgoalForm.goalTitle,
                 completed: this.addSubgoalForm.completed,
                 isSubgoal: true,
@@ -577,7 +597,7 @@ export default {
                 parentID: '',
             };
             this.addGoal(payload, this.currGoalTemplateID);
-            this.initForm();
+            this.initSubgoalForm();
         },
         onReset(evt) {
             evt.preventDefault();
