@@ -590,12 +590,12 @@ export default {
             const payload = {
                 goalID: '',
                 // goalNum: this.addSubgoalForm.goalNum,
-                goalNum: newNum,
+                goalNum: newNum, // gets rewritten by backend
                 goalTitle: this.addSubgoalForm.goalTitle,
                 completed: this.addSubgoalForm.completed,
                 isSubgoal: true,
                 // nestLevel: this.addSubgoalForm.nestLevel,
-                nestLevel: newNestLevel,
+                nestLevel: newNestLevel, // gets rewritten by backend
                 parentID: goalParent,
             };
             this.addGoal(payload, this.currGoalTemplateID);

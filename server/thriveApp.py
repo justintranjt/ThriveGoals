@@ -21,7 +21,7 @@ cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'login'
 
-# This is a secret key for storing sessions. 
+# This is a secret key for storing sessions.
 secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
 app.secret_key = secret_key
 
@@ -47,7 +47,7 @@ def catch_all(path):
 def login():
 	global netID
 	netID = cas.username
-	
+
 	# Bind to URIROOT if defined, otherwise default to localhost
 	uriRoot = environ.get('URIROOT', "http://localhost:8080")
 	return redirect(uriRoot + "/goals", code=302)
@@ -89,7 +89,7 @@ def cmpl_goal(goal_ref, goal_template_id):
 
 	# Update local templates from database
 	get_templates()
-	
+
 	return jsonify(response_object)
 
 # Mark goal as inProgress
@@ -113,7 +113,7 @@ def in_prog_goal(goal_num, goal_template_id):
 				# Goal nums are 1-indexed, so substract 1
 				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setInProgress(True)
 				response_object['message'] = 'Goal is in progress.'
-	
+
 	# Update local templates from database
 	get_templates()
 
@@ -121,7 +121,7 @@ def in_prog_goal(goal_num, goal_template_id):
 
 
 
-# Retrieving all current goals and adding new goals 
+# Retrieving all current goals and adding new goals
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
 	response_object = {'status': 'success'}
@@ -203,8 +203,8 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		parentList = parent.getSubgoalList()
 		index = parentList.index(prevGoal)
 		subgoals = prevGoal.getSubgoalList()
-		
-		
+
+
 		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
 			put_data.get('inProgress'), put_data.get('goalID'))
 		print(str(put_data.get('goalID'))+"\n\n\n\n\n")
@@ -264,7 +264,7 @@ def update_template(goal_template_id):
 	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
-		
+
 		allTemplates.pop(goal_template_id)
 		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
 		allTemplateRefs[new_template_id] = allTemplateRefs.pop(goal_template_id)
@@ -311,8 +311,8 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 			for goal in allTemplates[goal_template_id]:
 				if goal['goalNum'] > int(goal_num):
 					goal['goalNum'] -= 1
-			return None 
-		
+			return None
+
 def initTestTemplates():
 	global netID
 	# Make empty templates
@@ -330,7 +330,7 @@ def initTestTemplates():
 	# updateDB.deleteTemplate(netID, 'Template 2')
 
 # Helper function to create JSON representation from template obj reference
-def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):  
+def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	isSubgoal = False
 	if currTemplate.getParent() is currTemplate.getTemplate():
 		isSubgoal = False
@@ -339,7 +339,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 
 	if isFirst:
 		curlist = []
-	else: 
+	else:
 		curlist = [{
 			'goalID':  str(currTemplate.getUniqueID()),
 			'goalNum': 0,
@@ -373,9 +373,9 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	return curlist
 
 #function for mapping frontend goal representations to backend object references
-def getGoalUsingTime(curNode, var): 
-	#note that the rootnode is just refferring to the template 
-	retNode = None 
+def getGoalUsingTime(curNode, var):
+	#note that the rootnode is just refferring to the template
+	retNode = None
 	# print("\n\ncurNode's ID number in getGoalUsingTime: ")
 	# print(str(curNode.getGoalContent()))
 	# print(str(curNode.getUniqueID()).strip())
@@ -384,13 +384,13 @@ def getGoalUsingTime(curNode, var):
 
 	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
 			print("We found a matching node in getGoalUsingTime!!!")
-			retNode = curNode 
+			retNode = curNode
 			return retNode
 	for eachNode in curNode.getSubgoalList():
 		potentialVal = getGoalUsingTime(eachNode, var)
 		if potentialVal is not None:
 			retNode = potentialVal
-	return retNode 
+	return retNode
 
 
 # special debugging method
