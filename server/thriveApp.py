@@ -280,7 +280,7 @@ def initTestTemplates():
 	# updateDB.deleteTemplate(netID, 'Template 2')
 
 # Helper function to create JSON representation from template obj reference
-def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):  
+def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	isSubgoal = False
 	if currTemplate.getParent() is currTemplate.getTemplate():
 		isSubgoal = False
@@ -304,7 +304,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
 		for subgoal in currTemplate.getSubgoalList():
-			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False ))
+			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False))
 
 	curlist.extend(retList)
 
