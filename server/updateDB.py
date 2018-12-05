@@ -159,13 +159,15 @@ def deleteTemplate(username, templateName):
 	return (False, "The template has been successfully updated.")
 
 def updateTemplateName(username, newName, templateJSON):
+	print("Updating template name")
+	print("new name is: "+ newName)
 	try:
 		update = template_table.update().where(
 			(template_table.c.username == username) & (template_table.c.templateJSON == templateJSON)).values(templateName = newName)
 		conn.execute(update)
 
 	except Exception as e:
-		# print "Oh fuck........."
+		print("Database Exception updateTemplateName")
 		print (str(e))
 		return (True, str(e))
 
