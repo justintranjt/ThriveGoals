@@ -280,7 +280,7 @@ def initTestTemplates():
 	# updateDB.deleteTemplate(netID, 'Template 2')
 
 # Helper function to create JSON representation from template obj reference
-def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):  
+def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	isSubgoal = False
 	if currTemplate.getParent() is currTemplate.getTemplate():
 		isSubgoal = False
