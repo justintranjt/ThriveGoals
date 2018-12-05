@@ -61,22 +61,31 @@ def loginNetID():
 	return jsonify(response_object)
 
 # Mark goal as completed
-@app.route('/completeGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
-def cmpl_goal(goal_num, goal_template_id):
+@app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
+def cmpl_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
 	global allTemplateRefs
 	global allTemplates
 
-	for index, goal in enumerate(allTemplates[goal_template_id]):
-		if int(goal['goalNum']) == int(goal_num):
-			if goal['completed']:
-				# Goal nums are 1-indexed, so substract 1
-				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
-				response_object['message'] = 'Goal not completed.'
-			else:
-				# Goal nums are 1-indexed, so substract 1
-				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(True)
-				response_object['message'] = 'Goal completed!'
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
+	if(curGoal.getCompletionStatus()):
+		curGoal.setCompletionStatus(False)
+		response_object['message'] = 'Goal not completed.'
+	else:
+		curGoal.setCompletionStatus(True)
+		response_object['message'] = 'Goal completed!'
+
+
+	# for index, goal in enumerate(allTemplates[goal_template_id]):
+	# 	if int(goal['goalNum']) == int(goal_num):
+	# 		if goal['completed']:
+	# 			# Goal nums are 1-indexed, so substract 1
+	# 			allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
+	# 			response_object['message'] = 'Goal not completed.'
+	# 		else:
+	# 			# Goal nums are 1-indexed, so substract 1
+	# 			allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(True)
+	# 			response_object['message'] = 'Goal completed!'
 
 	# Update local templates from database
 	get_templates()
@@ -173,33 +182,42 @@ def completed_goals(goal_template_id):
 	return jsonify(response_object)
 
 # Updating preexisting goals and deleting goals
-@app.route('/modGoals/<goal_num>/<goal_template_id>', methods=['PUT', 'DELETE'])
-def update_rem_goal(goal_num, goal_template_id):
+@app.route('/modGoals/<goal_num>/<goal_template_id>/<goal_ref>', methods=['PUT', 'DELETE'])
+def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	response_object = {'status': 'success'}
 	global allTemplateRefs
 	global allTemplates
 
 	# Update goal title
+	print("We are in update_rem_goal\n")
 	if request.method == 'PUT':
 		put_data = request.get_json()
+		print("Method was put\n")
+		# for index, goal in enumerate(allTemplates[goal_template_id]):
+		# 	if int(goal_num) == (goal['goalNum']):
+		# goal['goalTitle'] = put_data.get('goalTitle')
+		prevGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
-		for index, goal in enumerate(allTemplates[goal_template_id]):
-			if int(goal_num) == (goal['goalNum']):
-				goal['goalTitle'] = put_data.get('goalTitle')
-				prevRef = allTemplateRefs[goal_template_id].removeSubgoalAtIndex(index)
-
-				# TODO Keep this handy piece of code in mind for future methods
-				parent = prevRef.getParent()
-				subgoals = prevRef.getSubgoalList()
-				
-				newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
-					put_data.get('inProgress'), put_data.get('goalID'))
-				allTemplateRefs[goal_template_id].insertSubgoalAtIndex(index, newGoal)
+		# TODO Keep this handy piece of code in mind for future methods
+		parent = prevGoal.getParent()
+		parentList = parent.getSubgoalList()
+		index = parentList.index(prevGoal)
+		subgoals = prevGoal.getSubgoalList()
+		
+		
+		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
+			put_data.get('inProgress'), put_data.get('goalID'))
+		print(str(put_data.get('goalID'))+"\n\n\n\n\n")
+		parent.insertSubgoalAtIndex(index, newGoal)
+		prevGoal.deleteSelf()
+		# prevRef.deleteSelf()
 
 		response_object['message'] = 'Goal updated!'
 
 	elif request.method == 'DELETE':
-		remove_goal(goal_num, goal_template_id)
+		print("Method was Delete\n")
+		print("goal ref: "+str(goal_ref))
+		remove_goal(goal_num, goal_template_id, goal_ref)
 		response_object['message'] = 'Goal deleted!'
 
 	# Sort by goal number
@@ -275,23 +293,25 @@ def count_completed_goals(goal_template_id):
 	return completedGoalCount
 
 # Helper function to remove goal from a template
-def remove_goal(goal_num, goal_template_id):
+def remove_goal(goal_num, goal_template_id, goal_ref):
 	global allTemplates
 	global allTemplateRefs
+
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
 	for goal in allTemplates[goal_template_id]:
 		removed = False
 		# Remove using removeSubgoalAtIndex() method
+
 		if goal['goalNum'] == int(goal_num):
-			allTemplates[goal_template_id].remove(goal)
-			# Goal nums are 1-indexed, so substract 1
-			allTemplateRefs[goal_template_id].removeSubgoalAtIndex(int(goal_num) - 1)
+			curGoal.deleteSelf()
 			removed = True
 		# Decrement all goalNums greater than removed goalNum
 		if removed:
 			for goal in allTemplates[goal_template_id]:
 				if goal['goalNum'] > int(goal_num):
 					goal['goalNum'] -= 1
+			return None 
 		
 def initTestTemplates():
 	global netID
@@ -330,12 +350,13 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 			'nestLevel': nestLevel, # should be 0,1,2
 			'parentID': str(currTemplate.getParent().getUniqueID()),
 		}]
-		print()
-		print("Inside loop in makeGoalDict_fromTemplate ")
-		print("Goal Content: "+str(currTemplate.getGoalContent()))
-		print("Goal Id: "+str(currTemplate.getUniqueID()))
-		print("parentID: "+str(currTemplate.getParent().getUniqueID()))
-		print()
+		# print()
+		# print("Inside loop in makeGoalDict_fromTemplate ")
+		# print("Goal Content: "+str(currTemplate.getGoalContent()))
+		# print("nestLevel: "+ str(nestLevel))
+		# print("Goal Id: "+str(currTemplate.getUniqueID()))
+		# print("parentID: "+str(currTemplate.getParent().getUniqueID()))
+		# print()
 
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
@@ -355,18 +376,12 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 def getGoalUsingTime(curNode, var): 
 	#note that the rootnode is just refferring to the template 
 	retNode = None 
-	print("\n\ncurNode's ID number in getGoalUsingTime: ")
-	print(str(curNode.getGoalContent()))
-	print(str(curNode.getUniqueID()).strip())
-	print(str(var).strip())
-	print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
+	# print("\n\ncurNode's ID number in getGoalUsingTime: ")
+	# print(str(curNode.getGoalContent()))
+	# print(str(curNode.getUniqueID()).strip())
+	# print(str(var).strip())
+	# print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
 
-	case_a = str(var).strip()
-	case_b = str(curNode.getUniqueID()).strip()
-
-	output_list = [li for li in difflib.ndiff(case_a, case_b) if li[0] != ' ']
-	for each in output_list:
-		print(each)
 	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
 			print("We found a matching node in getGoalUsingTime!!!")
 			retNode = curNode 
@@ -377,6 +392,17 @@ def getGoalUsingTime(curNode, var):
 			retNode = potentialVal
 	return retNode 
 
+
+# special debugging method
+def printTree(curGoal, indent):
+    string = ''
+    for i in range(0,indent):
+        string += '     '
+    string += str(curGoal)
+    print (string)
+    if curGoal.getSubgoalList() is not None:
+	    for subgoal in curGoal.getSubgoalList():
+	        printTree(subgoal, indent + 1)
 
 if __name__ == "__main__":
 	initTestTemplates()
