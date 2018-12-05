@@ -53,11 +53,7 @@ class Goal (object):
 	def getParent(self):
 		return self._parent
 
-	
-	
-
-	# removes goal from its current position and moves it to the subgoals list of the 
-	#new parent 
+	# updates the string containing goal content for the current goal
 	def setParent(self, newParent):
 		if self._parent != None and self._parent != newParent: # there is already a current parent (so overwrite)
 			self._parent.removeSubgoal(self)					# and if its the same parent being set, just set it as below.
@@ -108,11 +104,11 @@ class Goal (object):
 
 	#updates the string containing goal content for the current goal
 	def setGoalContent(self, newContent):
-		self._goalContent = newContent
-		if self.getParent is None:
+		if self.getParent() is None:
+			user = self._user
 			json = self.toJSON()
-			userName = self.getUser()
-			deleteTemplate()
+			updateTemplateName(user, newContent, json)
+		self._goalContent = newContent
 		self.updateDatabase()
 		
 
@@ -151,10 +147,10 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString):
-		newGoal = Goal(goalString, False, [], self, self._user, False)
+	def addSubgoal(self, goalString, goalComplete, inProgress):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress)
 		self._addSubgoal(newGoal)
-		return newGoal 
+		return newGoal
 
 
 
@@ -182,9 +178,10 @@ class Goal (object):
 	#takes an integer named index, removes the subgoal at that index
 	def removeSubgoalAtIndex(self, index):   # what exactly is the index ...
 		current = self._subgoals
-		current.pop(index)
+		ret = current.pop(index)
 		self._subgoals = current
 		self.updateDatabase()
+		return ret
 
 	#takes an integer named index, returns the subgoal at that index
 	def getSubgoalAtIndex(self, index):
@@ -199,39 +196,22 @@ class Goal (object):
 		self._subgoals[index2] = temp1
 		self.updateDatabase()
 
-	# literally just chages the parent reference 
-	def set_Parent_For_Swap_Nested(self, newParent):
-		self._parent = newParent
-		self.updateDatabase()
-
-	# swaps subgoals between arbitrary nesting levels 
-	def swapSubgoalsNested(self, other):
+	# should work across different levels of nesting
+	# still not tested in unit testing code 
+	def _swapSubgoals(self, other):
 		
 		selfParent = self.getParent()
 		otherParent = other.getParent()
-
-		if selfParent != None:
-			selfList = selfParent.getSubgoalList()
-			selfIndex = selfList.index(self)
-
-
-		else: # if it is the root node (only case when parent is null)
-			selfList = selfParent
-			selfIndex = 0
+		selfList = selfParent.getSubgoalList()
+		otherList = otherParent.getSubgoalList()
+		selfIndex = selfList.index(self)
+		otherIndex = otherList.index(other)
 
 
-		if otherParent != None:
-			otherList = otherParent.getSubgoalList()
-			otherIndex = otherList.index(other)
-		else:
-			otherList = otherParent
-			otherIndex = 0
+		other.setParent(selfParent)
+		selfList[selfIndex] = other  
 
-
-		other.set_Parent_For_Swap_Nested(selfParent)
-		selfList[selfIndex] = other   # overwrites self with the other at self's index in the subgoal list.
-
-		self.set_Parent_For_Swap_Nested(otherParent)
+		self.setParent(otherParent)
 		otherList[otherIndex] = self
 
 		self.updateDatabase()
