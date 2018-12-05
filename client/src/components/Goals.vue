@@ -157,7 +157,7 @@
                                     <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                                 </td>
                                 <td v-else-if="goal.inProgress && goal.nestLevel==3" v-bind:style="{backgroundColor: '#e0a800'}">
-                                    <label> {{ goal.goalNum }} </label>>
+                                    <label> {{ goal.goalNum }} </label>
                                 <td v-else-if="goal.isSubgoal && goal.nestLevel == 2" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                     <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                     <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">

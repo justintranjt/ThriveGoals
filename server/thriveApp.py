@@ -12,7 +12,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -304,7 +304,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
 		for subgoal in currTemplate.getSubgoalList():
-			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False ))
+			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False))
 
 	curlist.extend(retList)
 
