@@ -187,8 +187,7 @@ class Goal (object):
 	def getSubgoalAtIndex(self, index):
 		return self._subgoals[index]
 
-
-	#only works within one level
+		# only works within one level
 	def swapSubGoals(self, index1, index2):
 		temp1 = self._subgoals[index1]
 		temp2 = self._subgoals[index2]
@@ -196,27 +195,41 @@ class Goal (object):
 		self._subgoals[index2] = temp1
 		self.updateDatabase()
 
-	# should work across different levels of nesting
-	# still not tested in unit testing code 
-	def _swapSubgoals(self, other):
-		
+		# literally just chages the parent reference
+	def set_Parent_For_Swap_Nested(self, newParent):
+		self._parent = newParent
+		self.updateDatabase()
+
+		# swaps subgoals between arbitrary nesting levels
+	def swapSubgoalsNested(self, other):
+
 		selfParent = self.getParent()
 		otherParent = other.getParent()
-		selfList = selfParent.getSubgoalList()
-		otherList = otherParent.getSubgoalList()
-		selfIndex = selfList.index(self)
-		otherIndex = otherList.index(other)
+		# print(selfParent)
 
+		if selfParent != None:
+			selfList = selfParent.getSubgoalList()
+			selfIndex = selfList.index(self)
 
-		other.setParent(selfParent)
-		selfList[selfIndex] = other  
+		else:  # if it is the root node (only case when parent is null)
+			selfList = selfParent
+			selfIndex = 0
 
-		self.setParent(otherParent)
+		if otherParent != None:
+			otherList = otherParent.getSubgoalList()
+			otherIndex = otherList.index(other)
+		else:
+			otherList = otherParent
+			otherIndex = 0
+
+		other.set_Parent_For_Swap_Nested(selfParent)  # messed up hre???
+			# print (other.getParent())
+		selfList[selfIndex] = other  # overwrites self with the other at self's index in the subgoal list.
+
+		self.set_Parent_For_Swap_Nested(otherParent)
 		otherList[otherIndex] = self
 
 		self.updateDatabase()
-
-
 
 	#if all the goals in the subgoals list are marked complete, then the goal is also complete
 	#else the goal is still incomplete. Note this implementation technically misses complex cases
