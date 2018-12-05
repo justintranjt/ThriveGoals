@@ -4,7 +4,6 @@
     <b-alert v-else dismissible variant="success" show>{{ message }}</b-alert>
     <br>
   </div>
->>>>>>> master
 </template>
 
 <script>
