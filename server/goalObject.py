@@ -8,7 +8,7 @@
 
 import jsonpickle
 import psycopg2
-from updateDB3 import updateTemplate
+from updateDB import updateTemplate
 
 class Goal (object):
 
