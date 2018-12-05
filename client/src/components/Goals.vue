@@ -31,6 +31,7 @@
                             <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedTemplate!=(currGoalTemplateID)"> {{ currGoalTemplateID }} </label>
                             <!-- Disable template input if no templates exist -->
                             <input v-if="updatedTemplate==(currGoalTemplateID) && (goalTemplateIDs.length!==0 || this.currGoalTemplateID==='Enter Your Template Title Here')" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
+
                         </h1>
                     <h5>Overall Goal Progress</h5>
                     <prog v-if="goalTemplateIDs.length===0" :value="0"></prog>
@@ -302,6 +303,7 @@
     </div>
 </template>
 <script>
+
 import axios from 'axios';
 import draggable from 'vuedraggable';
 import alert from './Alert';
@@ -403,6 +405,7 @@ export default {
                     this.message = 'Goal added!';
                     this.showMessage = true;
                 })
+
                 .catch((error) => {
                     console.log(error);
                 });
@@ -506,6 +509,15 @@ export default {
         updateTemplate(goalTemplateID) {
             // Strip spaces from ends of changed template name
             this.newTemplateID = this.newTemplateID.trim();
+
+
+             if (this.goalTemplateIDs.includes(this.newTemplateID))
+             {
+                this.message = 'Duplicate template names not allowed.';
+                this.showMessage = true;
+                return;
+            }
+
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
@@ -523,6 +535,10 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+        },
+        dialog(){
+            Vue.dialog.confirm('Please confirm to continue')
+
         },
         initForm() {
             this.addGoalForm.goalNum = 0;
