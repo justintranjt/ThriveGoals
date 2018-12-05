@@ -379,6 +379,17 @@ def printTree(curGoal, indent):
 	    for subgoal in curGoal.getSubgoalList():
 	        printTree(subgoal, indent + 1)
 
+# special debugging method
+def printTree(curGoal, indent):
+    string = ''
+    for i in range(0,indent):
+        string += '     '
+    string += str(curGoal)
+    print (string)
+    if curGoal.getSubgoalList() is not None:
+	    for subgoal in curGoal.getSubgoalList():
+	        printTree(subgoal, indent + 1)
+
 if __name__ == "__main__":
 	initTestTemplates()
 	# Bind to PORT if defined, otherwise default to 5000.
