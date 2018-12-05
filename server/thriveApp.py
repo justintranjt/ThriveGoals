@@ -75,44 +75,26 @@ def cmpl_goal(goal_ref, goal_template_id):
 		curGoal.setCompletionStatus(True)
 		response_object['message'] = 'Goal completed!'
 
-
-	# for index, goal in enumerate(allTemplates[goal_template_id]):
-	# 	if int(goal['goalNum']) == int(goal_num):
-	# 		if goal['completed']:
-	# 			# Goal nums are 1-indexed, so substract 1
-	# 			allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
-	# 			response_object['message'] = 'Goal not completed.'
-	# 		else:
-	# 			# Goal nums are 1-indexed, so substract 1
-	# 			allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(True)
-	# 			response_object['message'] = 'Goal completed!'
-
 	# Update local templates from database
 	get_templates()
 
 	return jsonify(response_object)
 
 # Mark goal as inProgress
-@app.route('/inProgGoal/<goal_num>/<goal_template_id>', methods=['PUT'])
-def in_prog_goal(goal_num, goal_template_id):
+@app.route('/inProgGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
+def in_prog_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
 	global allTemplateRefs
 	global allTemplates
 
-	for goal in allTemplates[goal_template_id]:
-		if int(goal['goalNum']) == int(goal_num):
-			if goal['completed']:
-				# Goal nums are 1-indexed, so substract 1
-				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setCompletionStatus(False)
-				response_object['message'] = 'Goal is in progress.'
-			if goal['inProgress']:
-				# Goal nums are 1-indexed, so substract 1
-				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setInProgress(False)
-				response_object['message'] = 'Goal is not in progress.'
-			else:
-				# Goal nums are 1-indexed, so substract 1
-				allTemplateRefs[goal_template_id].getSubgoalAtIndex(int(goal_num) - 1).setInProgress(True)
-				response_object['message'] = 'Goal is in progress.'
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
+	if(curGoal.getInProgress()):
+		curGoal.setInProgress(False)
+		response_object['message'] = 'Goal not in progress.'
+	else:
+		curGoal.setInProgress(True)
+		response_object['message'] = 'Goal in progress!'
+
 
 	# Update local templates from database
 	get_templates()
@@ -134,17 +116,17 @@ def all_goals(goal_template_id):
 
 		parent = post_data.get('parentID')
 
-		print("\n\n\n\nIn add Subgoal, parent id is: "+str(parent))
+		# print("\n\n\n\nIn add Subgoal, parent id is: "+str(parent))
 		root = allTemplateRefs[goal_template_id]
-		print()
-		print("rootnode is: "+str(root))
-		print()
+		# print()
+		# print("rootnode is: "+str(root))
+		# print()
 
 		if parent is not None:
 
 			curGoal = getGoalUsingTime(root, parent)
 
-			print(str(curGoal))
+			# print(str(curGoal))
 			curGoal.addSubgoal(
 				post_data.get('goalTitle'),
 				post_data.get('completed'),
@@ -189,13 +171,8 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	global allTemplates
 
 	# Update goal title
-	print("We are in update_rem_goal\n")
 	if request.method == 'PUT':
 		put_data = request.get_json()
-		print("Method was put\n")
-		# for index, goal in enumerate(allTemplates[goal_template_id]):
-		# 	if int(goal_num) == (goal['goalNum']):
-		# goal['goalTitle'] = put_data.get('goalTitle')
 		prevGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
 		# TODO Keep this handy piece of code in mind for future methods
@@ -207,7 +184,6 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 
 		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
 			put_data.get('inProgress'), put_data.get('goalID'))
-		print(str(put_data.get('goalID'))+"\n\n\n\n\n")
 		parent.insertSubgoalAtIndex(index, newGoal)
 		prevGoal.deleteSelf()
 		# prevRef.deleteSelf()
@@ -215,8 +191,6 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		response_object['message'] = 'Goal updated!'
 
 	elif request.method == 'DELETE':
-		print("Method was Delete\n")
-		print("goal ref: "+str(goal_ref))
 		remove_goal(goal_num, goal_template_id, goal_ref)
 		response_object['message'] = 'Goal deleted!'
 
@@ -383,7 +357,7 @@ def getGoalUsingTime(curNode, var):
 	# print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
 
 	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
-			print("We found a matching node in getGoalUsingTime!!!")
+			# print("We found a matching node in getGoalUsingTime!!!")
 			retNode = curNode
 			return retNode
 	for eachNode in curNode.getSubgoalList():

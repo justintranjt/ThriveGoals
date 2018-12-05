@@ -44,9 +44,9 @@
                             <tr>
                                 <th scope="col">Goal #</th>
                                 <th scope="col">Goal</th>
-                                <th>3</th>
-                                <th>4</th>
-                                <th>5</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -84,7 +84,7 @@
                                     <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                                 </td>
                                 <!-- completed color with # -->
-                                <td v-else-if="goal.completed && goal.nestLevel==1 || goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <td v-else-if="goal.completed && (goal.nestLevel==1 || goal.nestLevel == 2)" v-bind:style="{backgroundColor: '#28a745c4'}">
                                     <label> {{ goal.goalNum }} </label>
                                 </td>
                                 <!-- just completed color -->
@@ -469,8 +469,8 @@ export default {
                     console.log(error);
                 });
         },
-        inProgGoal(goalNum, goalTemplateID) {
-            const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalNum + '/' + goalTemplateID;
+        inProgGoal(goalID, goalTemplateID) {
+            const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
             axios.put(path)
                 .then((res) => {
                     this.getGoals(goalTemplateID);
@@ -542,7 +542,7 @@ export default {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID);
         },
         onInProgGoal(goal) {
-            this.inProgGoal(goal.goalNum, this.currGoalTemplateID);
+            this.inProgGoal(goal.goalID, this.currGoalTemplateID);
         },
         onSubmit(evt) {
             evt.preventDefault();
