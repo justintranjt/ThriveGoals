@@ -334,6 +334,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 		print("Inside loop in makeGoalDict_fromTemplate ")
 		print("Goal Content: "+str(currTemplate.getGoalContent()))
 		print("Goal Id: "+str(currTemplate.getUniqueID()))
+		print("nestLevel: "+str(nestLevel))
 		print("parentID: "+str(currTemplate.getParent().getUniqueID()))
 		print()
 
