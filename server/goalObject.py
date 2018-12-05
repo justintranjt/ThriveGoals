@@ -317,10 +317,3 @@ class Goal (object):
 	#   self.delRecursive()
 	#   del self
 	#   template.updateDatabase()
-
-
-
-
-
-
-
