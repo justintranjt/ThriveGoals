@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect
+from flask import Flask, jsonify, render_template, request, redirect, session
 from flask_cas import CAS, login_required
 from flask_sslify import SSLify
 from flask_cors import CORS
@@ -13,13 +13,15 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'login'
+# This last thing may be an incorrect path. I want to bring them to the home page
+app.config['CAS_AFTER_LOGOUT'] = '/'
 
 # This is a secret key for storing sessions.
 secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
@@ -57,8 +59,21 @@ def loginNetID():
 	# Handle CAS login
 	response_object = {'status': 'success'}
 	global netID
+
+	# Set session. Do I do it here or elsewhere?
+	session['netID'] = netID
+
 	response_object['netID'] = netID
 	return jsonify(response_object)
+
+# Need to specify this path with Flask-CAS options. This method doesn't work yet
+@app.route('/logout')
+def logout():
+	print('made it to logout successfully')
+	print(session)
+	# remove the username from the session if it's there
+	session.pop('username', None)
+	print(session)
 
 # Mark goal as completed
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
@@ -395,5 +410,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)

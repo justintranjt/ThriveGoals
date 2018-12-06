@@ -18,6 +18,7 @@
                         {{ template }}
                     </b-dropdown-item>
                 </b-nav-item-dropdown>
+                <!-- Need to get this to point to the flask logout route -->
                 <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
             </b-navbar-nav>
         </b-navbar>
