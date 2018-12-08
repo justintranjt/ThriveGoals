@@ -9,7 +9,36 @@ import updateDB
 from goalObject import *
 import difflib
 
+#from flask_sessionstore import Session
+
+from flask.sessions import SessionInterface
+from beaker.middleware import SessionMiddleware
+# session_opts = {
+#     'session.type': 'ext:memcached',
+#     'session.url': '127.0.0.1:11211',
+#     'session.data_dir': './cache',
+# }
+session_opts = {
+    'session.type': 'file',
+    'session.cookie_expires': True,
+    'session.data_dir': './data',
+    'session.auto': True
+}
+
+
+class BeakerSessionInterface(SessionInterface):
+    def open_session(self, app, request):
+        session = request.environ['beaker.session']
+        return session
+
+    def save_session(self, app, session, response):
+        session.save()
+
+
+
 app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
+
+#POTENTIALLY IMPORTANT: 
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
@@ -23,19 +52,32 @@ app.config['CAS_AFTER_LOGIN'] = 'login'
 # This last thing may be an incorrect path. I want to bring them to the home page
 app.config['CAS_AFTER_LOGOUT'] = '/'
 
-# This is a secret key for storing sessions.
-secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
-app.secret_key = secret_key
 
+
+app.config['SESSION_TYPE'] = 'filesystem'
+
+# app.config.from_object(__name__)
+# Session(app)
+
+# This is a secret key for storing sessions.
+secret_key = "myMemesAreTooDank"
+#secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
+#app.secret_key = secret_key
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+#app.session_interface = BeakerSessionInterface()
 # Initialize CORS
-CORS(app)
+CORS(app, supports_credentials=True)
+
+app.wsgi_app = SessionMiddleware(app.wsgi_app, session_opts)
+app.session_interface = BeakerSessionInterface()
+#sess = Session(app)
 
 # Templates with references to objects and JSON representation
-allTemplateRefs = {}
-allTemplates = {}
+allTemplateRefsDict_by_User = {}
+allTemplatesDict_by_User = {}
 
 # Username
-netID = None
+# netID = None
 
 # See here for more info: http://flask.pocoo.org/snippets/57/
 @app.route('/', defaults={'path': ''})
@@ -47,8 +89,16 @@ def catch_all(path):
 @app.route('/loginPage', methods=['GET'])
 @login_required
 def login():
-	global netID
-	netID = cas.username
+	# session = request.environ.get('beaker.session')
+	print("\n\n\n\n In login_required:\nSession already has defined netID? : "+str(session.has_key('netID')))
+	if not session.has_key('netID'):
+		print("Apparently we didn't have the key since we're in the if condition")
+		session['netID'] = cas.username
+		session.modified = True
+		session.save()
+
+ 
+	print("In login_reqired cas.username is: "+str(session.get('netID', 'not set'))+"\n\n\n\n")
 
 	# Bind to URIROOT if defined, otherwise default to localhost
 	uriRoot = environ.get('URIROOT', "http://localhost:8080")
@@ -57,13 +107,25 @@ def login():
 @app.route('/loginNetID', methods=['GET'])
 def loginNetID():
 	# Handle CAS login
+
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+	print("\n\n\n\n In loginNetID:\nSession already has defined netID? : "+str(session.has_key('netID')))
+	if not session.has_key('netID'):
+		print("Apparently we didn't have the key since we're in the if condition, so let's assign one")
+		session['netID'] = "Memegod J"
+		session.modified = True
+		session.save()
+
 	response_object = {'status': 'success'}
-	global netID
-
-	# Set session. Do I do it here or elsewhere?
-	session['netID'] = netID
-
+	# session = request.environ.get('beaker.session')
+	netID = session.get('netID', 'not set')
+	print("In loginNetID cas.username is now:"+ str(netID))
 	response_object['netID'] = netID
+	allTemplateRefsDict_by_User[netID] = {}
+	allTemplatesDict_by_User[netID] = {}
+	print("we are sending ("+response_object['netID']+") to the frontend\n\n\n")
 	return jsonify(response_object)
 
 # Need to specify this path with Flask-CAS options. This method doesn't work yet
@@ -79,8 +141,19 @@ def logout():
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-	global allTemplateRefs
-	global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+
+	print("\n\n\n\n Testing sessions in cmpl_goal: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getCompletionStatus()):
@@ -99,8 +172,20 @@ def cmpl_goal(goal_ref, goal_template_id):
 @app.route('/inProgGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def in_prog_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-	global allTemplateRefs
-	global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+
+	print("\n\n\n\n Testing sessions in in_prog_goal: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
+
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getInProgress()):
@@ -122,9 +207,23 @@ def in_prog_goal(goal_ref, goal_template_id):
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
 	response_object = {'status': 'success'}
-	global allTemplates
-	global allTemplateRefs
+	# global allTemplates
+	# global allTemplateRefs
 
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+
+	print("\n\n\n\n Testing sessions in all_goals: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
+
+	print("\n\n\ngoal template id is: "+ goal_template_id+"\n\n\n")
 	if request.method == 'POST':
 		post_data = request.get_json()
 
@@ -182,8 +281,20 @@ def completed_goals(goal_template_id):
 @app.route('/modGoals/<goal_num>/<goal_template_id>/<goal_ref>', methods=['PUT', 'DELETE'])
 def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	response_object = {'status': 'success'}
-	global allTemplateRefs
-	global allTemplates
+	# global allTemplateRefs
+	# global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+
+	print("\n\n\n\n Testing sessions in update_rem_goal: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
 
 	# Update goal title
 	if request.method == 'PUT':
@@ -210,7 +321,7 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		response_object['message'] = 'Goal deleted!'
 
 	# Sort by goal number
-	allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 
 	# Update local templates from database
 	get_templates()
@@ -221,10 +332,15 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
 	response_object = {'status': 'success'}
-	global allTemplateRefs
-	global allTemplates
-	global netID
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
+	# allTemplateRefs = session['allTemplateRefs'] 
+	# allTemplates = session['allTemplates'] 
+
+	print("\n\n\n\n Testing sessions in get_templates: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
 	# Start template refs from clean slate each time
 	allTemplateRefs = {}
 	allTemplates = {}
@@ -233,18 +349,34 @@ def get_templates():
 		allTemplateRefs[currTemplate[1]] = currTemplate[2]
 		allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
 
+	print(str(list(allTemplates.keys())))
 	response_object['goalTemplateIDs'] = list(allTemplates.keys())
 
+	
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefsDict_by_User[netID] = allTemplateRefs 
+	allTemplatesDict_by_User[netID] = allTemplates
+
+
+	print("Did we store any templates? :"+str(allTemplatesDict_by_User[netID])+"\n\n\n\n")
 	return jsonify(response_object)
 
 # Create new, blank template designated with goal_template_id
 @app.route('/modTemplates/<goal_template_id>', methods=['DELETE', 'PUT', 'POST'])
 def update_template(goal_template_id):
 	response_object = {'status': 'success'}
-	global allTemplates
-	global allTemplateRefs
-	global netID
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
+
+	print("\n\n\n\n Testing sessions in update_template: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
 	# Delete current template
 	if request.method == 'DELETE':
 		updateDB.deleteTemplate(netID, goal_template_id)
@@ -254,6 +386,7 @@ def update_template(goal_template_id):
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
 
+		#Potential Buggos Hiding Here
 		allTemplates.pop(goal_template_id)
 		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
 		allTemplateRefs[new_template_id] = allTemplateRefs.pop(goal_template_id)
@@ -263,7 +396,6 @@ def update_template(goal_template_id):
 		new_template_id = goal_template_id
 		Goal(new_template_id, False, [], None, netID, False, '')
 
-
 	# Update local templates from database
 	get_templates()
 
@@ -272,7 +404,11 @@ def update_template(goal_template_id):
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
 	get_templates()
-	global allTemplates
+	
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID] 
 
 	completedGoalCount = 0
 
@@ -284,8 +420,16 @@ def count_completed_goals(goal_template_id):
 
 # Helper function to remove goal from a template
 def remove_goal(goal_num, goal_template_id, goal_ref):
-	global allTemplates
-	global allTemplateRefs
+	# global allTemplates
+	# global allTemplateRefs
+
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID] 
+
+
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
@@ -303,17 +447,17 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 					goal['goalNum'] -= 1
 			return None
 
-def initTestTemplates():
-	global netID
-	# Make empty templates
-	templateOne = Goal('Template 1', False, [], None, netID, False, time())
-	templateTwo = Goal('Template 2', False, [], None, netID, False, time())
+# def initTestTemplates():
+# 	netID = session.get('username', None)
+# 	# Make empty templates
+# 	templateOne = Goal('Template 1', False, [], None, netID, False, '')
+# 	templateTwo = Goal('Template 2', False, [], None, netID, False, '')
 
-	# Add goals to templates
-	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
-	templateOne.addSubgoal("Allow goal editing", False, False, time())
-	templateOne.addSubgoal("Allow goal deletion", False, False, time())
-	templateTwo.addSubgoal("Alternate template!", False, False, time())
+# 	# Add goals to templates
+# 	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
+# 	templateOne.addSubgoal("Allow goal editing", False, False, time())
+# 	templateOne.addSubgoal("Allow goal deletion", False, False, time())
+# 	templateTwo.addSubgoal("Alternate template!", False, False, time())
 
 	# Delete templates
 	# updateDB.deleteTemplate(netID, 'Template 1')
@@ -394,19 +538,8 @@ def printTree(curGoal, indent):
 	    for subgoal in curGoal.getSubgoalList():
 	        printTree(subgoal, indent + 1)
 
-# special debugging method
-def printTree(curGoal, indent):
-    string = ''
-    for i in range(0,indent):
-        string += '     '
-    string += str(curGoal)
-    print (string)
-    if curGoal.getSubgoalList() is not None:
-	    for subgoal in curGoal.getSubgoalList():
-	        printTree(subgoal, indent + 1)
-
 if __name__ == "__main__":
-	initTestTemplates()
+	# initTestTemplates()
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server

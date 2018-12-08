@@ -348,7 +348,7 @@ export default {
     methods: {
         async getLoginNetID() {
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
-            await axios.get(path)
+            await axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.netID = res.data.netID;
                 })
@@ -358,7 +358,7 @@ export default {
         },
         getGoals(goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
-            axios.get(path)
+            axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.goals = res.data.goals;
                 })
@@ -368,7 +368,7 @@ export default {
         },
         getNumCompleted(goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
-            axios.get(path)
+            axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.numCompleted = res.data.numCompleted;
                 })
@@ -378,7 +378,7 @@ export default {
         },
         async getTemplates() {
             const path = process.env.URI_SERVER_ROOT + '/getTemplates';
-            await axios.get(path)
+            await axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.goalTemplateIDs = res.data.goalTemplateIDs;
                 })
@@ -389,7 +389,7 @@ export default {
         },
         update(goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
-            axios.get(path)
+            axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.numCompleted = res.data.numCompleted;
                 })
@@ -399,7 +399,7 @@ export default {
         },
         addGoal(payload, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
-            axios.post(path, payload)
+            axios.post(path, payload, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -413,7 +413,7 @@ export default {
         },
         addTemplate() {
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + 'Enter Your Template Title Here';
-            axios.post(path)
+            axios.post(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
                     this.getGoals('Enter Your Template Title Here');
                     this.currGoalTemplateID = 'Enter Your Template Title Here';
@@ -427,7 +427,7 @@ export default {
         },
         completeGoal(goalRef, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/completeGoal/' + goalRef + '/' + goalTemplateID;
-            axios.put(path)
+            axios.put(path,  {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -440,7 +440,7 @@ export default {
         },
         deleteGoal(goalNum, goalTemplateID, goalID) {
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID + '/' + goalID;
-            axios.delete(path)
+            axios.delete(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -453,7 +453,7 @@ export default {
         },
         deleteTemplate() {
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
-            axios.delete(path)
+            axios.delete(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(async () => {
                     // Wait to get the new template list before setting fields
                     await this.getTemplates();
@@ -475,7 +475,7 @@ export default {
         },
         inProgGoal(goalID, goalTemplateID) {
             const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
-            axios.put(path)
+            axios.put(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -496,7 +496,7 @@ export default {
                 goalID: goal.goalID
             };
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID +'/'+ goal.goalID;
-            axios.put(path, payload)
+            axios.put(path, payload, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
                     this.getNumCompleted(this.currGoalTemplateID);
@@ -524,7 +524,7 @@ export default {
             };
             this.updatedTemplate = '';
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
-            axios.put(path, payload)
+            axios.put(path, payload,  {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
                     this.getTemplates();
                     this.currGoalTemplateID = this.newTemplateID;
