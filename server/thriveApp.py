@@ -58,10 +58,10 @@ app.config['SESSION_TYPE'] = 'filesystem'
 # Session(app)
 
 # This is a secret key for storing sessions.
-secret_key = "myMemesAreTooDank"
-#secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
-#app.secret_key = secret_key
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+#secret_key = "myMemesAreTooDank"
+secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
+app.secret_key = secret_key
+
 #app.session_interface = BeakerSessionInterface()
 # Initialize CORS
 CORS(app, supports_credentials=True)
@@ -92,8 +92,7 @@ def login():
 	if not session.has_key('netID'):
 		print("Apparently we didn't have the key since we're in the if condition")
 		session['netID'] = cas.username
-		session.modified = True
-		session.save()
+	
 
  
 	print("In login_reqired cas.username is: "+str(session.get('netID', 'not set'))+"\n\n\n\n")
@@ -129,12 +128,15 @@ def loginNetID():
 # Mark goal as completed
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_ref, goal_template_id):
+
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
 
 
 	print("\n\n\n\n Testing sessions in cmpl_goal: \n")
+	print("goal_ref is defined as: "+str(goal_ref))
+	print("goal_template_id is defined as: "+str(goal_template_id))
 	netID = session.get('netID', 'not set')
 	print(" current netID is:"+ str(netID)+" \n")
 	# Start template refs from clean slate each time
@@ -391,10 +393,14 @@ def update_template(goal_template_id):
 
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
-	get_templates()
-	
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	# get_templates()
+
+	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
-	
+	print(" current netID is:"+ str(netID)+" \n")
+
 	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
 	allTemplates = allTemplatesDict_by_User[netID] 
 
@@ -408,14 +414,15 @@ def count_completed_goals(goal_template_id):
 
 # Helper function to remove goal from a template
 def remove_goal(goal_num, goal_template_id, goal_ref):
-	# global allTemplates
-	# global allTemplateRefs
-
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+
 	
 	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
-	allTemplates = allTemplatesDict_by_User[netID] 
-
+	allTemplates = allTemplatesDict_by_User[netID]
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
