@@ -71,8 +71,8 @@ app.session_interface = BeakerSessionInterface()
 #sess = Session(app)
 
 # Templates with references to objects and JSON representation
-# allTemplateRefs = {}
-# allTemplates = {}
+allTemplateRefsDict_by_User = {}
+allTemplatesDict_by_User = {}
 
 # Username
 # netID = None
@@ -95,8 +95,7 @@ def login():
 		session.modified = True
 		session.save()
 
-	session['allTemplates'] = {}
-	session['allTemplateRefs'] = {}
+ 
 	print("In login_reqired cas.username is: "+str(session.get('netID', 'not set'))+"\n\n\n\n")
 
 	# Bind to URIROOT if defined, otherwise default to localhost
@@ -107,6 +106,8 @@ def login():
 def loginNetID():
 	# Handle CAS login
 
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
 	print("\n\n\n\n In loginNetID:\nSession already has defined netID? : "+str(session.has_key('netID')))
 	if not session.has_key('netID'):
@@ -120,6 +121,8 @@ def loginNetID():
 	netID = session.get('netID', 'not set')
 	print("In loginNetID cas.username is now:"+ str(netID))
 	response_object['netID'] = netID
+	allTemplateRefsDict_by_User[netID] = {}
+	allTemplatesDict_by_User[netID] = {}
 	print("we are sending ("+response_object['netID']+") to the frontend\n\n\n")
 	return jsonify(response_object)
 
@@ -127,11 +130,19 @@ def loginNetID():
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-	# global allTemplateRefs
-	# global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+
+	print("\n\n\n\n Testing sessions in cmpl_goal: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getCompletionStatus()):
@@ -150,11 +161,20 @@ def cmpl_goal(goal_ref, goal_template_id):
 @app.route('/inProgGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def in_prog_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-	# global allTemplateRefs
-	# global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+
+	print("\n\n\n\n Testing sessions in in_prog_goal: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
+
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getInProgress()):
@@ -179,8 +199,19 @@ def all_goals(goal_template_id):
 	# global allTemplates
 	# global allTemplateRefs
 
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+
+
+	print("\n\n\n\n Testing sessions in all_goals: \n")
+	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
 
 	print("\n\n\ngoal template id is: "+ goal_template_id+"\n\n\n")
 	if request.method == 'POST':
@@ -242,10 +273,19 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	response_object = {'status': 'success'}
 	# global allTemplateRefs
 	# global allTemplates
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
+
+	print("\n\n\n\n Testing sessions in update_rem_goal: \n")
 	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+	# Start template refs from clean slate each time
+
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
+
 	# Update goal title
 	if request.method == 'PUT':
 		put_data = request.get_json()
@@ -282,8 +322,8 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
 	response_object = {'status': 'success'}
-	# global allTemplateRefs
-	# global allTemplates
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
 	# allTemplateRefs = session['allTemplateRefs'] 
 	# allTemplates = session['allTemplates'] 
@@ -302,24 +342,27 @@ def get_templates():
 	print(str(list(allTemplates.keys())))
 	response_object['goalTemplateIDs'] = list(allTemplates.keys())
 
-	session['allTemplateRefs'] = allTemplateRefs
-	session['allTemplates'] = allTemplates
+	
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefsDict_by_User[netID] = allTemplateRefs 
+	allTemplatesDict_by_User[netID] = allTemplates
 
 
-	print("Did we store any templates? :"+str(session.get('allTemplates', 'nothing stored'))+"\n\n\n\n")
+	print("Did we store any templates? :"+str(allTemplatesDict_by_User[netID])+"\n\n\n\n")
 	return jsonify(response_object)
 
 # Create new, blank template designated with goal_template_id
 @app.route('/modTemplates/<goal_template_id>', methods=['DELETE', 'PUT', 'POST'])
 def update_template(goal_template_id):
 	response_object = {'status': 'success'}
-	# global allTemplates
-	# global allTemplateRefs
-
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
 
 	netID = session.get('netID', 'not set')
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID]
 
 	# Delete current template
 	if request.method == 'DELETE':
@@ -329,7 +372,7 @@ def update_template(goal_template_id):
 	elif request.method == 'PUT':
 		put_data = request.get_json()
 		new_template_id = put_data.get('newTemplateID')
-
+		#Potential Buggos Hiding Here
 		allTemplates.pop(goal_template_id)
 		allTemplateRefs[goal_template_id].setGoalContent(new_template_id)
 		allTemplateRefs[new_template_id] = allTemplateRefs.pop(goal_template_id)
@@ -347,7 +390,11 @@ def update_template(goal_template_id):
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
 	get_templates()
-	allTemplates = session['allTemplates'] 
+	
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID] 
 
 	completedGoalCount = 0
 
@@ -362,8 +409,11 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 	# global allTemplates
 	# global allTemplateRefs
 
-	allTemplateRefs = session['allTemplateRefs'] 
-	allTemplates = session['allTemplates'] 
+	netID = session.get('netID', 'not set')
+	
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplates = allTemplatesDict_by_User[netID] 
+
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
