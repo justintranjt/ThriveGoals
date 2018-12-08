@@ -206,7 +206,6 @@ def all_goals(goal_template_id):
 	print("\n\n\n\n Testing sessions in all_goals: \n")
 	netID = session.get('netID', 'not set')
 	print(" current netID is:"+ str(netID)+" \n")
-	# Start template refs from clean slate each time
 
 	
 	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
@@ -359,11 +358,14 @@ def update_template(goal_template_id):
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
 
+
+	print("\n\n\n\n Testing sessions in update_template: \n")
 	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+
 	
 	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
 	allTemplates = allTemplatesDict_by_User[netID]
-
 	# Delete current template
 	if request.method == 'DELETE':
 		updateDB.deleteTemplate(netID, goal_template_id)
