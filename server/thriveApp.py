@@ -42,9 +42,6 @@ app.config['CAS_SERVER'] = 'https://fed.princeton.edu/cas/'
 app.config['CAS_AFTER_LOGIN'] = 'login'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-# app.config.from_object(__name__)
-# Session(app)
-
 # This is a secret key for storing sessions.
 secret_key = environ.get('SECRET_KEY', "developmentsecretkey")
 app.secret_key = secret_key
@@ -59,71 +56,53 @@ app.session_interface = BeakerSessionInterface()
 allTemplateRefsDict_by_User = {}
 allTemplatesDict_by_User = {}
 
-# Username
-# netID = None
-
 # See here for more info: http://flask.pocoo.org/snippets/57/
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
 	return render_template("index.html")
 
-# TODO Make use of the database and access the netID field instead of using global var!
+# Set login netID
 @app.route('/loginPage', methods=['GET'])
 @login_required
 def login():
-	# session = request.environ.get('beaker.session')
-	print("\n\n\n\n In login_required:\nSession already has defined netID? : "+str(session.has_key('netID')))
-	if not session.has_key('netID'):
-		print("Apparently we didn't have the key since we're in the if condition")
-
 	session['netID'] = cas.username
-	print("In login_reqired cas.username is: "+str(session.get('netID', 'not set'))+"\n\n\n\n")
 
 	# Bind to URIROOT if defined, otherwise default to localhost
 	uriRoot = environ.get('URIROOT', "http://localhost:8080")
 	return redirect(uriRoot + "/goals", code=302)
 
+# Handle CAS login
 @app.route('/loginNetID', methods=['GET'])
 def loginNetID():
-	# Handle CAS login
+	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n In loginNetID:\nSession already has defined netID? : "+str(session.has_key('netID')))
-	if not session.has_key('netID'):
-		print("Apparently we didn't have the key since we're in the if condition, so let's assign one")
-		session['netID'] = "Memegod J"
-		session.modified = True
-		session.save()
-
-	response_object = {'status': 'success'}
-	# session = request.environ.get('beaker.session')
 	netID = session.get('netID', 'not set')
-	print("In loginNetID cas.username is now:"+ str(netID))
+
+	# if not session.has_key('netID'):
+	# 	print("Apparently we didn't have the key since we're in the if condition, so let's assign one")
+	# 	session['netID'] = "Memegod J"
+	# 	session.modified = True
+	# 	session.save()
+	
 	response_object['netID'] = netID
+
 	allTemplateRefsDict_by_User[netID] = {}
 	allTemplatesDict_by_User[netID] = {}
-	print("we are sending ("+response_object['netID']+") to the frontend\n\n\n")
+
 	return jsonify(response_object)
 
 # Mark goal as completed
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in cmpl_goal: \n")
-	print("goal_ref is defined as: "+str(goal_ref))
-	print("goal_template_id is defined as: "+str(goal_template_id))
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
 	# Start template refs from clean slate each time
-	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
-	allTemplates = allTemplatesDict_by_User[netID]
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getCompletionStatus()):
@@ -142,17 +121,12 @@ def cmpl_goal(goal_ref, goal_template_id):
 @app.route('/inProgGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def in_prog_goal(goal_ref, goal_template_id):
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in in_prog_goal: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
 	# Start template refs from clean slate each time
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
-	allTemplates = allTemplatesDict_by_User[netID]
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 	if(curGoal.getInProgress()):
@@ -162,44 +136,29 @@ def in_prog_goal(goal_ref, goal_template_id):
 		curGoal.setInProgress(True)
 		response_object['message'] = 'Goal in progress!'
 
-
 	# Update local templates from database
 	get_templates()
 
 	return jsonify(response_object)
 
-
-
 # Retrieving all current goals and adding new goals
 @app.route('/modGoals/<goal_template_id>', methods=['GET', 'POST'])
 def all_goals(goal_template_id):
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in all_goals: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
 	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
 	allTemplates = allTemplatesDict_by_User[netID]
 
-	print("\n\n\ngoal template id is: "+ goal_template_id+"\n\n\n")
 	if request.method == 'POST':
 		post_data = request.get_json()
 		parent = post_data.get('parentID')
-
-		# print("\n\n\n\nIn add Subgoal, parent id is: "+str(parent))
 		root = allTemplateRefs[goal_template_id]
-		# print()
-		# print("rootnode is: "+str(root))
-		# print()
 
 		if parent is not None:
 			curGoal = getGoalUsingTime(root, parent)
-
-			# print(str(curGoal))
 			curGoal.addSubgoal(
 				post_data.get('goalTitle'),
 				post_data.get('completed'),
@@ -215,7 +174,6 @@ def all_goals(goal_template_id):
 				time(),
 			)
 			response_object['message'] = 'Goal added!'
-
 	else:
 		response_object['goals'] = allTemplates[goal_template_id]
 
@@ -238,12 +196,8 @@ def completed_goals(goal_template_id):
 @app.route('/modGoals/<goal_num>/<goal_template_id>/<goal_ref>', methods=['PUT', 'DELETE'])
 def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
-
-	print("\n\n\n\n Testing sessions in update_rem_goal: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
 	# Start template refs from clean slate each time
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
@@ -263,7 +217,6 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		put_data.get('inProgress'), put_data.get('goalID'))
 		parent.insertSubgoalAtIndex(index, newGoal)
 		prevGoal.deleteSelf()
-		# prevRef.deleteSelf()
 
 		response_object['message'] = 'Goal updated!'
 
@@ -283,49 +236,35 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	# allTemplateRefs = session['allTemplateRefs'] 
-	# allTemplates = session['allTemplates'] 
-
-	print("\n\n\n\n Testing sessions in get_templates: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
+
 	# Start template refs from clean slate each time
 	allTemplateRefs = {}
 	allTemplates = {}
+
 	# Get templates and load into template list
 	for currTemplate in updateDB.getTemplateList(netID)[2]:
 		allTemplateRefs[currTemplate[1]] = currTemplate[2]
 		allTemplates[currTemplate[1]] = makeGoalDict_fromTemplate(currTemplate[2], 0, True)
 
-	print(str(list(allTemplates.keys())))
 	response_object['goalTemplateIDs'] = list(allTemplates.keys())
-	
-	netID = session.get('netID', 'not set')
 	
 	allTemplateRefsDict_by_User[netID] = allTemplateRefs
 	allTemplatesDict_by_User[netID] = allTemplates
 
-
-	print("Did we store any templates? :"+str(allTemplatesDict_by_User[netID])+"\n\n\n\n")
 	return jsonify(response_object)
 
 # Create new, blank template designated with goal_template_id
 @app.route('/modTemplates/<goal_template_id>', methods=['DELETE', 'PUT', 'POST'])
 def update_template(goal_template_id):
 	response_object = {'status': 'success'}
-
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in update_template: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
-	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
 	allTemplates = allTemplatesDict_by_User[netID]
 
 	# Delete current template
@@ -355,10 +294,7 @@ def update_template(goal_template_id):
 def count_completed_goals(goal_template_id):
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 
 	allTemplates = allTemplatesDict_by_User[netID]
 
@@ -374,10 +310,7 @@ def count_completed_goals(goal_template_id):
 def remove_goal(goal_num, goal_template_id, goal_ref):
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
-
-	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
-	print(" current netID is:"+ str(netID)+" \n")
 	
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
 	allTemplates = allTemplatesDict_by_User[netID]
@@ -397,9 +330,11 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 					goal['goalNum'] -= 1
 			return None
 
-# Session.get() violates our HTTP request rules. FIX IT!
+
 def initTestTemplates():
-	netID = session.get('username', None)
+	# UNCOMMENT THIS AND FIX IT. Session.get() violates our HTTP request rules. FIX IT!
+	netID = session.get('username', 'not set')
+
 	# Make empty templates
 	templateOne = Goal('Template 1', False, [], None, netID, False, time())
 	templateTwo = Goal('Template 2', False, [], None, netID, False, time())
@@ -426,7 +361,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 		curlist = []
 	else:
 		curlist = [{
-			'goalID':  str(currTemplate.getUniqueID()),
+			'goalID': str(currTemplate.getUniqueID()),
 			'goalNum': 0,
 			'goalTitle': currTemplate.getGoalContent(),
 			'completed': currTemplate.getCompletionStatus(),
@@ -435,18 +370,11 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 			'nestLevel': nestLevel, # should be 0,1,2
 			'parentID': str(currTemplate.getParent().getUniqueID()),
 		}]
-		# print()
-		# print("Inside loop in makeGoalDict_fromTemplate ")
-		# print("Goal Content: "+str(currTemplate.getGoalContent()))
-		# print("nestLevel: "+ str(nestLevel))
-		# print("Goal Id: "+str(currTemplate.getUniqueID()))
-		# print("parentID: "+str(currTemplate.getParent().getUniqueID()))
-		# print()
 
 	retList = []
 	if currTemplate.getSubgoalList() is not None:
 		for subgoal in currTemplate.getSubgoalList():
-			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False ))
+			retList.extend(makeGoalDict_fromTemplate(subgoal, (nestLevel + 1), False))
 
 	curlist.extend(retList)
 
@@ -457,15 +385,9 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 
 	return curlist
 
-#function for mapping frontend goal representations to backend object references
+# Function for mapping frontend goal representations to backend object references
 def getGoalUsingTime(curNode, var):
-	#note that the rootnode is just refferring to the template
 	retNode = None
-	# print("\n\ncurNode's ID number in getGoalUsingTime: ")
-	# print(str(curNode.getGoalContent()))
-	# print(str(curNode.getUniqueID()).strip())
-	# print(str(var).strip())
-	# print("Strings are equal:"+str(curNode.getUniqueID()).strip() == (str(var).strip()))
 
 	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
 			# print("We found a matching node in getGoalUsingTime!!!")
@@ -477,19 +399,19 @@ def getGoalUsingTime(curNode, var):
 			retNode = potentialVal
 	return retNode
 
-
 # special debugging method
 def printTree(curGoal, indent):
 	string = ''
-	for i in range(0,indent):
+	for i in range(0, indent):
 		string += '     '
 	string += str(curGoal)
-	print (string)
+	print(string)
 	if curGoal.getSubgoalList() is not None:
 		for subgoal in curGoal.getSubgoalList():
 			printTree(subgoal, indent + 1)
 
 if __name__ == "__main__":
+	# THIS LINE HAS TO GO SOMEWHERE ELSE: Initialize templates for new user
 	# initTestTemplates()
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
