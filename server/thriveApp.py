@@ -76,8 +76,8 @@ def login():
 	print("\n\n\n\n In login_required:\nSession already has defined netID? : "+str(session.has_key('netID')))
 	if not session.has_key('netID'):
 		print("Apparently we didn't have the key since we're in the if condition")
-		session['netID'] = cas.username
 
+	session['netID'] = cas.username
 	print("In login_reqired cas.username is: "+str(session.get('netID', 'not set'))+"\n\n\n\n")
 
 	# Bind to URIROOT if defined, otherwise default to localhost
