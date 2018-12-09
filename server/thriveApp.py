@@ -73,8 +73,7 @@ def catch_all(path):
 def login():
 	if not session.has_key('netID'):
 		session['netID'] = cas.username
-		session.modified = True
-		session.save()
+	
 
 	# Bind to URIROOT if defined, otherwise default to localhost
 	uriRoot = environ.get('URIROOT', "http://localhost:8080")
@@ -105,6 +104,7 @@ def logout():
 # Mark goal as completed
 @app.route('/completeGoal/<goal_ref>/<goal_template_id>', methods=['PUT'])
 def cmpl_goal(goal_ref, goal_template_id):
+
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
@@ -320,8 +320,11 @@ def update_template(goal_template_id):
 
 # Helper function to count number of completed goals in a template
 def count_completed_goals(goal_template_id):
-	get_templates()
-	
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	# get_templates()
+
+	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
 	
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
@@ -337,9 +340,14 @@ def count_completed_goals(goal_template_id):
 
 # Helper function to remove goal from a template
 def remove_goal(goal_num, goal_template_id, goal_ref):
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	print("\n\n\n\n Testing sessions in remove_goal: \n")
 	netID = session.get('netID', 'not set')
+	print(" current netID is:"+ str(netID)+" \n")
+
 	
-	allTemplateRefs = allTemplateRefsDict_by_User[netID]
+	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
 	allTemplates = allTemplatesDict_by_User[netID]
 
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)

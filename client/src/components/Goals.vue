@@ -309,6 +309,7 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 import alert from './Alert';
 import prog from './Progress';
+// axios.defaults.withCredentials = true;
 export default {
     data() {
         return {
@@ -346,7 +347,9 @@ export default {
         prog,
     },
     methods: {
+ 
         async getLoginNetID() {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
             await axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -357,6 +360,7 @@ export default {
                 });
         },
         getGoals(goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
             axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -367,6 +371,7 @@ export default {
                 });
         },
         getNumCompleted(goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
             axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -377,6 +382,7 @@ export default {
                 });
         },
         async getTemplates() {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/getTemplates';
             await axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -388,6 +394,7 @@ export default {
                 });
         },
         update(goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/completedGoals/' + goalTemplateID;
             axios.get(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -398,6 +405,7 @@ export default {
                 });
         },
         addGoal(payload, goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
             axios.post(path, payload, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
@@ -412,6 +420,7 @@ export default {
                 });
         },
         addTemplate() {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + 'Enter Your Template Title Here';
             axios.post(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
@@ -426,8 +435,9 @@ export default {
                 });
         },
         completeGoal(goalRef, goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/completeGoal/' + goalRef + '/' + goalTemplateID;
-            axios.put(path,  {withCredentials: true, credentials: 'same-origin'})
+            axios.put(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                     this.getNumCompleted(goalTemplateID);
@@ -439,6 +449,7 @@ export default {
                 });
         },
         deleteGoal(goalNum, goalTemplateID, goalID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID + '/' + goalID;
             axios.delete(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(() => {
@@ -452,6 +463,7 @@ export default {
                 });
         },
         deleteTemplate() {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modTemplates/' + this.currGoalTemplateID;
             axios.delete(path, {withCredentials: true, credentials: 'same-origin'})
                 .then(async () => {
@@ -474,6 +486,7 @@ export default {
                 });
         },
         inProgGoal(goalID, goalTemplateID) {
+            axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
             axios.put(path, {withCredentials: true, credentials: 'same-origin'})
                 .then((res) => {
@@ -487,6 +500,7 @@ export default {
                 });
         },
         updateGoalTitle(goal) {
+            axios.defaults.withCredentials = true;
             this.updatedGoalTitle = '';
             const payload = {
                 goalNum: goal.goalNum,
@@ -508,6 +522,7 @@ export default {
                 });
         },
         updateTemplate(goalTemplateID) {
+            axios.defaults.withCredentials = true;
             // Strip spaces from ends of changed template name
             this.newTemplateID = this.newTemplateID.trim();
 
