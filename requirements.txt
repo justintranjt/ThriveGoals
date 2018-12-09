@@ -1,3 +1,4 @@
+beaker==1.10.0
 Click==7.0
 Flask==1.0.2
 Flask-CAS-fork==1.0.1
