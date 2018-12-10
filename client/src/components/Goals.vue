@@ -48,7 +48,7 @@
                                 <th scope="col">Goal</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
+                                <th scope="col" class="text-right">Time Spent</th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -228,26 +228,21 @@
                             </td>
                             </td>
                             <td v-else></td>
-                            <!-- Added Col 5-->
-                            <td v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <!-- Added Col 5 for Timers-->
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <div>
+                                <timer> </timer>
+                                </div>
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <div>
+                                <timer> </timer>
+                                </div>
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#e0a800'}">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            </td>
-                            <td v-else-if="goal.inProgress && parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}">
-                            </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
-                            </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel==4" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            <td v-else>
+                                <div>
+                                <timer> </timer>
+                                </div>
                             </td>
                             <td v-else></td>
                             <!-- Buttons/ Col 6 -->
@@ -363,6 +358,8 @@
 import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
+import timer from './Timer.vue';
+
 // axios.defaults.withCredentials = true;
 export default {
     data() {
@@ -398,6 +395,7 @@ export default {
     components: {
         alert,
         prog,
+        timer,
     },
     methods: {
 
