@@ -226,9 +226,9 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 
 	return jsonify(response_object)
 
-# Move a specified goal up in priority
-@app.route('/moveUpGoal/<goal_id>/goal_template_id')
-def move_up_goal():
+# Swap two specified goals in priority
+@app.route('/swapGoal/<curr_goal_id>/<other_goal_id>/goal_template_id')
+def swap_goal():
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
@@ -237,30 +237,11 @@ def move_up_goal():
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
 	# allTemplates = allTemplatesDict_by_User[netID]
 
-	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_id)
-	otherGoal = 
+	# Get references to goals to be swapped
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], curr_goal_id)
+	otherGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], other_goal_id)
 
-	# Sort by goal number
-	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
-
-	# Update local templates from database
-	get_templates()
-
-	return jsonify(response_object)
-
-# Move a specified goal down in priority
-@app.route('/moveDownGoal/<goal_id>/goal_template_id')
-def move_down_goal():
-	response_object = {'status': 'success'}
-	global allTemplateRefsDict_by_User
-	global allTemplatesDict_by_User
-	netID = session.get('netID', 'not set')
-
-	allTemplateRefs = allTemplateRefsDict_by_User[netID]
-	# allTemplates = allTemplatesDict_by_User[netID]
-
-	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_id)
-	# otherGoal = 
+	curGoal.swapGoalsNested(otherGoal)
 
 	# Sort by goal number
 	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])

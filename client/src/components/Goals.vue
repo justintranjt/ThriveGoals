@@ -57,28 +57,28 @@
                             <!-- Goal Number/ Col 1 -->
                             <!-- completed color with goal # -->
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
+                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
+                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
                             <!-- progress color with # -->
                             <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
+                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
+                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
                             <!-- default: goal #-->
                             <td v-else>
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
+                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
+                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
@@ -136,7 +136,7 @@
                             <td v-if="goal.completed && goal.nestLevel != 4 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
- -->                            </td>
+                                --> </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
@@ -479,22 +479,9 @@ export default {
                     console.log(error);
                 });
         },
-        moveUpGoal(goalID, goalTemplateID) {
+        swapGoal(currGoalID, otherGoalID, goalTemplateID) {
             axios.defaults.withCredentials = true;
-            const path = process.env.URI_SERVER_ROOT + '/moveUpGoal/' + goalID + '/' + goalTemplateID;
-            axios.put(path, { withCredentials: true, credentials: 'same-origin' })
-                .then((res) => {
-                    this.getGoals(goalTemplateID);
-                    this.message = res.data.message;
-                    this.showMessage = true;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-        moveDownGoal(goalID, goalTemplateID) {
-            axios.defaults.withCredentials = true;
-            const path = process.env.URI_SERVER_ROOT + '/moveDownGoal/' + goalID + '/' + goalTemplateID;
+            const path = process.env.URI_SERVER_ROOT + '/swapGoal/' + currGoalID + '/' + otherGoalID + '/' + goalTemplateID;
             axios.put(path, { withCredentials: true, credentials: 'same-origin' })
                 .then((res) => {
                     this.getGoals(goalTemplateID);
@@ -578,11 +565,8 @@ export default {
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID);
         },
-        onMoveUpGoal(goal) {
-            this.moveUpGoal(goal.goalID, this.currGoalTemplateID);
-        },
-        onMoveDownGoal(goal) {
-            this.moveDownGoal(goal.goalID, this.currGoalTemplateID);
+        onSwapGoal(currGoal, otherGoal) {
+            this.swapGoal(goal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(goal) {
             this.inProgGoal(goal.goalID, this.currGoalTemplateID);
