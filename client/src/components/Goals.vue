@@ -48,10 +48,11 @@
                                 <th scope="col">Goal</th>
                                 <th></th>
                                 <th></th>
-                                <th scope="col" class="text-right">Time Spent</th>
+                                <th scope="col">Time Spent</th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
+
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
                             <!-- Goal Number/ Col 1 -->
@@ -228,23 +229,17 @@
                             </td>
                             </td>
                             <td v-else></td>
+
                             <!-- Added Col 5 for Timers-->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <div>
-                                <timer> </timer>
-                                </div>
+                            <td>
+                            <timer ref="getTime"> </timer>
+
+                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(goal)">
+                                                <v-icon>delete_forever</v-icon>
+                                            </b-button>
+
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
-                                <div>
-                                <timer> </timer>
-                                </div>
-                            </td>
-                            <td v-else>
-                                <div>
-                                <timer> </timer>
-                                </div>
-                            </td>
-                            <td v-else></td>
+            
                             <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
@@ -690,6 +685,12 @@ export default {
             this.currGoalTemplateID = goalTemplateID;
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
+        },
+
+        getTime(goal) {
+            console.log(this.goal.$refs.getTime.pause());
+            time = this.goal.$refs.getTime.pause();
+            console.log("time", time);
         },
     },
     async created() {
