@@ -44,7 +44,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Goal #</th>
+                                <th scope="col">Priority</th>
                                 <th scope="col">Goal</th>
                                 <th></th>
                                 <th></th>
