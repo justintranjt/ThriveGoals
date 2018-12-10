@@ -57,28 +57,28 @@
                             <!-- Goal Number/ Col 1 -->
                             <!-- completed color with goal # -->
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
                             <!-- progress color with # -->
                             <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
                             <!-- default: goal #-->
                             <td v-else>
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Up" @click="onMoveUpGoal(goal)">
                                     <v-icon>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button type="b-button">
+                                <b-button type="b-button" v-b-tooltip.hover title="Move Down" @click="onMoveDownGoal(goal)">
                                     <v-icon>keyboard_arrow_down</v-icon>
                                 </b-button>
                             </td>
@@ -328,7 +328,6 @@ export default {
         prog,
     },
     methods: {
-
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
@@ -480,6 +479,32 @@ export default {
                     console.log(error);
                 });
         },
+        moveUpGoal(goalID, goalTemplateID) {
+            axios.defaults.withCredentials = true;
+            const path = process.env.URI_SERVER_ROOT + '/moveUpGoal/' + goalID + '/' + goalTemplateID;
+            axios.put(path, { withCredentials: true, credentials: 'same-origin' })
+                .then((res) => {
+                    this.getGoals(goalTemplateID);
+                    this.message = res.data.message;
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        moveDownGoal(goalID, goalTemplateID) {
+            axios.defaults.withCredentials = true;
+            const path = process.env.URI_SERVER_ROOT + '/moveDownGoal/' + goalID + '/' + goalTemplateID;
+            axios.put(path, { withCredentials: true, credentials: 'same-origin' })
+                .then((res) => {
+                    this.getGoals(goalTemplateID);
+                    this.message = res.data.message;
+                    this.showMessage = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         updateGoalTitle(goal) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTitle = '';
@@ -552,6 +577,12 @@ export default {
         },
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID);
+        },
+        onMoveUpGoal(goal) {
+            this.moveUpGoal(goal.goalID, this.currGoalTemplateID);
+        },
+        onMoveDownGoal(goal) {
+            this.moveDownGoal(goal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(goal) {
             this.inProgGoal(goal.goalID, this.currGoalTemplateID);

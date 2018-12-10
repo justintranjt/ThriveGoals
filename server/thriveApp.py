@@ -33,7 +33,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -220,6 +220,50 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	elif request.method == 'DELETE':
 		remove_goal(goal_num, goal_template_id, goal_ref)
 		response_object['message'] = 'Goal deleted!'
+
+	# Update local templates from database
+	get_templates()
+
+	return jsonify(response_object)
+
+# Move a specified goal up in priority
+@app.route('/moveUpGoal/<goal_id>/goal_template_id')
+def move_up_goal():
+	response_object = {'status': 'success'}
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	netID = session.get('netID', 'not set')
+
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
+	# allTemplates = allTemplatesDict_by_User[netID]
+
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_id)
+	otherGoal = 
+
+	# Sort by goal number
+	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+
+	# Update local templates from database
+	get_templates()
+
+	return jsonify(response_object)
+
+# Move a specified goal down in priority
+@app.route('/moveDownGoal/<goal_id>/goal_template_id')
+def move_down_goal():
+	response_object = {'status': 'success'}
+	global allTemplateRefsDict_by_User
+	global allTemplatesDict_by_User
+	netID = session.get('netID', 'not set')
+
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
+	# allTemplates = allTemplatesDict_by_User[netID]
+
+	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_id)
+	# otherGoal = 
+
+	# Sort by goal number
+	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
 
 	# Update local templates from database
 	get_templates()
@@ -438,5 +482,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
