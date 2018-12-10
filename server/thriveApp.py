@@ -68,6 +68,9 @@ def catch_all(path):
 def login():
 	session['netID'] = cas.username
 
+	# Initialize starter templates
+	initTestTemplates(cas.username)
+
 	# Bind to URIROOT if defined, otherwise default to localhost
 	uriRoot = environ.get('URIROOT', "http://localhost:8080")
 	return redirect(uriRoot + "/goals", code=302)
@@ -79,12 +82,6 @@ def loginNetID():
 	global allTemplateRefsDict_by_User
 	global allTemplatesDict_by_User
 	netID = session.get('netID', 'not set')
-
-	# if not session.has_key('netID'):
-	# 	print("Apparently we didn't have the key since we're in the if condition, so let's assign one")
-	# 	session['netID'] = "Memegod J"
-	# 	session.modified = True
-	# 	session.save()
 	
 	response_object['netID'] = netID
 
@@ -149,7 +146,7 @@ def all_goals(goal_template_id):
 	global allTemplatesDict_by_User
 	netID = session.get('netID', 'not set')
 
-	allTemplateRefs = allTemplateRefsDict_by_User[netID] 
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
 	allTemplates = allTemplatesDict_by_User[netID]
 
 	if request.method == 'POST':
@@ -331,18 +328,18 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 			return None
 
 
-def initTestTemplates():
+def initTestTemplates(netID):
 	# UNCOMMENT THIS AND FIX IT. Session.get() violates our HTTP request rules. FIX IT!
-	netID = session.get('username', 'not set')
+	# netID = session.get('username', 'not set')
 
 	# Make empty templates
-	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, time())
+	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '')
 
 	# Add goals to templates
 	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())
 	templateOne.addSubgoal("Gather quotes from articles in Word", False, False, time())
 	templateOne.addSubgoal("Locate relevant outside articles", False, False, time())
-	templateTwo.addSubgoal("Extract quotes which relate to quotes from main articles", False, False, time())
+	templateOne.addSubgoal("Extract quotes which relate to quotes from main articles", False, False, time())
 	templateOne.addSubgoal("Arrange quotes under headings based on relevance and relation to each other", False, False, time())
 	templateOne.addSubgoal("Eliminate all quotes which are not significantly connected to most other quotes", False, False, time())
 	templateOne.addSubgoal("Write analysis which connects chosen quotes", False, False, time())
@@ -355,6 +352,8 @@ def initTestTemplates():
 	templateOne.addSubgoal("Create works cited", False, False, time())
 	templateOne.addSubgoal("Proofread out loud", False, False, time())
 	templateOne.addSubgoal("Submit", False, False, time())
+
+	get_templates()
 
 	# Delete templates
 	# updateDB.deleteTemplate(netID, 'Template 1')
@@ -421,8 +420,6 @@ def printTree(curGoal, indent):
 			printTree(subgoal, indent + 1)
 
 if __name__ == "__main__":
-	# THIS LINE HAS TO GO SOMEWHERE ELSE: Initialize templates for new user
-	# initTestTemplates()
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
