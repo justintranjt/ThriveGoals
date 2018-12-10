@@ -221,9 +221,6 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		remove_goal(goal_num, goal_template_id, goal_ref)
 		response_object['message'] = 'Goal deleted!'
 
-	# Sort by goal number
-	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
-
 	# Update local templates from database
 	get_templates()
 
@@ -327,13 +324,12 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 					goal['goalNum'] -= 1
 			return None
 
-
+# Test templates initialized for first-time users
 def initTestTemplates(netID):
-	# UNCOMMENT THIS AND FIX IT. Session.get() violates our HTTP request rules. FIX IT!
-	# netID = session.get('username', 'not set')
-
 	# Make empty templates
 	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '')
+	templateTwo = Goal('COS 126 Assignment 2 Template', False, [], None, netID, False, '')
+	templateThree = Goal('COS 126 Assignment 3 Template', False, [], None, netID, False, '')
 
 	# Add goals to templates
 	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())
@@ -359,6 +355,18 @@ def initTestTemplates(netID):
 	templateOne.addSubgoal("Create works cited", False, False, time())
 	templateOne.addSubgoal("Proofread out loud", False, False, time())
 	templateOne.addSubgoal("Submit", False, False, time())
+
+	templateTwo.addSubgoal("Find relevant material from the course web page", False, False, time())	
+	templateTwo.addSubgoal("Edit, compile, and execute a few short Java programs", False, False, time())
+	templateTwo.addSubgoal("Submit pertinent files to Tigerhub", False, False, time())
+
+	templateThree.addSubgoal("Edit appropriate programs", False, False, time())
+	templateThree.addSubgoal("Declare and initialize variables", False, False, time())
+	templateThree.addSubgoal("Use arithmetric and boolean expressions", False, False, time())
+	templateThree.addSubgoal("Use conditionals and loops", False, False, time())
+	templateThree.addSubgoal("Nest conditionals and loops", False, False, time())
+	templateThree.addSubgoal("Debug code", False, False, time())
+	templateThree.addSubgoal("Submit pertinent files to Tigerhub", False, False, time())
 
 	get_templates()
 

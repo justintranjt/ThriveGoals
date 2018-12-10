@@ -4,26 +4,22 @@
             <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
             <b-navbar-brand>Thrive</b-navbar-brand>
         </b-navbar>
-        <b-container fluid id="row1">
-            <h3 id="hometitle">THRIVE</h3>
-            <div class="container-fluid" id="row1-1">
-                <h2>Set goals and track <br> your progress every <br> step of the way.</h2>
-            </div>
-            <div class="mb-3 pb-3" id="loginButton">
-                <b-form>
+        <b-row id="intro">
+            <b-col>
+                <h3 id="hometitle">THRIVE</h3>
+                <h2 id="row1-1">Set goals and track <br> your progress every <br> step of the way.</h2>
+                <b-form id="loginButton">
                     <b-button variant="secondary lg" size="lg" v-bind:href="serverURI + '/loginPage'">Login via CAS</b-button>
                 </b-form>
-            </div>
-            <b-row id="aboutText">
-                <b-col class="bv-r2c1" cols="5">
+            </b-col>
+        </b-row>
+        <b-row id="aboutText">
+                <b-col id="bv-r2c2">
                     <h1>About Thrive</h1>
-                </b-col>
-                <b-col class="bv-r2c2" cols="6">
                     <!-- eslint-disable -->
                     Our software helps you break down large projects into manageable subgoals in a goal hierarchy, reducing procrastination and making work more enjoyable and intrinsically motivating. Our modifiable templates are created by learning specialists and other students with the purpose of guiding you through major assignments.
                 </b-col>
-            </b-row>
-        </b-container>
+        </b-row>
     </b-container>
 </template>
 <script>
