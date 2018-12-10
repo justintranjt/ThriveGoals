@@ -336,18 +336,28 @@ def initTestTemplates():
 	netID = session.get('username', 'not set')
 
 	# Make empty templates
-	templateOne = Goal('Template 1', False, [], None, netID, False, time())
-	templateTwo = Goal('Template 2', False, [], None, netID, False, time())
+	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, time())
 
 	# Add goals to templates
-	templateOne.addSubgoal("Finish basic addition of goals", False, False, time())
-	templateOne.addSubgoal("Allow goal editing", False, False, time())
-	templateOne.addSubgoal("Allow goal deletion", False, False, time())
-	templateTwo.addSubgoal("Alternate template!", False, False, time())
+	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())
+	templateOne.addSubgoal("Gather quotes from articles in Word", False, False, time())
+	templateOne.addSubgoal("Locate relevant outside articles", False, False, time())
+	templateTwo.addSubgoal("Extract quotes which relate to quotes from main articles", False, False, time())
+	templateOne.addSubgoal("Arrange quotes under headings based on relevance and relation to each other", False, False, time())
+	templateOne.addSubgoal("Eliminate all quotes which are not significantly connected to most other quotes", False, False, time())
+	templateOne.addSubgoal("Write analysis which connects chosen quotes", False, False, time())
+	templateOne.addSubgoal("Rearrange and fine-tune analysis", False, False, time())
+	templateOne.addSubgoal("Determine main ideas of argument and motivating questions", False, False, time())
+	templateOne.addSubgoal("Fill in any research gaps(i.e. find more sources)", False, False, time())
+	templateOne.addSubgoal("Re-organize paper to reflect argument structure", False, False, time())
+	templateOne.addSubgoal("Extend source based argument to include new original frameworks and ideas", False, False, time())
+	templateOne.addSubgoal("Address significance and implications of argument", False, False, time())
+	templateOne.addSubgoal("Create works cited", False, False, time())
+	templateOne.addSubgoal("Proofread out loud", False, False, time())
+	templateOne.addSubgoal("Submit", False, False, time())
 
 	# Delete templates
-	updateDB.deleteTemplate(netID, 'Template 1')
-	updateDB.deleteTemplate(netID, 'Template 2')
+	# updateDB.deleteTemplate(netID, 'Template 1')
 
 # Helper function to create JSON representation from template obj reference
 def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
