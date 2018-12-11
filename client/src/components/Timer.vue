@@ -44,9 +44,6 @@ module.exports = {
             return this.hours + ':' + this.minutes + ':' + this.seconds;
         },
         milliseconds: function() {
-            if (this.loaded == null) {
-                this.loaded = 0;
-            }
             return this.loaded + (this.currentTime - this.startTime) - this.netTimeDiff;
         },
         hours: function() {
