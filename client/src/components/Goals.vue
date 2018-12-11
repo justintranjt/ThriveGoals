@@ -138,7 +138,7 @@
                             <td v-if="goal.completed && goal.nestLevel != 4 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
- -->                            </td>
+                            </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
