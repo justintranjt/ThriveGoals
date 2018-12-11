@@ -234,7 +234,7 @@
                             <td>
                             <timer ref="getTime"> </timer>
 
-                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(goal)">
+                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(index)">
                                                 <v-icon>delete_forever</v-icon>
                                             </b-button>
 
@@ -393,6 +393,15 @@ export default {
         prog,
         timer,
     },
+
+    mounted: function() {
+        this.interval = setInterval(this.getTime, 60000);
+    },
+
+    destroyed: function() {
+        clearInterval(this.interval);
+    },
+
     methods: {
 
         async getLoginNetID() {
@@ -568,7 +577,8 @@ export default {
                     console.log(error);
                 });
         },
-         updateGoalTime(goal, newTime) {
+
+        updateGoalTime(goal, newTime) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTime = 0;
             const payload = {
@@ -710,10 +720,10 @@ export default {
             this.getNumCompleted(goalTemplateID);
         },
 
-        getTime(goal) {
-            console.log(this.goal.$refs.getTime.pause());
-            time = this.goal.$refs.getTime.pause();
-            console.log("time", time);
+        getTime(index) {
+            var goal = this.goals[index];
+            var time = this.$refs.getTime[index].milliseconds;
+            this.updateGoalTime(goal, time);
         },
     },
     async created() {
