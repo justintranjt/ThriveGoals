@@ -232,19 +232,15 @@
 
                             <!-- Added Col 5 for Timers-->
                             <td>
-                            <td v-if="goal.goalTime == 0">
-                            <timer v-bind:loaded="0" ref="getTime"> </timer>
+                            <td v-if="Number(goal.goalTime) == 0">
+                            <timer v-bind:loaded="0" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
                             <td v-else>
-                            <timer v-bind:loaded="goal.goalTime" ref="getTime"> </timer>
+                            <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
 
-                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(index)">
-                                                <v-icon>delete_forever</v-icon>
-                                            </b-button>
-
                             </td>
-            
+
                             <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
@@ -387,11 +383,11 @@ export default {
             clientURI: process.env.URI_CLIENT_ROOT,
             // Double click to edit boolean and new entry fields
             updatedGoalTitle: null,
-            updatedGoalTime: 0, 
+            updatedGoalTime: 0,
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
-          
+
 
             startTime: Date.now(),
             currentTime: Date.now(),
@@ -401,15 +397,6 @@ export default {
         alert,
         prog,
         timer,
-    },
-
-    mounted: function() {
-        this.interval = setInterval(this.updateCurrentTime, 1000);
-            // 60000);
-    },
-
-    destroyed: function() {
-        clearInterval(this.interval);
     },
 
     methods: {
@@ -733,8 +720,7 @@ export default {
 
         getTime(index) {
             var goal = this.goals[index];
-            var time = this.$refs.getTime[index].milliseconds;
-
+            var time = this.$refs.timercomponent[index].milliseconds;
             this.updateGoalTime(goal, time);
         },
 
@@ -754,7 +740,7 @@ export default {
             if((this.currentTime - this.startTime) >= 3000 ){
                 this.startTime = this.currentTime
                 console.log("ITS OVER 9000!!!")
-                this.getTimeAllGoals(); 
+                this.getTimeAllGoals();
             }
             console.log("\nthis.currentTime in updateCurrentTime outside if: "+ this.currentTime);
             console.log("this.startTime in updateCurrentTime outside if: "+ this.startTime);

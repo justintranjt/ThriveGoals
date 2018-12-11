@@ -29,9 +29,7 @@ module.exports = {
         }
     },
 
-    props: {
-        loaded: Number,
-    },
+    props: ['loaded', 'index'],
 
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -75,6 +73,7 @@ module.exports = {
         pause: function() {
             this.state = "paused";
             this.pauseTime = Date.now();
+            this.$parent.getTime(this.index);
         },
         resume: function() {
             
