@@ -566,7 +566,7 @@ export default {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID);
         },
         onSwapGoal(currGoal, otherGoal) {
-            this.swapGoal(goal.goalID, otherGoal.goalID, this.currGoalTemplateID);
+            this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(goal) {
             this.inProgGoal(goal.goalID, this.currGoalTemplateID);

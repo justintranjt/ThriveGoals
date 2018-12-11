@@ -33,7 +33,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -227,30 +227,28 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 	return jsonify(response_object)
 
 # Swap two specified goals in priority
-@app.route('/swapGoal/<curr_goal_id>/<other_goal_id>/goal_template_id')
-def swap_goal():
-	response_object = {'status': 'success'}
+@app.route('/swapGoal/<curr_goal_id>/<other_goal_id>/<goal_template_id>', methods=['PUT'])
+def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 	global allTemplateRefsDict_by_User
-	global allTemplatesDict_by_User
 	netID = session.get('netID', 'not set')
 
 	allTemplateRefs = allTemplateRefsDict_by_User[netID]
-	# allTemplates = allTemplatesDict_by_User[netID]
 
 	# Get references to goals to be swapped
-	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], curr_goal_id)
+	currGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], curr_goal_id)
 	otherGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], other_goal_id)
 
-	# Swap the two goals
-	curGoal.swapSubgoalsNested(otherGoal)
+	# Prevent goal swaps of different levels
+	if currGoal.getParent() != otherGoal.getParent():
+		return jsonify({'status': 'failure', 'message': 'Can\'t swap goals of different levels.'})
 
-	# Sort by goal number
-	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
+	# Swap the two goals
+	currGoal.swapSubgoalsNested(otherGoal)
 
 	# Update local templates from database
 	get_templates()
 
-	return jsonify(response_object)
+	return jsonify({'status': 'success', 'message': 'Successful goal swap!'})
 
 # Get all existing template IDs
 @app.route('/getTemplates', methods=['GET'])
@@ -464,5 +462,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
