@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid class="container-fluid" id="splashContainer">
+    <b-container fluid id="splashContainer">
         <b-navbar toggleable fixed="top" variant="light" type="light">
             <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
             <b-navbar-brand>Thrive</b-navbar-brand>
@@ -22,6 +22,7 @@
         </b-row>
     </b-container>
 </template>
+
 <script>
 import axios from 'axios';
 

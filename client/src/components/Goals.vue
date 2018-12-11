@@ -1,26 +1,28 @@
 <template>
     <div>
         <b-navbar toggleable fixed="top" variant="light" type="light">
-            <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
-            <b-navbar-brand>Thrive</b-navbar-brand>
-            <b-nav-text>Logged in as {{ netID }}</b-nav-text>
-            <b-navbar-nav class="ml-auto">
-                <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
-                <!-- Allow this template creation to change the template name -->
-                <b-nav-item @click="addTemplate()"><em>Create Template</em></b-nav-item>
-                <b-nav-item @click="deleteTemplate()"><em>Delete Current Template</em></b-nav-item>
-                <b-nav-item-dropdown right>
-                    <!-- Using button-content slot -->
-                    <template slot="button-content">
-                        <em>Templates</em>
-                    </template>
-                    <b-dropdown-item v-for="(template, index) in goalTemplateIDs" :key="index" @click="onSetTemplate(template)">
-                        {{ template }}
-                    </b-dropdown-item>
-                </b-nav-item-dropdown>
-                <!-- Need to get this to point to the flask logout route -->
-                <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
-            </b-navbar-nav>
+            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+            <b-collapse is-nav id="nav_collapse">
+                <b-navbar-brand>Thrive</b-navbar-brand>
+                <b-nav-text>Logged in as {{ netID }}</b-nav-text>
+                <b-navbar-nav class="ml-auto">
+                    <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
+                    <!-- Allow this template creation to change the template name -->
+                    <b-nav-item @click="addTemplate()"><em>Create Template</em></b-nav-item>
+                    <b-nav-item @click="deleteTemplate()"><em>Delete Current Template</em></b-nav-item>
+                    <b-nav-item-dropdown right>
+                        <!-- Using button-content slot -->
+                        <template slot="button-content">
+                            <em>Templates</em>
+                        </template>
+                        <b-dropdown-item v-for="(template, index) in goalTemplateIDs" :key="index" @click="onSetTemplate(template)">
+                            {{ template }}
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
+                    <!-- Need to get this to point to the flask logout route -->
+                    <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
+                    </b-navbar-nav>
+            </b-collapse>
         </b-navbar>
         <b-container fluid id="goalsContainerBackground">
             <div class="container mt-4 pt-5 pb-2">
@@ -136,7 +138,7 @@
                             <td v-if="goal.completed && goal.nestLevel != 4 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
-                                --> </td>
+                            </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
