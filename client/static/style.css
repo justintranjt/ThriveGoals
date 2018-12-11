@@ -2,13 +2,13 @@
 
 @media (min-width: 800px) {
 	#intro {
-	  padding-top: 15vh;
+	  padding-top: 10vh;
 	  padding-left: 10vw;
 	}
 }
 
 #intro {
-  padding-top: 15vh;
+  padding-top: 10vh;
   padding-left: 5vw;
 }
 
@@ -63,4 +63,12 @@ body {
 
 .btn {
 	margin-bottom:5px;
+}
+
+.container {
+    width: 100vw;
+    padding-right: 15px;
+    /*padding-left: 15px;*/
+    margin-right: auto;
+    margin-left: auto;
 }
