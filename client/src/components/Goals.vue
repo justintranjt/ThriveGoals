@@ -233,15 +233,11 @@
                             <!-- Added Col 5 for Timers-->
                             <td>
                             <td v-if="goal.goalTime == 0">
-                            <timer v-bind:loaded="0" ref="getTime"> </timer>
+                            <timer v-bind:loaded="0" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
                             <td v-else>
-                            <timer v-bind:loaded="goal.goalTime" ref="getTime"> </timer>
+                            <timer v-bind:loaded="goal.goalTime" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
-
-                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(index)">
-                                                <v-icon>delete_forever</v-icon>
-                                            </b-button>
 
                             </td>
             
@@ -401,15 +397,6 @@ export default {
         alert,
         prog,
         timer,
-    },
-
-    mounted: function() {
-        this.interval = setInterval(this.updateCurrentTime, 1000);
-            // 60000);
-    },
-
-    destroyed: function() {
-        clearInterval(this.interval);
     },
 
     methods: {
@@ -733,7 +720,7 @@ export default {
 
         getTime(index) {
             var goal = this.goals[index];
-            var time = this.$refs.getTime[index].milliseconds;
+            var time = this.$refs.timercomponent[index].milliseconds;
             this.updateGoalTime(goal, time);
         },
 
