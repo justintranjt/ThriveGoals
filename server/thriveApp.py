@@ -241,7 +241,8 @@ def swap_goal():
 	curGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], curr_goal_id)
 	otherGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], other_goal_id)
 
-	curGoal.swapGoalsNested(otherGoal)
+	# Swap the two goals
+	curGoal.swapSubgoalsNested(otherGoal)
 
 	# Sort by goal number
 	# allTemplates[goal_template_id].sort(key=lambda goal: goal['goalNum'])
