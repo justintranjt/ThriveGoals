@@ -83,7 +83,7 @@ class Goal (object):
 
 	# set the current time as [hours, minutes, seconds]
 	def setTime(self, newTime):
-		print("Time set bitches")
+		print("Time set")
 		self._time = newTime
 		self.updateDatabase()
 

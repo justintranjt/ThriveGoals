@@ -589,7 +589,7 @@ export default {
         },
 
         updateGoalTime(goal, newTime) {
-            console.log('Known knowns, known unknowns, unknown knowns, unknown unknowns');
+            console.log('Were in updateGoalTime')
             axios.defaults.withCredentials = true;
             this.updatedGoalTime = 0;
             const payload = {
@@ -734,6 +734,7 @@ export default {
         getTime(index) {
             var goal = this.goals[index];
             var time = this.$refs.getTime[index].milliseconds;
+
             this.updateGoalTime(goal, time);
         },
 
@@ -746,11 +747,11 @@ export default {
 
          updateCurrentTime: function() {
             console.log("\n\n")
-            console.log("Update time motherfuckers");
+            console.log("updateCurrentTime in Goal.vue called");
             this.currentTime = Date.now();
             console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
             console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
-            if((this.currentTime - this.startTime) >= 300000 ){
+            if((this.currentTime - this.startTime) >= 3000 ){
                 this.startTime = this.currentTime
                 console.log("ITS OVER 9000!!!")
                 this.getTimeAllGoals(); 

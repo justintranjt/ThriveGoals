@@ -44,7 +44,7 @@ module.exports = {
             return this.hours + ':' + this.minutes + ':' + this.seconds;
         },
         milliseconds: function() {
-            return this.loaded + (this.currentTime - this.startTime) - this.netTimeDiff;
+            return this.loaded + ((this.currentTime - this.startTime) - this.netTimeDiff);
         },
         hours: function() {
             var lapsed = this.milliseconds;
@@ -80,7 +80,7 @@ module.exports = {
             
             if(this.state== "paused"){
                 this.netTimeDiff = this.netTimeDiff + (Date.now() - this.pauseTime);
-                this.currentTime = Date.now()
+                this.currentTime = Date.now();
             }
             this.state = "started";
             this.currentTime = Date.now() 

@@ -233,7 +233,7 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 # Updating preexisting goals and deleting goals
 @app.route('/updateTimer/<goal_template_id>/<goal_ref>/<new_time>', methods=['PUT'])
 def update_goal_time(goal_template_id, goal_ref, new_time):
-	print("Misssion Accomplished")
+	print("\n\n\nMisssion Accomplished")
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	netID = session.get('netID', 'not set')
@@ -243,6 +243,7 @@ def update_goal_time(goal_template_id, goal_ref, new_time):
 
 	# Update goal time
 	if request.method == 'PUT':
+		print("Yay, we're in the if block the method was PUT ")
 		put_data = request.get_json()
 		prevGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
 
@@ -256,7 +257,7 @@ def update_goal_time(goal_template_id, goal_ref, new_time):
 		put_data.get('inProgress'), put_data.get('goalID'), new_time)
 		parent.insertSubgoalAtIndex(index, newGoal)
 		prevGoal.deleteSelf()
-
+		print("End of if block\n\n\n ")
 		response_object['message'] = 'Goal updated!'
 
 	get_templates()
