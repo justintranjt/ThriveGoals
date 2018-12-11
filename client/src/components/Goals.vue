@@ -387,6 +387,7 @@ export default {
             clientURI: process.env.URI_CLIENT_ROOT,
             // Double click to edit boolean and new entry fields
             updatedGoalTitle: null,
+            updatedGoalTime: 0, 
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
@@ -567,6 +568,28 @@ export default {
                     this.getNumCompleted(this.currGoalTemplateID);
                     this.message = 'Goal updated!';
                     this.showMessage = true;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+         updateGoalTime(goal, newTime) {
+            axios.defaults.withCredentials = true;
+            this.updatedGoalTime = 0;
+            const payload = {
+                goalNum: goal.goalNum,
+                goalTitle: goal.goalTitle,
+                completed: goal.completed,
+                inProgress: goal.inProgress,
+                goalID: goal.goalID
+            };
+            const path = process.env.URI_SERVER_ROOT + '/updateTimer/' + this.currGoalTemplateID + '/' + goal.goalID + '/' + newTime;
+            axios.put(path, payload, { withCredentials: true, credentials: 'same-origin' })
+                .then(() => {
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
+                    // this.message = 'Goal Timer updated!';
+                    // this.showMessage = true;
                 })
                 .catch((error) => {
                     console.log(error);

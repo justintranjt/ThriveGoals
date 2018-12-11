@@ -33,7 +33,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -229,6 +229,42 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 
 	return jsonify(response_object)
 
+
+# Updating preexisting goals and deleting goals
+@app.route('/updateTimer/<goal_template_id>/<goal_ref>/<new_time>', methods=['PUT'])
+def update_goal_time(goal_template_id, goal_ref, new_time):
+	response_object = {'status': 'success'}
+	global allTemplateRefsDict_by_User
+	netID = session.get('netID', 'not set')
+
+	# Start template refs from clean slate each time
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
+
+	# Update goal time
+	if request.method == 'PUT':
+		put_data = request.get_json()
+		prevGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
+
+		# TODO Keep this handy piece of code in mind for future methods
+		parent = prevGoal.getParent()
+		parentList = parent.getSubgoalList()
+		index = parentList.index(prevGoal)
+		subgoals = prevGoal.getSubgoalList()
+
+		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
+		put_data.get('inProgress'), put_data.get('goalID'), new_time)
+		parent.insertSubgoalAtIndex(index, newGoal)
+		prevGoal.deleteSelf()
+
+		response_object['message'] = 'Goal updated!'
+
+	get_templates()
+
+	return jsonify(response_object)
+
+
+
+
 # Get all existing template IDs
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
@@ -333,7 +369,7 @@ def initTestTemplates(netID):
 	# netID = session.get('username', 'not set')
 
 	# Make empty templates
-	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '')
+	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '', 0)
 
 	# Add goals to templates
 	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())
@@ -378,6 +414,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 			'isSubgoal': isSubgoal,
 			'nestLevel': nestLevel, # should be 0,1,2
 			'parentID': str(currTemplate.getParent().getUniqueID()),
+			'goalTime': currTemplate.getTime(),
 		}]
 
 	retList = []
@@ -423,5 +460,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	# app.run(host='0.0.0.0', port=port)
-	serve(app, host='0.0.0.0', port=port)
+	app.run(host='0.0.0.0', port=port)
+	# serve(app, host='0.0.0.0', port=port)
