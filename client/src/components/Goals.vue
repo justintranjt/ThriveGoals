@@ -232,7 +232,12 @@
 
                             <!-- Added Col 5 for Timers-->
                             <td>
-                            <timer ref="getTime"> </timer>
+                            <td v-if="goal.goalTime == 0">
+                            <timer v-bind:loaded="0" ref="getTime"> </timer>
+                            </td>
+                            <td v-else>
+                            <timer v-bind:loaded="goal.goalTime" ref="getTime"> </timer>
+                            </td>
 
                              <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(index)">
                                                 <v-icon>delete_forever</v-icon>
