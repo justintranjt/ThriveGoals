@@ -395,7 +395,7 @@ export default {
     },
 
     mounted: function() {
-        this.interval = setInterval(this.getTime, 60000);
+        this.interval = setInterval(this.getTimeAllGoals, 60000);
     },
 
     destroyed: function() {
@@ -724,6 +724,13 @@ export default {
             var goal = this.goals[index];
             var time = this.$refs.getTime[index].milliseconds;
             this.updateGoalTime(goal, time);
+        },
+
+        getTimeAllGoals() {
+            var i;
+            for (i = 0; i < this.goals.length; i++) {
+            this.getTime(i);
+            }
         },
     },
     async created() {
