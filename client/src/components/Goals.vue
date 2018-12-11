@@ -232,7 +232,7 @@
 
                             <!-- Added Col 5 for Timers-->
                             <td>
-                            <timer ref="getTime"> </timer>
+                            <timer v-bind:loaded="goal.goalTime" ref="getTime"> </timer>
 
                              <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="TEST" @click="getTime(index)">
                                                 <v-icon>delete_forever</v-icon>
@@ -732,6 +732,11 @@ export default {
             this.getTime(i);
             }
         },
+
+        setTime(goal) {
+            this.goal.goalTime;
+        },
+
     },
     async created() {
         await this.getLoginNetID();

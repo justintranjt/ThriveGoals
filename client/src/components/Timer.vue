@@ -28,6 +28,11 @@ module.exports = {
             pauseTime: Date.now() ,
         }
     },
+
+    props: {
+        loaded: Number,
+    },
+
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
     },
@@ -39,7 +44,10 @@ module.exports = {
             return this.hours + ':' + this.minutes + ':' + this.seconds;
         },
         milliseconds: function() {
-            return (this.currentTime - this.startTime) - this.netTimeDiff;
+            if (this.loaded == null) {
+                this.loaded = 0;
+            }
+            return this.loaded + (this.currentTime - this.startTime) - this.netTimeDiff;
         },
         hours: function() {
             var lapsed = this.milliseconds;
@@ -65,6 +73,7 @@ module.exports = {
             this.interval = null;
             this.netTimeDiff = 0; 
             this.pauseTime = Date.now();
+            this.loaded = 0;
         },
         pause: function() {
             this.state = "paused";
