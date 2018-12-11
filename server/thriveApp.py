@@ -33,7 +33,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -241,6 +241,11 @@ def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 	# Force goal to swap with its neighbor
 	if currGoal.getParent() != otherGoal.getParent():
 		currGoalIndex = currGoal.getParent().getSubgoalList().index(currGoal)
+		# Check that goal isn't at top or bottom of its sublist
+		if currGoalIndex == 0:
+			return jsonify({'status': 'failure', 'message': 'Can\'t swap topmost goal.'})
+		elif currGoalIndex == (len(currGoal.getParent().getSubgoalList()) - 1):
+			return jsonify({'status': 'failure', 'message': 'Can\'t swap bottommost goal.'})
 
 		if currGoal == otherGoal.getParent():
 			otherGoal = currGoal.getParent().getSubgoalAtIndex(currGoalIndex + 1)
@@ -467,5 +472,5 @@ if __name__ == "__main__":
 	# Bind to PORT if defined, otherwise default to 5000.
 	port = int(environ.get('PORT', 5000))
 	# Run with Flask dev server or with Waitress WSGI server
-	app.run(host='0.0.0.0', port=port)
-	# serve(app, host='0.0.0.0', port=port)
+	# app.run(host='0.0.0.0', port=port)
+	serve(app, host='0.0.0.0', port=port)
