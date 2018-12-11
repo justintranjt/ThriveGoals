@@ -232,11 +232,11 @@
 
                             <!-- Added Col 5 for Timers-->
                             <td>
-                            <td v-if="goal.goalTime == 0">
+                            <td v-if="Number(goal.goalTime) == 0">
                             <timer v-bind:loaded="0" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
                             <td v-else>
-                            <timer v-bind:loaded="goal.goalTime" v-bind:index="index" ref="timercomponent"> </timer>
+                            <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                             </td>
 
                             </td>
