@@ -241,11 +241,6 @@ def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 	# Force goal to swap with its neighbor
 	if currGoal.getParent() != otherGoal.getParent():
 		currGoalIndex = currGoal.getParent().getSubgoalList().index(currGoal)
-		# Check that goal isn't at top or bottom of its sublist
-		if currGoalIndex == 0:
-			return jsonify({'status': 'failure', 'message': 'Can\'t swap topmost goal.'})
-		elif currGoalIndex == (len(currGoal.getParent().getSubgoalList()) - 1):
-			return jsonify({'status': 'failure', 'message': 'Can\'t swap bottommost goal.'})
 
 		if currGoal == otherGoal.getParent():
 			otherGoal = currGoal.getParent().getSubgoalAtIndex(currGoalIndex + 1)
@@ -258,7 +253,7 @@ def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 	# Update local templates from database
 	get_templates()
 
-	return jsonify({'status': 'success', 'message': 'Successful goal swap!'})
+	return jsonify({'status': 'success'})
 
 # Get all existing template IDs
 @app.route('/getTemplates', methods=['GET'])

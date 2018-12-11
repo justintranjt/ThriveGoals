@@ -487,8 +487,6 @@ export default {
             axios.put(path, { withCredentials: true, credentials: 'same-origin' })
                 .then((res) => {
                     this.getGoals(goalTemplateID);
-                    this.message = res.data.message;
-                    this.showMessage = true;
                 })
                 .catch((error) => {
                     console.log(error);
