@@ -386,6 +386,10 @@ export default {
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
+          
+
+            startTime: Date.now(),
+            currentTime: Date.now(),
         };
     },
     components: {
@@ -395,7 +399,8 @@ export default {
     },
 
     mounted: function() {
-        this.interval = setInterval(this.getTimeAllGoals, 60000);
+        this.interval = setInterval(this.updateCurrentTime, 1000);
+            // 60000);
     },
 
     destroyed: function() {
@@ -579,6 +584,7 @@ export default {
         },
 
         updateGoalTime(goal, newTime) {
+            console.log('Known knowns, known unknowns, unknown knowns, unknown unknowns');
             axios.defaults.withCredentials = true;
             this.updatedGoalTime = 0;
             const payload = {
@@ -731,6 +737,22 @@ export default {
             for (i = 0; i < this.goals.length; i++) {
             this.getTime(i);
             }
+        },
+
+         updateCurrentTime: function() {
+            console.log("\n\n")
+            console.log("Update time motherfuckers");
+            this.currentTime = Date.now();
+            console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
+            console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
+            if((this.currentTime - this.startTime) >= 300000 ){
+                this.startTime = this.currentTime
+                console.log("ITS OVER 9000!!!")
+                this.getTimeAllGoals(); 
+            }
+            console.log("\nthis.currentTime in updateCurrentTime outside if: "+ this.currentTime);
+            console.log("this.startTime in updateCurrentTime outside if: "+ this.startTime);
+            console.log("\n\n")
         },
     },
     async created() {

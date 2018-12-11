@@ -233,6 +233,7 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 # Updating preexisting goals and deleting goals
 @app.route('/updateTimer/<goal_template_id>/<goal_ref>/<new_time>', methods=['PUT'])
 def update_goal_time(goal_template_id, goal_ref, new_time):
+	print("Misssion Accomplished")
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	netID = session.get('netID', 'not set')
