@@ -7,6 +7,7 @@
                 <b-nav-text>Logged in as {{ netID }}</b-nav-text>
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
+                    <b-nav-item v-bind:href="clientURI + '/aboutUs'">About Us</b-nav-item>
                     <!-- Allow this template creation to change the template name -->
                     <b-nav-item @click="addTemplate()"><em>Create Template</em></b-nav-item>
                     <b-nav-item @click="deleteTemplate()"><em>Delete Current Template</em></b-nav-item>

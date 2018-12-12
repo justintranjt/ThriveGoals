@@ -31,6 +31,10 @@
     color: #ffffff;
 }
 
+#aboutUsText {
+	color: #ffffff;
+}
+
 @media (min-width: 800px) {
 	#aboutText {
 		padding-top: 5vh;
@@ -48,6 +52,10 @@
 #bv-r2c2 {
 	background-color: rgba(0, 0, 0, 0.6);
 	padding: 2vw 2vh;
+}
+
+#aboutUsContainer {
+	overflow-y: hidden;
 }
 
 body {

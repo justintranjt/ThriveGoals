@@ -2,7 +2,12 @@
     <b-container fluid id="splashContainer">
         <b-navbar toggleable fixed="top" variant="light" type="light">
             <b-navbar-toggle target="nav_text_collapse"></b-navbar-toggle>
-            <b-navbar-brand>Thrive</b-navbar-brand>
+            <b-collapse is-nav id="nav_collapse">
+                <b-navbar-brand>Thrive</b-navbar-brand>
+                <b-navbar-nav class="ml-auto">
+                    <b-nav-item v-bind:href="clientURI + '/aboutUs'">About Us</b-nav-item>
+                </b-navbar-nav>
+         </b-collapse>
         </b-navbar>
         <b-row id="intro">
             <b-col>
@@ -14,40 +19,23 @@
             </b-col>
         </b-row>
         <b-row id="aboutText">
-                <b-col id="bv-r2c2">
-                    <h1>About Thrive</h1>
-                    <!-- eslint-disable -->
-                    Our software helps you break down large projects into manageable subgoals in a goal hierarchy, reducing procrastination and making work more enjoyable and intrinsically motivating. Our modifiable templates are created by learning specialists and other students with the purpose of guiding you through major assignments.
-                </b-col>
+            <b-col id="bv-r2c2">
+                <h1>About Thrive</h1>
+                <!-- eslint-disable -->
+                Our software helps you break down large projects into manageable subgoals in a goal hierarchy, reducing procrastination and making work more enjoyable and intrinsically motivating. Our modifiable templates are created by learning specialists and other students with the purpose of guiding you through major assignments.
+            </b-col>
         </b-row>
     </b-container>
 </template>
-
 <script>
 import axios from 'axios';
 
 export default {
     data() {
         return {
-            netID: '',
+            clientURI: process.env.URI_CLIENT_ROOT,
             serverURI: process.env.URI_SERVER_ROOT,
         };
-    },
-    methods: {
-        getLoginNetID() {
-            const path = process.env.URI_SERVER_ROOT + '/loginNetID';
-            axios.get(path)
-                .then((res) => {
-                    this.netID = res.data.netID;
-                })
-                .catch((error) => {
-                    // eslint-disable-next-line
-                    console.error(error);
-                });
-        },
-    },
-    beforeMount() {
-        this.getLoginNetID();
     },
 };
 </script>
