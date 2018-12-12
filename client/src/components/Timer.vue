@@ -24,7 +24,6 @@ module.exports = {
             startTime: 100000,
             currentTime: 100000,
             interval: null,
-            netTimeDiff: 0,
             pauseTime: 100000,
             internalCounter:100000, 
         }
@@ -43,21 +42,13 @@ module.exports = {
             return this.hours + ':' + this.minutes + ':' + this.seconds;
         },
         milliseconds: function() {
-            console.log('\n\nloaded in milliseconds: '+this.loaded);
-            console.log('other terms: '+((this.currentTime - this.startTime) - this.netTimeDiff))
-            console.log('At call time, pauseTime is: '+ this.pauseTime); 
-            console.log('At call time, startTime is: '+ this.startTime); 
-            console.log('At call time, netTimeDiff is: '+ this.netTimeDiff); 
-            console.log('At call time, currentTime is: '+ this.currentTime); 
+
             if(this.currentTime == this.startTime) {
-                console.log("yeet, we in the if block");
                 this.currentTime = this.currentTime + this.loaded;
-                console.log('After update, currentTime is: '+ this.currentTime); 
-                return ((this.currentTime - this.startTime) - this.netTimeDiff);
+                return (this.currentTime - this.startTime);
          }
-         console.log('After load, currentTime is: '+ this.currentTime); 
-         console.log('computed milliseconds: '+ ((this.currentTime - this.startTime) - this.netTimeDiff)); 
-           return ((this.currentTime - this.startTime) - this.netTimeDiff);
+  
+         return (this.currentTime - this.startTime);
 
         },
         hours: function() {
@@ -70,15 +61,6 @@ module.exports = {
             var min = Math.floor((lapsed / 1000 / 60) % 60);
             return min >= 10 ? min : '0' + min;
         },
-
-        getPauseTime: function(){
-            // console.log('\n\nYEET INDEED getPause Time returns: '+ this.loaded + ((this.pauseTime - this.startTime) - this.netTimeDiff));
-            // console.log('At call time, milliseconds is: '+ this.milliseconds); 
-            // console.log('At call time, pauseTime is: '+ this.pauseTime); 
-            // console.log('At call time, startTime is: '+ this.startTime); 
-            // console.log('At call time, netTimeDiff is: '+ this.netTimeDiff); 
-             return this.loaded + ((this.pauseTime - this.startTime) - this.netTimeDiff);
-        } , 
         
         seconds: function() {
             var lapsed = this.milliseconds;
@@ -92,40 +74,30 @@ module.exports = {
             this.startTime = 100000;
             this.currentTime = 100000;
             this.interval = null;
-            this.netTimeDiff = 0;
             this.pauseTime = 100000;
-            this.loaded = 100000;
+            this.loaded = 0;
             this.internalCounter = 100000;
+            this.$parent.getTime(this.index);
         },
         pause: function() {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
-            console.log('\n\n\nYEET!! Pause time was:'+this.pauseTime);
+            // console.log('\n\n\nYEET!! Pause time was:'+this.pauseTime);
             this.$parent.getTime(this.index);
         },
 
 
 
         resume: function() {
-            console.log("\n\n\nresume function called!!!:"); 
+            // console.log("\n\n\nresume function called!!!:"); 
             if(this.currentTime == this.startTime) {
                 this.curentTime = this.internalCounter + this.loaded
             }
-            else{
-                        if(this.state == "paused"){
-                        console.log("internal counter: "+ this.internalCounter);
-                        console.log("pauseTime: "+ this.pauseTime);
-                        console.log("netDiff updated: "+ this.netTimeDiff);
-                        this.netTimeDiff = this.netTimeDiff + (this.internalCounter - this.pauseTime);  
-                        console.log("netDiff updated: "+ this.netTimeDiff);
-                    }
-
-            }
-
 
             this.state = "started";
             
         },
+
         updateCurrentTime: function() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;

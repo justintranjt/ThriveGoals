@@ -228,18 +228,29 @@
                                 </b-button>
                             </td>
                             </td>
-                            <td v-else></td>
+                           
 
+
+                            <td v-else></td>
                             <!-- Added Col 5 for Timers-->
-                            <td>
-                            <td v-if="Number(goal.goalTime) == 0">
-                            <timer v-bind:loaded="0" v-bind:index="index" ref="timercomponent"> </timer>
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <div>
+                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
+                            </td>
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <div>
+                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
                             </td>
                             <td v-else>
-                            <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                <div>
+                               <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
                             </td>
+                            <td v-else></td>
 
-                            </td>
+
 
                             <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
@@ -576,7 +587,6 @@ export default {
         },
 
         updateGoalTime(goal, newTime) {
-            console.log('Were in updateGoalTime')
             axios.defaults.withCredentials = true;
             this.updatedGoalTime = 0;
             const payload = {
@@ -591,8 +601,7 @@ export default {
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
                     this.getNumCompleted(this.currGoalTemplateID);
-                    // this.message = 'Goal Timer updated!';
-                    // this.showMessage = true;
+
                 })
                 .catch((error) => {
                     console.log(error);
@@ -732,19 +741,17 @@ export default {
         },
 
          updateCurrentTime: function() {
-            console.log("\n\n")
-            console.log("updateCurrentTime in Goal.vue called");
+            // console.log("\n\n")
+            // console.log("updateCurrentTime in Goal.vue called");
             this.currentTime = Date.now();
-            console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
-            console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
+            // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
+            // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
             if((this.currentTime - this.startTime) >= 3000 ){
                 this.startTime = this.currentTime
-                console.log("ITS OVER 9000!!!")
+                // console.log("ITS OVER 9000!!!")
                 this.getTimeAllGoals();
             }
-            console.log("\nthis.currentTime in updateCurrentTime outside if: "+ this.currentTime);
-            console.log("this.startTime in updateCurrentTime outside if: "+ this.startTime);
-            console.log("\n\n")
+
         },
     },
     async created() {
