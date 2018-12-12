@@ -51,10 +51,11 @@
                                 <th scope="col">Goal</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
+                                <th scope="col">Time Spent</th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
+
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
                             <!-- Goal Number/ Col 1 -->
@@ -158,29 +159,30 @@
                             <td v-else-if="goal.parentID != '' && goal.nestLevel == 4">
                             </td>
                             </td>
+                           
+
+
                             <td v-else></td>
-                            <!-- Added Col 5-->
-                            <td v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <!-- Added Col 5 for Timers-->
+                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <div>
+                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <div>
+                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#e0a800'}">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            </td>
-                            <td v-else-if="goal.inProgress && parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}">
-                            </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
-                            </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel==4" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            <td v-else>
+                                <div>
+                               <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                </div>
                             </td>
                             <td v-else></td>
+
+
+
                             <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
@@ -294,6 +296,8 @@
 import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
+import timer from './Timer.vue';
+
 // axios.defaults.withCredentials = true;
 export default {
     data() {
@@ -321,15 +325,22 @@ export default {
             clientURI: process.env.URI_CLIENT_ROOT,
             // Double click to edit boolean and new entry fields
             updatedGoalTitle: null,
+            updatedGoalTime: 0,
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
+
+
+            startTime: Date.now(),
+            currentTime: Date.now(),
         };
     },
     components: {
         alert,
         prog,
+        timer,
     },
+
     methods: {
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
@@ -515,6 +526,28 @@ export default {
                     console.log(error);
                 });
         },
+
+        updateGoalTime(goal, newTime) {
+            axios.defaults.withCredentials = true;
+            this.updatedGoalTime = 0;
+            const payload = {
+                goalNum: goal.goalNum,
+                goalTitle: goal.goalTitle,
+                completed: goal.completed,
+                inProgress: goal.inProgress,
+                goalID: goal.goalID
+            };
+            const path = process.env.URI_SERVER_ROOT + '/updateTimer/' + this.currGoalTemplateID + '/' + goal.goalID + '/' + newTime;
+            axios.put(path, payload, { withCredentials: true, credentials: 'same-origin' })
+                .then(() => {
+                    this.getGoals(this.currGoalTemplateID);
+                    this.getNumCompleted(this.currGoalTemplateID);
+
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
         updateTemplate(goalTemplateID) {
             axios.defaults.withCredentials = true;
             // Strip spaces from ends of changed template name
@@ -636,6 +669,33 @@ export default {
             this.currGoalTemplateID = goalTemplateID;
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
+        },
+
+        getTime(index) {
+            var goal = this.goals[index];
+            var time = this.$refs.timercomponent[index].milliseconds;
+            this.updateGoalTime(goal, time);
+        },
+
+        getTimeAllGoals() {
+            var i;
+            for (i = 0; i < this.goals.length; i++) {
+            this.getTime(i);
+            }
+        },
+
+         updateCurrentTime: function() {
+            // console.log("\n\n")
+            // console.log("updateCurrentTime in Goal.vue called");
+            this.currentTime = Date.now();
+            // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
+            // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
+            if((this.currentTime - this.startTime) >= 3000 ){
+                this.startTime = this.currentTime
+                // console.log("ITS OVER 9000!!!")
+                this.getTimeAllGoals();
+            }
+
         },
     },
     async created() {

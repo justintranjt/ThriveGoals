@@ -14,7 +14,7 @@ class Goal (object):
 
 	#initializes a new goal
 	#adding additional fields to allow for easier evolution
-	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress, time):
+	def __init__(self, goalContent, completionStatus, initialSubgoals, parent, user, inProgress, uniqueID, time):
 		#string containing the actual content of a goal
 		self._goalContent = goalContent
 		#boolean: true if goal complete, else false
@@ -31,7 +31,11 @@ class Goal (object):
 		self._inProgress = inProgress
 
 		#unique identifier using time 
-		self._uniqueID = time 
+		self._uniqueID = uniqueID
+
+
+		#current timer time
+		self._time = time
 
 		
 		#Not sure why we have these, but Dr. Dondero recommended we have them for some reason
@@ -57,10 +61,6 @@ class Goal (object):
 		return self._parent
 
 
-	# returns the parent, which should be another goal Object
-	def getUniqueID(self):
-		return self._uniqueID
-
 	# updates the string containing goal content for the current goal
 	def setParent(self, newParent):
 		if self._parent != None and self._parent != newParent: # there is already a current parent (so overwrite)
@@ -72,8 +72,21 @@ class Goal (object):
 			self._parent = newParent
 		self.updateDatabase()
 
+	# returns the parent, which should be another goal Object
+	def getUniqueID(self):
+		return self._uniqueID
 
 
+	# get the current time as [hours, minutes, seconds]
+	def getTime(self):
+		return self._time  
+
+	# set the current time as [hours, minutes, seconds]
+	def setTime(self, newTime):
+		self._time = newTime
+		self.updateDatabase()
+
+	
 	#returns the template(a goal object) the goal belongs to if it is a goal
 	#if it is the root Node,i.e. the template, this method returns the calling object
 	def getTemplate(self):
@@ -155,8 +168,8 @@ class Goal (object):
 		self.updateDatabase()
 
 	#appends a new subgoal to the end of the subgoals list for this goal
-	def addSubgoal(self, goalString, goalComplete, inProgress, time):
-		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress, time)
+	def addSubgoal(self, goalString, goalComplete, inProgress, goalID):
+		newGoal = Goal(goalString, goalComplete, [], self, self._user, inProgress, goalID, 0)
 		self._addSubgoal(newGoal)
 		return newGoal
 

@@ -33,7 +33,7 @@ app = Flask(__name__, static_folder='./dist/static', template_folder='./dist')
 app.config.from_object(__name__)
 
 # Initialize HTTPS redirection.
-sslify = SSLify(app)
+# sslify = SSLify(app)
 
 # Initialize CAS login
 cas = CAS()
@@ -261,6 +261,44 @@ def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 
 	return jsonify({'status': 'success'})
 
+
+# Updating preexisting goals and deleting goals
+@app.route('/updateTimer/<goal_template_id>/<goal_ref>/<new_time>', methods=['PUT'])
+def update_goal_time(goal_template_id, goal_ref, new_time):
+	print("\n\n\nMisssion Accomplished")
+	response_object = {'status': 'success'}
+	global allTemplateRefsDict_by_User
+	netID = session.get('netID', 'not set')
+
+	# Start template refs from clean slate each time
+	allTemplateRefs = allTemplateRefsDict_by_User[netID]
+
+	# Update goal time
+	if request.method == 'PUT':
+		print("Yay, we're in the if block the method was PUT ")
+		put_data = request.get_json()
+		prevGoal = getGoalUsingTime(allTemplateRefs[goal_template_id], goal_ref)
+
+		# TODO Keep this handy piece of code in mind for future methods
+		parent = prevGoal.getParent()
+		parentList = parent.getSubgoalList()
+		index = parentList.index(prevGoal)
+		subgoals = prevGoal.getSubgoalList()
+
+		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
+		put_data.get('inProgress'), put_data.get('goalID'), new_time)
+		parent.insertSubgoalAtIndex(index, newGoal)
+		prevGoal.deleteSelf()
+		print("End of if block\n\n\n ")
+		response_object['message'] = 'Goal updated!'
+
+	get_templates()
+
+	return jsonify(response_object)
+
+
+
+
 # Get all existing template IDs
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
@@ -312,7 +350,7 @@ def update_template(goal_template_id):
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
-		Goal(new_template_id, False, [], None, netID, False, '')
+		Goal(new_template_id, False, [], None, netID, False, '', 0)
 
 	# Update local templates from database
 	get_templates()
@@ -365,6 +403,7 @@ def initTestTemplates(netID):
 	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '')
 	templateTwo = Goal('COS 126 Assignment 2 Template', False, [], None, netID, False, '')
 	templateThree = Goal('COS 126 Assignment 3 Template', False, [], None, netID, False, '')
+	templateOne = Goal('AAAAAA', False, [], None, netID, False, '', 0)
 
 	# Add goals to templates
 	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())
@@ -428,6 +467,7 @@ def makeGoalDict_fromTemplate(currTemplate, nestLevel, isFirst):
 			'isSubgoal': isSubgoal,
 			'nestLevel': nestLevel, # should be 0,1,2
 			'parentID': str(currTemplate.getParent().getUniqueID()),
+			'goalTime': currTemplate.getTime(),
 		}]
 
 	retList = []
