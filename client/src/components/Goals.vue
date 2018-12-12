@@ -30,7 +30,7 @@
                     <br>
                     <alert :message="message" v-if="showMessage"></alert>
                     <!-- Editable template name -->
-                    <h1 @dblclick="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID">
+                    <h1 @touchstart="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID" @dblclick="updatedTemplate=(currGoalTemplateID); newTemplateID=currGoalTemplateID">
                             <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedTemplate!=(currGoalTemplateID)"> {{ currGoalTemplateID }} </label>
                             <!-- Disable template input if no templates exist -->
                             <input v-if="updatedTemplate==(currGoalTemplateID) && (goalTemplateIDs.length!==0 || this.currGoalTemplateID==='Enter Your Template Title Here')" v-model="newTemplateID" @keyup.enter="updateTemplate(currGoalTemplateID);">
@@ -86,7 +86,7 @@
                             </td>
                             <!-- Goal title/ Col 2 -->
                             <!-- completed color with title -->
-                            <td v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -94,7 +94,7 @@
                             <td v-else-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <!-- progress color w title -->
-                            <td v-else-if="goal.inProgress && goal.parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.inProgress && goal.parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -104,14 +104,14 @@
                             <td v-else-if="goal.parentID != '' && nestLevel != 2">
                             </td>
                             <!-- default title -->
-                            <td v-else @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <!-- Added Col 3-->
                             <td v-if="goal.completed && goal.parentID==''" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.completed && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -122,12 +122,12 @@
                             <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
                             <!-- TODO: POSSIBLE BUG HERE WITH GOAL TITLE DISPLAY -->
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <td v-else-if="goal.inProgress && goal.nestLevel != 2 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#e0a800'}"></td>
-                            <td v-else-if="goal.nestLevel == 2 && goal.parentID != ''" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.nestLevel == 2 && goal.parentID != ''" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -139,18 +139,18 @@
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             <td v-else-if="goal.inProgress && goal.nestLevel != 3 && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <td v-else-if="goal.inProgress && goal.nestLevel==4" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 3" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 3" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -163,7 +163,7 @@
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -175,7 +175,7 @@
                             </td>
                             <td v-else-if="goal.inProgress && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel==4" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td v-else-if="goal.parentID != '' && goal.nestLevel==4" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
