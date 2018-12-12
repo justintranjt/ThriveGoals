@@ -400,10 +400,9 @@ def remove_goal(goal_num, goal_template_id, goal_ref):
 # Test templates initialized for first-time users
 def initTestTemplates(netID):
 	# Make empty templates
-	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '')
-	templateTwo = Goal('COS 126 Assignment 2 Template', False, [], None, netID, False, '')
-	templateThree = Goal('COS 126 Assignment 3 Template', False, [], None, netID, False, '')
-	templateOne = Goal('AAAAAA', False, [], None, netID, False, '', 0)
+	templateOne = Goal('Writing Sem Goal Template', False, [], None, netID, False, '', 0)
+	templateTwo = Goal('COS 126 Assignment 2 Template', False, [], None, netID, False, '', 0)
+	templateThree = Goal('COS 126 Assignment 3 Template', False, [], None, netID, False, '', 0)
 
 	# Add goals to templates
 	templateOne.addSubgoal("Read and mark up primary articles", False, False, time())

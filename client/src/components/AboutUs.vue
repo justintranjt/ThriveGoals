@@ -21,30 +21,18 @@
                     <p class="card-text">
                         COS '20
                     </p>
-                    <a href="#"
-               class="card-link">GitHub</a>
-                    <a href="#"
-               class="card-link">Website</a>
                 </b-card>
                 <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
                     <h5 class="card-title">Sonia Joseph</h5>
                     <p class="card-text">
                         NEU '19
                     </p>
-                    <a href="#"
-               class="card-link">GitHub</a>
-                    <a href="#"
-               class="card-link">Website</a>
                 </b-card>
                 <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
                     <h5 class="card-title">Hamza Mahmood</h5>
                     <p class="card-text">
                         COS '20
                     </p>
-                    <a href="#"
-               class="card-link">GitHub</a>
-                    <a href="#"
-               class="card-link">Website</a>
                 </b-card>
                 <b-card class="border-0" img-src="/static/JTran.jpg" img-top>
                     <h5 class="card-title">Justin Tran</h5>
@@ -56,15 +44,11 @@
                     <a href="https://justintranjt.me/"
                class="card-link">Website</a>
                 </b-card>
-                <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
+                <b-card class="border-0" img-src="/static/ZVlatinova.png" img-top>
                     <h5 class="card-title">Viktoria Zlatinova</h5>
                     <p class="card-text">
                         COS '19
                     </p>
-                    <a href="#"
-               class="card-link">GitHub</a>
-                    <a href="#"
-               class="card-link">Website</a>
                 </b-card>
             </b-card-group>
         </b-container>

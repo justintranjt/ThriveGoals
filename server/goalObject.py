@@ -79,7 +79,7 @@ class Goal (object):
 
 	# get the current time as [hours, minutes, seconds]
 	def getTime(self):
-		return self._time  
+		return self._time
 
 	# set the current time as [hours, minutes, seconds]
 	def setTime(self, newTime):
