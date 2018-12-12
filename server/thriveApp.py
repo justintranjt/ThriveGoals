@@ -318,7 +318,7 @@ def update_template(goal_template_id):
 	# Create new template with specified name
 	elif request.method == 'POST':
 		new_template_id = goal_template_id
-		Goal(new_template_id, False, [], None, netID, False, '')
+		Goal(new_template_id, False, [], None, netID, False, '', 0)
 
 	# Update local templates from database
 	get_templates()

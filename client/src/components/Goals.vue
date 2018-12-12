@@ -720,7 +720,7 @@ export default {
 
         getTime(index) {
             var goal = this.goals[index];
-            var time = this.$refs.timercomponent[index].milliseconds;
+            var time = this.$refs.timercomponent[index].getPauseTime;
             this.updateGoalTime(goal, time);
         },
 
