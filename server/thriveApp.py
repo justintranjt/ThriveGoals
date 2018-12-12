@@ -62,12 +62,6 @@ allTemplatesDict_by_User = {}
 def catch_all(path):
 	return render_template("index.html")
 
-# About us page
-@app.route('/aboutUs', methods=['GET'])
-def aboutUs():
-	uriRoot = environ.get('URIROOT', "http://localhost:8080")
-	return redirect(uriRoot + "/aboutUs", code=302)
-
 # Set login netID
 @app.route('/loginPage', methods=['GET'])
 @login_required

@@ -5,7 +5,7 @@
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-brand>Thrive</b-navbar-brand>
                 <b-navbar-nav class="ml-auto">
-                    <b-nav-item v-bind:href="serverURI + '/aboutUs'">About Us</b-nav-item>
+                    <b-nav-item v-bind:href="clientURI + '/AboutUs'">About Us</b-nav-item>
                 </b-navbar-nav>
          </b-collapse>
         </b-navbar>
@@ -33,6 +33,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            clientURI: process.env.URI_CLIENT_ROOT,
             serverURI: process.env.URI_SERVER_ROOT,
         };
     },

@@ -14,7 +14,7 @@ export default new Router({
             component: Splash,
         },
         {
-            path: '/aboutUs',
+            path: '/AboutUs',
             name: 'AboutUs',
             component: AboutUs,
         },
