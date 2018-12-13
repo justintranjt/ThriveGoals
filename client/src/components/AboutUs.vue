@@ -16,19 +16,19 @@
         <b-container class="mt-4 text-center" id="bv-r2c2">
             <h1 id="aboutUsText">Team</h1>
             <b-card-group deck>
-                <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
+                <b-card class="border-0" img-src="/static/blank.png" img-top>
                     <h5 class="card-title">Josh Gardner</h5>
                     <p class="card-text">
                         COS '20
                     </p>
                 </b-card>
-                <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
+                <b-card class="border-0" img-src="/static/blank.png" img-top>
                     <h5 class="card-title">Sonia Joseph</h5>
                     <p class="card-text">
                         NEU '19
                     </p>
                 </b-card>
-                <b-card class="border-0" img-src="https://placekitten.com/1000/300" img-top>
+                <b-card class="border-0" img-src="/static/HMahmood.jpg" img-top>
                     <h5 class="card-title">Hamza Mahmood</h5>
                     <p class="card-text">
                         COS '20
