@@ -22,7 +22,7 @@
                     </b-nav-item-dropdown>
                     <!-- Need to get this to point to the flask logout route -->
                     <b-nav-item href="https://fed.princeton.edu/cas/logout">Logout</b-nav-item>
-                    </b-navbar-nav>
+                </b-navbar-nav>
             </b-collapse>
         </b-navbar>
         <b-container fluid id="goalsContainerBackground">
@@ -44,18 +44,16 @@
                     <b-button v-if="this.currGoalTemplateID==='Enter Your Template Title Here' || goalTemplateIDs.length===0" type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal disabled>Add Goal</b-button>
                     <b-button v-else type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
                     <br><br>
-                    <table class="table table-hover">
+                    <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Priority</th>
                                 <th scope="col">Goal</th>
-                                <th></th>
-                                <th></th>
+                                <th colspan=2>Subgoals</th>
                                 <th scope="col">Time Spent</th>
                                 <th scope="col" class="text-right">Actions</th>
                             </tr>
                         </thead>
-
                         <tr v-for="(goal, index) in goals" :key="index">
                             <!-- Every cell has a bg color if goal.completed=True or goal.inProgress=True. No bg color if False -->
                             <!-- Goal Number/ Col 1 -->
@@ -159,30 +157,24 @@
                             <td v-else-if="goal.parentID != '' && goal.nestLevel == 4">
                             </td>
                             </td>
-                           
-
-
                             <td v-else></td>
                             <!-- Added Col 5 for Timers-->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div>
-                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div>
-                                <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else>
                                 <div>
-                               <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else></td>
-
-
-
                             <!-- Buttons/ Col 6 -->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar float-right" role="toolbar">
@@ -245,7 +237,7 @@
                                         </div>
                                     </v-hover>
                                     <!-- added subgoal form -->
-                                    <v-hover v-if="goal.nestLevel < 4">
+                                    <v-hover v-if="goal.nestLevel < 3">
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
                                             <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover @click="setCurrGoalClicked(goal)" title="Add Subgoal" v-b-modal.subgoal-modal>
                                                 <v-icon>add</v-icon>
@@ -680,17 +672,17 @@ export default {
         getTimeAllGoals() {
             var i;
             for (i = 0; i < this.goals.length; i++) {
-            this.getTime(i);
+                this.getTime(i);
             }
         },
 
-         updateCurrentTime: function() {
+        updateCurrentTime: function() {
             // console.log("\n\n")
             // console.log("updateCurrentTime in Goal.vue called");
             this.currentTime = Date.now();
             // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
             // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
-            if((this.currentTime - this.startTime) >= 3000 ){
+            if ((this.currentTime - this.startTime) >= 3000) {
                 this.startTime = this.currentTime
                 // console.log("ITS OVER 9000!!!")
                 this.getTimeAllGoals();
