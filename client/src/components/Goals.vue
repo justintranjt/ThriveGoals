@@ -46,12 +46,12 @@
                     <br><br>
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <tr>
+                            <tr class="text-center">
                                 <th scope="col">Priority</th>
                                 <th scope="col">Goal</th>
                                 <th colspan=2>Subgoals</th>
                                 <th scope="col">Time Spent</th>
-                                <th scope="col" class="text-right">Actions</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tr v-for="(goal, index) in goals" :key="index">
@@ -160,18 +160,19 @@
                             <td v-else></td>
                             <!-- Added Col 5 for Timers-->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <div>
+                                <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
-                                <div>
+                                <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else>
-                                <div>
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                <div class="text-center">
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent">
+                                    </timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -241,7 +242,6 @@
                                         <div slot-scope="{hover}" class="btn-group mr-2" role="group">
                                             <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover @click="setCurrGoalClicked(goal)" title="Add Subgoal" v-b-modal.subgoal-modal>
                                                 <v-icon>add</v-icon>
-                                            </b-button>
                                             </b-button>
                                         </div>
                                     </v-hover>
