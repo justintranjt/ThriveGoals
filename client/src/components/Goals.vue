@@ -59,30 +59,36 @@
                             <!-- Goal Number/ Col 1 -->
                             <!-- completed color with goal # -->
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                    <v-icon>keyboard_arrow_up</v-icon>
+                                <div class="btn-toolbar justify-content-center">
+                                <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                    <v-icon small>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                    <v-icon>keyboard_arrow_down</v-icon>
+                                <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                    <v-icon small>keyboard_arrow_down</v-icon>
                                 </b-button>
+                            </div>
                             </td>
                             <!-- progress color with # -->
-                            <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
-                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                    <v-icon>keyboard_arrow_up</v-icon>
+                            <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}" class="align-middle">
+                                <div class="btn-toolbar justify-content-center">
+                                <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                    <v-icon small>keyboard_arrow_up</v-icon>
                                 </b-button>
-                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                    <v-icon>keyboard_arrow_down</v-icon>
+                                <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                    <v-icon small>keyboard_arrow_down</v-icon>
                                 </b-button>
+                            </div>
                             </td>
                             <!-- default: goal #-->
-                            <td v-else>
-                                <b-button v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                    <v-icon>keyboard_arrow_up</v-icon>
-                                </b-button>
-                                <b-button v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                    <v-icon>keyboard_arrow_down</v-icon>
-                                </b-button>
+                            <td v-else class="align-middle">
+                                <div class="btn-toolbar justify-content-center">
+                                    <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                        <v-icon small>keyboard_arrow_up</v-icon>
+                                    </b-button>
+                                    <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                        <v-icon small>keyboard_arrow_down</v-icon>
+                                    </b-button>
+                                </div>
                             </td>
                             <!-- Goal title/ Col 2 -->
                             <!-- completed color with title -->
@@ -177,71 +183,71 @@
                             </td>
                             <td v-else></td>
                             <!-- Buttons/ Col 6 -->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <div class="btn-toolbar float-right" role="toolbar">
+                            <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                                <div class="btn-toolbar justify-content-center">
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not Complete" @click="onCompleteGoal(goal)">
-                                                <v-icon>undo</v-icon>
+                                                <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group" role="group">
+                                        <div slot-scope="{hover}">
                                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="Delete" @click="onDeleteGoal(goal)">
-                                                <v-icon>delete_forever</v-icon>
+                                                <v-icon small>delete_forever</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                 </div>
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
-                                <div class="btn-toolbar float-right" role="toolbar">
+                            <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                                <div class="btn-toolbar justify-content-center">
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" @click="onInProgGoal(goal)">
-                                                <v-icon>undo</v-icon>
+                                                <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" class="btn btn-danger btn-sm" v-b-tooltip.hover title="Delete" @click="onDeleteGoal(goal)">
-                                                <v-icon>delete_forever</v-icon>
+                                                <v-icon small>delete_forever</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                 </div>
                             </td>
-                            <td v-else>
-                                <div class="btn-toolbar float-right" role="toolbar">
+                            <td class="align-middle" v-else>
+                                <div class="btn-toolbar justify-content-center">
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" class="btn btn-success btn-sm" v-b-tooltip.hover title="Complete" @click="onCompleteGoal(goal)">
-                                                <v-icon>done</v-icon>
+                                                <v-icon small>done</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" @click="onInProgGoal(goal)">
-                                                <v-icon>schedule</v-icon>
+                                                <v-icon small>schedule</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
-                                    <!-- mr-2 for spacing -->
+                                    <!-- mr-1 for spacing -->
                                     <v-hover>
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" v-b-tooltip.hover title="Delete" class="btn btn-danger btn-sm" @click="onDeleteGoal(goal)">
-                                                <v-icon>delete_forever</v-icon>
+                                                <v-icon small>delete_forever</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>
                                     <!-- added subgoal form -->
                                     <v-hover v-if="goal.nestLevel < 3">
-                                        <div slot-scope="{hover}" class="btn-group mr-2" role="group">
+                                        <div slot-scope="{hover}" class="mr-1">
                                             <b-button type="b-button" variant="primary" size="sm" v-b-tooltip.hover @click="setCurrGoalClicked(goal)" title="Add Subgoal" v-b-modal.subgoal-modal>
-                                                <v-icon>add</v-icon>
+                                                <v-icon small>add</v-icon>
                                             </b-button>
                                         </div>
                                     </v-hover>

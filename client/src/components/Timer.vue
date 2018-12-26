@@ -3,14 +3,14 @@
         <span id="time" v-html="time"></span>
         <br>
         <b-button type="b-button" class="btn btn-success btn-sm" v-b-tooltip.hover title="Play" @click="resume">
-        <v-icon>play_circle_filled</v-icon> </b-button>
+        <v-icon small>play_circle_filled</v-icon> </b-button>
 
         <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="Pause" @click="pause">
-        <v-icon>pause_circle_outline</v-icon>
+        <v-icon small>pause_circle_outline</v-icon>
         </b-button>
 
         <b-button type="b-button" class="btn btn-sm" v-b-tooltip.hover title="Reset" @click="reset" >
-        <v-icon>replay</v-icon>
+        <v-icon small>replay</v-icon>
         </b-button>
     </div>
 </template>
