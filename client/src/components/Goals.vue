@@ -290,6 +290,7 @@
         </b-modal>
     </div>
 </template>
+
 <script>
 import axios from 'axios';
 import alert from './Alert';
@@ -297,6 +298,17 @@ import prog from './Progress';
 import timer from './Timer.vue';
 
 // axios.defaults.withCredentials = true;
+
+    /* name: 'goals',
+        props: {
+            time: {
+                type: Function,
+                default() {
+                    return function () {};
+                }
+            }
+        }, */
+
 export default {
     data() {
         return {
@@ -336,7 +348,7 @@ export default {
     components: {
         alert,
         prog,
-        timer,
+        timer
     },
 
     methods: {
@@ -602,7 +614,13 @@ export default {
         },
         onInProgGoal(goal) {
             this.inProgGoal(goal.goalID, this.currGoalTemplateID);
+            this.startTimer();
         },
+        startTimer(index)
+        {
+            this.$refs.timercomponent[index].resume();
+        },
+
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();

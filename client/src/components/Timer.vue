@@ -1,23 +1,13 @@
 <template>
     <div>
         <span id="time" v-html="time"></span>
-        <br>
-        <b-button type="b-button" class="btn btn-success btn-sm" v-b-tooltip.hover title="Play" @click="resume">
-        <v-icon small>play_circle_filled</v-icon> </b-button>
-
-        <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="Pause" @click="pause">
-        <v-icon small>pause_circle_outline</v-icon>
-        </b-button>
-
-        <b-button type="b-button" class="btn btn-sm" v-b-tooltip.hover title="Reset" @click="reset" >
-        <v-icon small>replay</v-icon>
-        </b-button>
     </div>
 </template>
 
-
 <script>
+
 module.exports = {
+
     data: function() {
         return {
             state: "paused",
@@ -25,7 +15,7 @@ module.exports = {
             currentTime: 100000,
             interval: null,
             pauseTime: 100000,
-            internalCounter:100000, 
+            internalCounter:100000,
         }
     },
 
@@ -47,7 +37,7 @@ module.exports = {
                 this.currentTime = this.currentTime + this.loaded;
                 return (this.currentTime - this.startTime);
          }
-  
+
          return (this.currentTime - this.startTime);
 
         },
@@ -61,7 +51,7 @@ module.exports = {
             var min = Math.floor((lapsed / 1000 / 60) % 60);
             return min >= 10 ? min : '0' + min;
         },
-        
+
         seconds: function() {
             var lapsed = this.milliseconds;
             var sec = Math.ceil((lapsed / 1000) % 60);
@@ -89,13 +79,14 @@ module.exports = {
 
 
         resume: function() {
-            // console.log("\n\n\nresume function called!!!:"); 
+            console.log("\n\n\nresume function called!!!:");
             if(this.currentTime == this.startTime) {
-                this.curentTime = this.internalCounter + this.loaded
+                this.currentTime = this.internalCounter + this.loaded;
             }
 
             this.state = "started";
-            
+           // this.$parent.startTimer(this.index);
+
         },
 
         updateCurrentTime: function() {
