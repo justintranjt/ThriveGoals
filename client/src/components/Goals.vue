@@ -205,7 +205,7 @@
                                 <div class="btn-toolbar justify-content-center">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" @click="onInProgGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" v-bind:index="index" @click="onInProgGoal(index, goal)">
                                                 <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
@@ -230,7 +230,7 @@
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" @click="onInProgGoal(goal)">
+                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" v-bind:index="index" @click="onInProgGoal(index, goal)">
                                                 <v-icon small>schedule</v-icon>
                                             </b-button>
                                         </div>
@@ -296,9 +296,7 @@ import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
 import timer from './Timer.vue';
-
 // axios.defaults.withCredentials = true;
-
     /* name: 'goals',
         props: {
             time: {
@@ -308,7 +306,6 @@ import timer from './Timer.vue';
                 }
             }
         }, */
-
 export default {
     data() {
         return {
@@ -339,8 +336,6 @@ export default {
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
-
-
             startTime: Date.now(),
             currentTime: Date.now(),
         };
@@ -350,7 +345,6 @@ export default {
         prog,
         timer
     },
-
     methods: {
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
@@ -418,7 +412,6 @@ export default {
                     this.message = 'Goal added!';
                     this.showMessage = true;
                 })
-
                 .catch((error) => {
                     console.log(error);
                 });
@@ -536,7 +529,6 @@ export default {
                     console.log(error);
                 });
         },
-
         updateGoalTime(goal, newTime) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTime = 0;
@@ -552,7 +544,6 @@ export default {
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
                     this.getNumCompleted(this.currGoalTemplateID);
-
                 })
                 .catch((error) => {
                     console.log(error);
@@ -562,14 +553,11 @@ export default {
             axios.defaults.withCredentials = true;
             // Strip spaces from ends of changed template name
             this.newTemplateID = this.newTemplateID.trim();
-
-
             if (this.goalTemplateIDs.includes(this.newTemplateID)) {
                 this.message = 'Duplicate template names not allowed.';
                 this.showMessage = true;
                 return;
             }
-
             const payload = {
                 newTemplateID: this.newTemplateID,
             };
@@ -590,7 +578,6 @@ export default {
         },
         dialog() {
             Vue.dialog.confirm('Please confirm to continue')
-
         },
         initForm() {
             this.addGoalForm.goalNum = 0;
@@ -612,15 +599,15 @@ export default {
         onSwapGoal(currGoal, otherGoal) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
-        onInProgGoal(goal) {
+        onInProgGoal(index, goal) {
             this.inProgGoal(goal.goalID, this.currGoalTemplateID);
-            this.startTimer();
+            this.startTimer(index);
         },
         startTimer(index)
         {
+            console.log("start");
             this.$refs.timercomponent[index].resume();
         },
-
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
@@ -653,7 +640,6 @@ export default {
             var goalParent = this.currGoalClicked;
             var parentNum = this.currGoalClickedNum;
             var newNum = null;
-
             var temp = parentNum;
             while (temp > 1) {
                 temp--;
@@ -662,7 +648,6 @@ export default {
                 newNum = 0.1 + Math.floor(parentNum);
             } else newNum = temp + 0.1 + Math.floor(parentNum);
             var newNestLevel = newNum - Math.floor(parentNum) * 10;
-
             const payload = {
                 goalID: '',
                 // goalNum: this.addSubgoalForm.goalNum,
@@ -686,20 +671,17 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
-
         getTime(index) {
             var goal = this.goals[index];
             var time = this.$refs.timercomponent[index].milliseconds;
             this.updateGoalTime(goal, time);
         },
-
         getTimeAllGoals() {
             var i;
             for (i = 0; i < this.goals.length; i++) {
                 this.getTime(i);
             }
         },
-
         updateCurrentTime: function() {
             // console.log("\n\n")
             // console.log("updateCurrentTime in Goal.vue called");
@@ -711,7 +693,6 @@ export default {
                 // console.log("ITS OVER 9000!!!")
                 this.getTimeAllGoals();
             }
-
         },
     },
     async created() {

@@ -5,9 +5,7 @@
 </template>
 
 <script>
-
 module.exports = {
-
     data: function() {
         return {
             state: "paused",
@@ -18,9 +16,7 @@ module.exports = {
             internalCounter:100000,
         }
     },
-
     props: ['loaded', 'index'],
-
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
     },
@@ -32,14 +28,11 @@ module.exports = {
             return this.hours + ':' + this.minutes + ':' + this.seconds;
         },
         milliseconds: function() {
-
             if(this.currentTime == this.startTime) {
                 this.currentTime = this.currentTime + this.loaded;
                 return (this.currentTime - this.startTime);
          }
-
          return (this.currentTime - this.startTime);
-
         },
         hours: function() {
             var lapsed = this.milliseconds;
@@ -51,7 +44,6 @@ module.exports = {
             var min = Math.floor((lapsed / 1000 / 60) % 60);
             return min >= 10 ? min : '0' + min;
         },
-
         seconds: function() {
             var lapsed = this.milliseconds;
             var sec = Math.ceil((lapsed / 1000) % 60);
@@ -75,20 +67,14 @@ module.exports = {
             // console.log('\n\n\nYEET!! Pause time was:'+this.pauseTime);
             this.$parent.getTime(this.index);
         },
-
-
-
         resume: function() {
             console.log("\n\n\nresume function called!!!:");
             if(this.currentTime == this.startTime) {
                 this.currentTime = this.internalCounter + this.loaded;
             }
-
             this.state = "started";
            // this.$parent.startTimer(this.index);
-
         },
-
         updateCurrentTime: function() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
