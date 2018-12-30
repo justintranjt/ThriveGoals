@@ -205,7 +205,7 @@
                                 <div class="btn-toolbar justify-content-center">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" v-bind:index="index" @click="onInProgGoal(index, goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress"   @click="onInProgGoal(index, goal)">
                                                 <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
@@ -230,7 +230,7 @@
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" v-bind:index="index" @click="onInProgGoal(index, goal)">
+                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress"  @click="onInProgGoal(index, goal)">
                                                 <v-icon small>schedule</v-icon>
                                             </b-button>
                                         </div>
@@ -600,13 +600,28 @@ export default {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(index, goal) {
-            this.inProgGoal(goal.goalID, this.currGoalTemplateID);
-            this.startTimer(index);
+           goal.inProgress = !goal.inProgress;
+           if(goal.inProgress){
+            this.pauseTimer(index);
+            }
+            else{
+                this.startTimer(index); 
+                this.inProgGoal(goal.goalID, this.currGoalTemplateID);
+            }
+
+            
         },
         startTimer(index)
         {
-            console.log("start");
+            console.log("started\nindex was: "+index);
+
             this.$refs.timercomponent[index].resume();
+        },
+        pauseTimer(index)
+        {
+            console.log("paused\nindex was: "+index);
+
+            this.$refs.timercomponent[index].pause();
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -672,6 +687,7 @@ export default {
             this.getNumCompleted(goalTemplateID);
         },
         getTime(index) {
+            console.log("We're in get time")
             var goal = this.goals[index];
             var time = this.$refs.timercomponent[index].milliseconds;
             this.updateGoalTime(goal, time);

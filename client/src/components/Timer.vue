@@ -64,21 +64,23 @@ module.exports = {
         pause: function() {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
-            // console.log('\n\n\nYEET!! Pause time was:'+this.pauseTime);
+            console.log('\nYEET! We paused! Pause time was:'+this.pauseTime);
             this.$parent.getTime(this.index);
         },
         resume: function() {
-            console.log("\n\n\nresume function called!!!:");
+            console.log("\n\n\nresume function called!!!:\nyeet meister was: ");
             if(this.currentTime == this.startTime) {
                 this.currentTime = this.internalCounter + this.loaded;
             }
             this.state = "started";
+            
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime: function() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
             }
+
             this.internalCounter = this.internalCounter + 1000;
         },
     },
