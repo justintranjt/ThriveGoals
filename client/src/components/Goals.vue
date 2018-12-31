@@ -440,9 +440,9 @@ export default {
                     console.log(error);
                 });
         },
-        deleteGoal(goalNum, goalTemplateID, goalID) {
+        deleteGoal(goalNum, goalTemplateID, goalID, goalTime) {
             axios.defaults.withCredentials = true;
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID + '/' + goalID;
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalNum + '/' + goalTemplateID + '/' + goalID + '/' + goalTime;
             axios.delete(path, { withCredentials: true, credentials: 'same-origin' })
                 .then(() => {
                     this.getGoals(goalTemplateID);
@@ -505,7 +505,7 @@ export default {
         updateGoalTitle(goal) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTitle = '';
-            var time = this.$refs.timercomponent[goal.goalNum - 1].milliseconds;
+            var goalTime = this.$refs.timercomponent[goal.goalNum - 1].milliseconds;
             const payload = {
                 goalNum: goal.goalNum,
                 goalTitle: this.newGoalTitle,
@@ -513,7 +513,7 @@ export default {
                 inProgress: goal.inProgress,
                 goalID: goal.goalID
             };
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID + '/' + goal.goalID + '/' + time;
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID + '/' + goal.goalID + '/' + goalTime;
             axios.put(path, payload, { withCredentials: true, credentials: 'same-origin' })
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
@@ -596,7 +596,7 @@ export default {
             this.completeGoal(goal.goalID, this.currGoalTemplateID);
         },
         onDeleteGoal(goal) {
-            this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID);
+            this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds)
         },
         onSwapGoal(currGoal, otherGoal) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
