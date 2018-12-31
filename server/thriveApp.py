@@ -190,8 +190,8 @@ def completed_goals(goal_template_id):
 	return jsonify(response_object)
 
 # Updating preexisting goals and deleting goals
-@app.route('/modGoals/<goal_num>/<goal_template_id>/<goal_ref>', methods=['PUT', 'DELETE'])
-def update_rem_goal(goal_num, goal_template_id, goal_ref):
+@app.route('/modGoals/<goal_num>/<goal_template_id>/<goal_ref>/<time>', methods=['PUT', 'DELETE'])
+def update_rem_goal(goal_num, goal_template_id, goal_ref, time):
 	response_object = {'status': 'success'}
 	global allTemplateRefsDict_by_User
 	netID = session.get('netID', 'not set')
@@ -211,7 +211,7 @@ def update_rem_goal(goal_num, goal_template_id, goal_ref):
 		subgoals = prevGoal.getSubgoalList()
 
 		newGoal = Goal(put_data.get('goalTitle'), put_data.get('completed'), subgoals, parent, netID,
-		put_data.get('inProgress'), put_data.get('goalID'))
+		put_data.get('inProgress'), put_data.get('goalID'), put_data.get('time'))
 		parent.insertSubgoalAtIndex(index, newGoal)
 		prevGoal.deleteSelf()
 

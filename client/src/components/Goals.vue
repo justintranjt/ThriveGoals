@@ -505,6 +505,7 @@ export default {
         updateGoalTitle(goal) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTitle = '';
+            var time = this.$refs.timercomponent[goal.goalNum - 1].milliseconds;
             const payload = {
                 goalNum: goal.goalNum,
                 goalTitle: this.newGoalTitle,
@@ -512,7 +513,7 @@ export default {
                 inProgress: goal.inProgress,
                 goalID: goal.goalID
             };
-            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID + '/' + goal.goalID;
+            const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goal.goalNum + '/' + this.currGoalTemplateID + '/' + goal.goalID + '/' + time;
             axios.put(path, payload, { withCredentials: true, credentials: 'same-origin' })
                 .then(() => {
                     this.getGoals(this.currGoalTemplateID);
