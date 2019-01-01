@@ -7,7 +7,6 @@ from time import time
 from waitress import serve
 import updateDB
 from goalObject import *
-import difflib
 
 from flask.sessions import SessionInterface
 from beaker.middleware import SessionMiddleware
