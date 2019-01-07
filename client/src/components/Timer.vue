@@ -1,6 +1,7 @@
 <template>
     <div>
         <span id="time" v-html="time"></span>
+         <span id="getIndex" v-html="getIndex"></span>
     </div>
 </template>
 
@@ -16,7 +17,7 @@ module.exports = {
             internalCounter:100000,
         }
     },
-    props: ['loaded', 'index'],
+    props: ['loaded', 'indexYeet'],
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
     },
@@ -48,6 +49,9 @@ module.exports = {
             var lapsed = this.milliseconds;
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
+        },
+         getIndex: function(){
+            return this.indexYeet;
         }
     },
     methods: {
@@ -65,15 +69,16 @@ module.exports = {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
             console.log('\nYEET! We paused! Pause time was:'+this.pauseTime);
-            this.$parent.getTime(this.index);
+            console.log('\nYEET! We paused! Pause yeet index was:'+this.indexYeet);
+            this.$parent.getTime(this.indexYeet);
         },
         resume: function() {
-            console.log("\n\n\nresume function called!!!:\nyeet meister was: ");
+            console.log("\n\n\nresume function called!!!:\nyeet index was: "+this.indexYeet);
             if(this.currentTime == this.startTime) {
                 this.currentTime = this.internalCounter + this.loaded;
             }
             this.state = "started";
-            
+            // this.$parent.getTime(this.index);
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime: function() {

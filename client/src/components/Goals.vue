@@ -167,17 +167,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent">
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent">
                                     </timer>
                                 </div>
                             </td>
@@ -205,7 +205,8 @@
                                 <div class="btn-toolbar justify-content-center">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress"   @click="onInProgGoal(index, goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" 
+                                             @click="onInProgGoal(index, goal)">
                                                 <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
@@ -482,20 +483,20 @@ export default {
                     console.log(error);
                 });
         },
-        inProgGoal(goalID, goalTemplateID) {
-            axios.defaults.withCredentials = true;
-            const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
-            axios.put(path, { withCredentials: true, credentials: 'same-origin' })
-                .then((res) => {
-                    this.getGoals(goalTemplateID);
-                    this.getNumCompleted(goalTemplateID);
-                    this.message = res.data.message;
-                    this.showMessage = true;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
+        // inProgGoal(goalID, goalTemplateID) {
+        //     axios.defaults.withCredentials = true;
+        //     const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
+        //     axios.put(path, { withCredentials: true, credentials: 'same-origin' })
+        //         .then((res) => {
+        //             this.getGoals(goalTemplateID);
+        //             this.getNumCompleted(goalTemplateID);
+        //             this.message = res.data.message;
+        //             this.showMessage = true;
+        //         })
+        //         .catch((error) => {
+        //             console.log(error);
+        //         });
+        // },
         swapGoal(currGoalID, otherGoalID, goalTemplateID) {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/swapGoal/' + currGoalID + '/' + otherGoalID + '/' + goalTemplateID;
@@ -599,29 +600,43 @@ export default {
         onSwapGoal(currGoal, otherGoal) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
-        onInProgGoal(index, goal) {
-           goal.inProgress = !goal.inProgress;
+        onInProgGoal(index, goal) { 
            if(goal.inProgress){
+            console.log("\n\n\n\n\n\ndilly dilly m'fucker, in other words we're about to pause in Goals.vue");
+            goal.inProgress = false;
             this.pauseTimer(index);
+            console.log("after pause should be unreachable, right? Ro-shit");
+            console.log("Ro-shit is right. Now, index has value: "+index)
             }
             else{
+
+                console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
+                goal.inProgress = true;
                 this.startTimer(index); 
-                this.inProgGoal(goal.goalID, this.currGoalTemplateID);
+                console.log("technically, this should be unreachable, right? Ruh-ro");
+                console.log("Ruh-ro is right. Now, index has value: "+index)
+               
+                // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
 
             
         },
-        startTimer(index)
+        startTimer(nugget)
         {
-            console.log("started\nindex was: "+index);
+            console.log("started, index was: "+nugget);
+            console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
+            console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
 
-            this.$refs.timercomponent[index].resume();
+          
+            this.$refs.timercomponent[nugget].resume();
         },
-        pauseTimer(index)
+        pauseTimer(nugget)
         {
-            console.log("paused\nindex was: "+index);
+            console.log("paused, index was: "+nugget);
+            console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
+            console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
 
-            this.$refs.timercomponent[index].pause();
+            this.$refs.timercomponent[nugget].pause();
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -686,10 +701,12 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
-        getTime(index) {
-            console.log("We're in get time")
-            var goal = this.goals[index];
-            var time = this.$refs.timercomponent[index].milliseconds;
+        getTime(nugget) {
+            console.log("We're in get time, index is:  " + nugget);
+            var goal = this.goals[nugget];
+            console.log("current goal is: "+goal.goalTitle);
+            var time = this.$refs.timercomponent[nugget].milliseconds;
+            console.log("The time value for that goal is: "+time);
             this.updateGoalTime(goal, time);
         },
         getTimeAllGoals() {
