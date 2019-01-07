@@ -27,7 +27,7 @@
         </b-navbar>
         <b-container fluid id="goalsContainerBackground">
             <div class="container mt-4 pt-5 pb-2">
-                <div class="shadow-lg col-lg-12 bg-white" id="goalTable">
+                <div class="shadow-lg col-xs-12 bg-white" id="goalTable">
                     <br>
                     <alert :message="message" v-if="showMessage"></alert>
                     <!-- Editable template name -->
@@ -60,27 +60,16 @@
                             <!-- completed color with goal # -->
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar justify-content-center">
-                                <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                    <v-icon small>keyboard_arrow_up</v-icon>
-                                </b-button>
-                                <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                    <v-icon small>keyboard_arrow_down</v-icon>
-                                </b-button>
-                            </div>
+                                    <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                        <v-icon small>keyboard_arrow_up</v-icon>
+                                    </b-button>
+                                    <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                        <v-icon small>keyboard_arrow_down</v-icon>
+                                    </b-button>
+                                </div>
                             </td>
                             <!-- progress color with # -->
                             <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}" class="align-middle">
-                                <div class="btn-toolbar justify-content-center">
-                                <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                    <v-icon small>keyboard_arrow_up</v-icon>
-                                </b-button>
-                                <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                    <v-icon small>keyboard_arrow_down</v-icon>
-                                </b-button>
-                            </div>
-                            </td>
-                            <!-- default: goal #-->
-                            <td v-else class="align-middle">
                                 <div class="btn-toolbar justify-content-center">
                                     <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
                                         <v-icon small>keyboard_arrow_up</v-icon>
@@ -90,92 +79,104 @@
                                     </b-button>
                                 </div>
                             </td>
+                            <!-- default: goal #-->
+                            <td v-else class="align-middle">
+                                <div class="btn-toolbar justify-content-center">
+                                    <b-button-group vertical>
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                            <v-icon small>keyboard_arrow_up</v-icon>
+                                        </b-button>
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                            <v-icon small>keyboard_arrow_down</v-icon>
+                                        </b-button>
+                                    </b-button-group>
+                                </div>
+                            </td>
                             <!-- Goal title/ Col 2 -->
                             <!-- completed color with title -->
-                            <td v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-if="goal.completed && goal.parentID == ''" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <!-- completed color with # -->
-                            <td v-else-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-else-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <!-- progress color w title -->
-                            <td v-else-if="goal.inProgress && goal.parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.parentID == ''" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <!-- progress color -->
-                            <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
+                            <td class="align-middle" v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td v-else-if="goal.parentID != '' && nestLevel != 2">
+                            <td class="align-middle" v-else-if="goal.parentID != '' && nestLevel != 2">
                             </td>
                             <!-- default title -->
-                            <td v-else @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <!-- Added Col 3-->
-                            <td v-if="goal.completed && goal.parentID==''" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-if="goal.completed && goal.parentID==''" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
                             <td v-else-if="goal.completed && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <!-- TODO: POSSIBLE BUG HERE WITH GOAL TITLE DISPLAY -->
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel != 2 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#e0a800'}"></td>
-                            <td v-else-if="goal.nestLevel == 2 && goal.parentID != ''" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel != 2 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#e0a800'}"></td>
+                            <td class="align-middle" v-else-if="goal.nestLevel == 2 && goal.parentID != ''" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <td v-else-if="goal.nestLevel == 3 && goal.parentID != ''">
+                            <td class="align-middle" v-else-if="goal.nestLevel == 3 && goal.parentID != ''">
                             </td>
-                            <td v-else></td>
+                            <td class="align-middle" v-else></td>
                             <!-- Added Col 4-->
-                            <td v-if="goal.completed && goal.nestLevel != 4 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-if="goal.completed && goal.nestLevel != 4 && goal.nestLevel != 3" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-else-if="goal.completed && goal.nestLevel == 4" v-bind:style="{backgroundColor: '#28a745c4'}">
                             </td>
-                            <td v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else-if="goal.completed && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#28a745c4'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            <td v-else-if="goal.inProgress && goal.nestLevel != 3 && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel != 3 && goal.nestLevel != 4" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
-                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
-                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
-                            </td>
-                            <td v-else-if="goal.inProgress && goal.nestLevel==4" v-bind:style="{backgroundColor: '#e0a800'}">
-                            </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 3" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
-                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 4">
+                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel==4" v-bind:style="{backgroundColor: '#e0a800'}">
+                            </td>
+                            <td class="align-middle" v-else-if="goal.parentID != '' && goal.nestLevel == 3" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                                <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
+                                <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
+                            </td>
+                            <td class="align-middle" v-else-if="goal.parentID != '' && goal.nestLevel == 4">
                             </td>
                             </td>
                             <td v-else></td>
                             <!-- Added Col 5 for Timers-->
-                            <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                            <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
-                            <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
+                            <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
-                            <td v-else>
+                            <td class="align-middle" v-else>
                                 <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"></timer>
                                 </div>
@@ -204,8 +205,7 @@
                                 <div class="btn-toolbar justify-content-center">
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" 
-                                             @click="onInProgGoal(index, goal)">
+                                            <b-button type="b-button" class="btn btn-secondary btn-sm" v-b-tooltip.hover title="Not In Progress" @click="onInProgGoal(index, goal)">
                                                 <v-icon small>undo</v-icon>
                                             </b-button>
                                         </div>
@@ -230,7 +230,7 @@
                                     </v-hover>
                                     <v-hover>
                                         <div slot-scope="{hover}" class="mr-1">
-                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress"  @click="onInProgGoal(index, goal)">
+                                            <b-button type="b-button" class="btn btn-warning btn-sm" v-b-tooltip.hover title="In Progress" @click="onInProgGoal(index, goal)">
                                                 <v-icon small>schedule</v-icon>
                                             </b-button>
                                         </div>
@@ -290,22 +290,21 @@
         </b-modal>
     </div>
 </template>
-
 <script>
 import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
 import timer from './Timer.vue';
 // axios.defaults.withCredentials = true;
-    /* name: 'goals',
-        props: {
-            time: {
-                type: Function,
-                default() {
-                    return function () {};
-                }
+/* name: 'goals',
+    props: {
+        time: {
+            type: Function,
+            default() {
+                return function () {};
             }
-        }, */
+        }
+    }, */
 export default {
     data() {
         return {
@@ -599,40 +598,38 @@ export default {
         onSwapGoal(currGoal, otherGoal) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
-        onInProgGoal(index, goal) { 
-           if(goal.inProgress){
-            console.log("\n\n\n\n\n\ndilly dilly m'fucker, in other words we're about to pause in Goals.vue");
-            // goal.inProgress = false;
-            this.pauseTimer(index);
-            console.log("after pause should be unreachable, right? Ro-shit");
-            console.log("Ro-shit is right. Now, index has value: "+index)
-            }
-            else{
+        onInProgGoal(index, goal) {
+            if (goal.inProgress) {
+                console.log("\n\n\n\n\n\ndilly dilly m'fucker, in other words we're about to pause in Goals.vue");
+                goal.inProgress = false;
+                this.pauseTimer(index);
+                console.log("after pause should be unreachable, right? Ro-shit");
+                console.log("Ro-shit is right. Now, index has value: " + index)
+            } else {
 
                 console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
                 goal.inProgress = true;
-                this.startTimer(index); 
+                this.startTimer(index);
                 console.log("technically, this should be unreachable, right? Ruh-ro");
-                console.log("Ruh-ro is right. Now, index has value: "+index)
-               
+                console.log("Ruh-ro is right. Now, index has value: " + index)
+
                 // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
 
-            
-        },
-        startTimer(nugget)
-        {
-            console.log("started, index was: "+nugget);
-            console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
-            console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
 
-            var counter = 0; 
-            for (let eachTimer of this.$refs.timercomponent){
-                console.log("Current index :"+counter+" Current IndexYeet: "+ eachTimer.getIndexYeet());
-                counter +=1; 
+        },
+        startTimer(nugget) {
+            console.log("started, index was: " + nugget);
+            console.log("Here art thou refs: " + String(this.$refs.timercomponent));
+            console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
+
+            var counter = 0;
+            for (let eachTimer of this.$refs.timercomponent) {
+                console.log("Current index :" + counter + " Current IndexYeet: " + eachTimer.getIndexYeet());
+                counter += 1;
             }
 
-          
+
             this.$refs.timercomponent[nugget].resume(nugget);
             // for (let eachTimer of this.$refs.timercomponent){
             //     if (eachTimer.getIndexYeet() == nugget){
@@ -641,17 +638,16 @@ export default {
             //     }
             // }
         },
-        pauseTimer(nugget)
-        {
-            console.log("paused, index was: "+nugget);
-            console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
-            console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
+        pauseTimer(nugget) {
+            console.log("paused, index was: " + nugget);
+            console.log("Here art thou refs: " + String(this.$refs.timercomponent));
+            console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
 
 
-            var counter = 0; 
-            for (let eachTimer of this.$refs.timercomponent){
-                console.log("Current index :"+counter+" Current IndexYeet: "+ eachTimer.getIndexYeet());
-                counter +=1; 
+            var counter = 0;
+            for (let eachTimer of this.$refs.timercomponent) {
+                console.log("Current index :" + counter + " Current IndexYeet: " + eachTimer.getIndexYeet());
+                counter += 1;
             }
 
             this.$refs.timercomponent[nugget].pause(nugget);
@@ -728,9 +724,9 @@ export default {
         getTime(nugget) {
             console.log("We're in get time, index is:  " + nugget);
             var goal = this.goals[nugget];
-            console.log("current goal is: "+goal.goalTitle);
+            console.log("current goal is: " + goal.goalTitle);
             var time = this.$refs.timercomponent[nugget].milliseconds;
-            console.log("The time value for that goal is: "+time);
+            console.log("The time value for that goal is: " + time);
             this.updateGoalTime(goal, time);
         },
         // getTimeAllGoals() {

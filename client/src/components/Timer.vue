@@ -1,7 +1,6 @@
 <template>
     <div>
         <span id="time" v-html="time"></span>
-         <span id="getIndex" v-html="getIndex"></span>
     </div>
 </template>
 
