@@ -18,7 +18,7 @@ module.exports = {
     },
     props: {
         loaded: Number,
-        indexYeet: Number
+        // indexYeet: Number
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -90,9 +90,9 @@ module.exports = {
 
             this.internalCounter = this.internalCounter + 1000;
         },
-        getIndexYeet(){
-            return this.indexYeet;
-        }
+        // getIndexYeet(){
+        //     return this.indexYeet;
+        // }
     },
 };
 </script>

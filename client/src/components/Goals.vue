@@ -625,7 +625,7 @@ export default {
 
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + " Current IndexYeet: " + eachTimer.getIndexYeet());
+                console.log("Current index :" + counter + " Current IndexYeet: " + nugget);
                 counter += 1;
             }
 
@@ -646,7 +646,7 @@ export default {
 
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + " Current IndexYeet: " + eachTimer.getIndexYeet());
+                console.log("Current index :" + counter + " Current IndexYeet: " + nugget);
                 counter += 1;
             }
 
