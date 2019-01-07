@@ -109,7 +109,7 @@
                             <!-- progress color -->
                             <td class="align-middle" v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td class="align-middle" v-else-if="goal.parentID != '' && nestLevel != 2">
+                            <td class="align-middle" v-else-if="goal.parentID != '' && goal.nestLevel == 2">
                             </td>
                             <!-- default title -->
                             <td class="align-middle" v-else @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
