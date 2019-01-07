@@ -602,7 +602,7 @@ export default {
         onInProgGoal(index, goal) { 
            if(goal.inProgress){
             console.log("\n\n\n\n\n\ndilly dilly m'fucker, in other words we're about to pause in Goals.vue");
-            goal.inProgress = false;
+            // goal.inProgress = false;
             this.pauseTimer(index);
             console.log("after pause should be unreachable, right? Ro-shit");
             console.log("Ro-shit is right. Now, index has value: "+index)
@@ -633,12 +633,13 @@ export default {
             }
 
           
-            for (let eachTimer of this.$refs.timercomponent){
-                if (eachTimer.getIndexYeet() == nugget){
-                    eachTimer.resume();
-                    break;
-                }
-            }
+            this.$refs.timercomponent[nugget].resume();
+            // for (let eachTimer of this.$refs.timercomponent){
+            //     if (eachTimer.getIndexYeet() == nugget){
+            //         eachTimer.resume();
+            //         break;
+            //     }
+            // }
         },
         pauseTimer(nugget)
         {
@@ -653,13 +654,13 @@ export default {
                 counter +=1; 
             }
 
-            // this.$refs.timercomponent[nugget].pause();
-             for (let eachTimer of this.$refs.timercomponent){
-                if (eachTimer.getIndexYeet() == nugget){
-                    eachTimer.pause();
-                    break;
-                }
-            }
+            this.$refs.timercomponent[nugget].pause();
+            //  for (let eachTimer of this.$refs.timercomponent){
+            //     if (eachTimer.getIndexYeet() == nugget){
+            //         eachTimer.pause();
+            //         break;
+            //     }
+            // }
         },
         onSubmit(evt) {
             evt.preventDefault();

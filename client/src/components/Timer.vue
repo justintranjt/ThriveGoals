@@ -17,7 +17,10 @@ module.exports = {
             internalCounter:100000,
         }
     },
-    props: ['loaded', 'indexYeet'],
+    props: {
+        loaded: Number,
+        indexYeet: Number
+    },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
     },
