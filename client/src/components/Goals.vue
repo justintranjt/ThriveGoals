@@ -167,16 +167,20 @@
                             <!-- Added Col 5 for Timers-->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
+                                    <input v-model="parentMsg">
+                                        <br>
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
+                                    
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else>
                                 <div class="text-center">
+
                                     <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"></timer>
                                 </div>
                             </td>
@@ -610,8 +614,8 @@ export default {
             else{
 
                 console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
-                goal.inProgress = true;
                 this.startTimer(index); 
+                goal.inProgress = true;
                 console.log("technically, this should be unreachable, right? Ruh-ro");
                 console.log("Ruh-ro is right. Now, index has value: "+index)
                
@@ -633,13 +637,17 @@ export default {
             }
 
           
-            this.$refs.timercomponent[nugget].resume();
-            // for (let eachTimer of this.$refs.timercomponent){
-            //     if (eachTimer.getIndexYeet() == nugget){
-            //         eachTimer.resume();
-            //         break;
-            //     }
-            // }
+            // this.$refs.timercomponent[nugget].resume();
+            counter = 0; 
+             for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getIndexYeet() == nugget){
+                    console.log("YEEET MEISTER JUNIOR!!!");
+                    // eachTimer.resume();
+                    break;
+                }
+                counter += 1; 
+            }
+            this.$refs.timercomponent[counter].resume();
         },
         pauseTimer(nugget)
         {
@@ -654,13 +662,18 @@ export default {
                 counter +=1; 
             }
 
-            this.$refs.timercomponent[nugget].pause();
-            //  for (let eachTimer of this.$refs.timercomponent){
-            //     if (eachTimer.getIndexYeet() == nugget){
-            //         eachTimer.pause();
-            //         break;
-            //     }
-            // }
+            // this.$refs.timercomponent[nugget].pause();
+            counter = 0; 
+             for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getIndexYeet() == nugget){
+                    console.log("YEEET MEISTER SUPREME!!!");
+                    // eachTimer.pause();
+                    break;
+                }
+                counter += 1; 
+            }
+            this.$refs.timercomponent[counter].pause();
+
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -729,9 +742,17 @@ export default {
             console.log("We're in get time, index is:  " + nugget);
             var goal = this.goals[nugget];
             console.log("current goal is: "+goal.goalTitle);
+
+            var donkeyMan = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getIndexYeet() == nugget){
+                    donkeyMan = eachTimer.milliseconds;
+                    break;
+                }
+            }
             var time = this.$refs.timercomponent[nugget].milliseconds;
             console.log("The time value for that goal is: "+time);
-            this.updateGoalTime(goal, time);
+            this.updateGoalTime(goal, donkeyMan);
         },
         // getTimeAllGoals() {
         //     var i;
