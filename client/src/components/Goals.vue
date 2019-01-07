@@ -167,18 +167,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="goal.goalNum" ref="timercomponent">
-                                    </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -627,8 +626,19 @@ export default {
             console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
             console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
 
+            var counter = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                console.log("Current index :"+counter+" Current IndexYeet: "+ eachTimer.getIndexYeet());
+                counter +=1; 
+            }
+
           
-            this.$refs.timercomponent[nugget].resume();
+            for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getIndexYeet() == nugget){
+                    eachTimer.resume();
+                    break;
+                }
+            }
         },
         pauseTimer(nugget)
         {
@@ -636,7 +646,20 @@ export default {
             console.log("Here art thou refs: " +  String(this.$refs.timercomponent));
             console.log("Here ist thee unique time identifer: "+this.$refs.timercomponent[nugget].milliseconds);
 
-            this.$refs.timercomponent[nugget].pause();
+
+            var counter = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                console.log("Current index :"+counter+" Current IndexYeet: "+ eachTimer.getIndexYeet());
+                counter +=1; 
+            }
+
+            // this.$refs.timercomponent[nugget].pause();
+             for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getIndexYeet() == nugget){
+                    eachTimer.pause();
+                    break;
+                }
+            }
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -709,24 +732,24 @@ export default {
             console.log("The time value for that goal is: "+time);
             this.updateGoalTime(goal, time);
         },
-        getTimeAllGoals() {
-            var i;
-            for (i = 0; i < this.goals.length; i++) {
-                this.getTime(i);
-            }
-        },
-        updateCurrentTime: function() {
-            // console.log("\n\n")
-            // console.log("updateCurrentTime in Goal.vue called");
-            this.currentTime = Date.now();
-            // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
-            // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
-            if ((this.currentTime - this.startTime) >= 3000) {
-                this.startTime = this.currentTime
-                // console.log("ITS OVER 9000!!!")
-                this.getTimeAllGoals();
-            }
-        },
+        // getTimeAllGoals() {
+        //     var i;
+        //     for (i = 0; i < this.goals.length; i++) {
+        //         this.getTime(i);
+        //     }
+        // },
+        // updateCurrentTime: function() {
+        //     // console.log("\n\n")
+        //     // console.log("updateCurrentTime in Goal.vue called");
+        //     this.currentTime = Date.now();
+        //     // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
+        //     // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
+        //     if ((this.currentTime - this.startTime) >= 3000) {
+        //         this.startTime = this.currentTime
+        //         // console.log("ITS OVER 9000!!!")
+        //         this.getTimeAllGoals();
+        //     }
+        // },
     },
     async created() {
         await this.getLoginNetID();

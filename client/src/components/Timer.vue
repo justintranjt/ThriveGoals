@@ -88,6 +88,9 @@ module.exports = {
 
             this.internalCounter = this.internalCounter + 1000;
         },
+        getIndexYeet: function(){
+            return this.indexYeet;
+        }
     },
 };
 </script>
