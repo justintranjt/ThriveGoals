@@ -1,7 +1,6 @@
 <template>
     <div>
         <span id="time" v-html="time"></span>
-         <span id="getIndex" v-html="getIndex"></span>
     </div>
 </template>
 
@@ -15,11 +14,12 @@ module.exports = {
             interval: null,
             pauseTime: 100000,
             internalCounter:100000,
+            timerID: null,
+            saveCounter: 0,
         }
     },
     props: {
         loaded: Number,
-        indexYeet: Number
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -53,9 +53,9 @@ module.exports = {
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
         },
-         getIndex: function(){
-            return this.indexYeet;
-        }
+        //  getIndex: function(){
+        //     return this.indexYeet;
+        // }
     },
     methods: {
         reset: function() {
@@ -66,34 +66,42 @@ module.exports = {
             this.pauseTime = 100000;
             this.loaded = 0;
             this.internalCounter = 100000;
+            this.timerID = null;
+            this.saveCounter= 0;
             this.$parent.getTime(this.index);
         },
-        pause: function() {
+        pause(nugget) {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
             console.log('\nYEET! We paused! Pause time was:'+this.pauseTime);
-            console.log('\nYEET! We paused! Pause yeet index was:'+this.indexYeet);
-            this.$parent.getTime(this.indexYeet);
+            console.log('\nYEET! We paused! Pause yeet index was:'+nugget);
+            this.$parent.getTime(nugget);
         },
-        resume: function() {
-            console.log("\n\n\nresume function called!!!:\nyeet index was: "+this.indexYeet);
+        resume(nugget) {
+            console.log("\n\n\nresume function called!!!:\nyeet index was: "+nugget);
             if(this.currentTime == this.startTime) {
-                this.currentTime = this.internalCounter + this.loaded;
+                this.currentTime += this.loaded;
             }
             this.state = "started";
-            // this.$parent.getTime(this.index);
+            this.timerID = nugget; 
+            this.$parent.getTime(nugget);
            // this.$parent.startTimer(this.index);
         },
-        updateCurrentTime: function() {
+        updateCurrentTime() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
             }
+            if(this.saveCounter = 30000){
+                this.saveCounter = 0; 
+                this.$parent.getTime(this.timerID);
+            }
 
             this.internalCounter = this.internalCounter + 1000;
+            this.saveCounter = this.saveCounter + 1000;
         },
-        getIndexYeet: function(){
-            return this.indexYeet;
-        }
+        // getIndexYeet(){
+        //     return this.indexYeet;
+        // }
     },
 };
 </script>
