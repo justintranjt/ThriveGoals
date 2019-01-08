@@ -170,19 +170,22 @@
                             </td>
                             <td v-else></td>
                             <!-- Added Col 5 for Timers-->
+                             <div>
+                            <span id="time" v-html="time"></span>
+                            </div>
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"  :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"  :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"></timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"  :key="goal.goalID"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -298,7 +301,7 @@
 import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
-import timer from './Timer.vue';
+
 export default {
     data() {
         return {
@@ -328,16 +331,87 @@ export default {
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
-            startTime: Date.now(),
-            currentTime: Date.now(),
+            //startTime: Date.now(),
+           // currentTime: Date.now(),
+            state: "paused",
+            startTime: 100000,
+            currentTime: 100000,
+            interval: null,
+            pauseTime: 100000,
+            internalCounter: 100000,
+            timerIndex: null,
+            autoSaveCounter: 0,
         };
+
     },
     components: {
         alert,
         prog,
-        timer,
     },
+    mounted: function() {
+        this.interval = setInterval(this.updateCurrentTime, 1000);
+    },
+    destroyed: function() {
+        clearInterval(this.interval)
+    },
+    computed: {
+        time: function() {
+            return this.hours + ':' + this.minutes + ':' + this.seconds;
+        },
+        milliseconds: function() {
+            if (this.currentTime == this.startTime) {
+                this.currentTime = this.currentTime + this.loaded;
+                return (this.currentTime - this.startTime);
+            }
+            return (this.currentTime - this.startTime);
+        },
+        hours: function() {
+            var lapsed = this.milliseconds;
+            var hrs = Math.floor((lapsed / 1000 / 60 / 60));
+            return hrs >= 10 ? hrs : '0' + hrs;
+        },
+        minutes: function() {
+            var lapsed = this.milliseconds;
+            var min = Math.floor((lapsed / 1000 / 60) % 60);
+            return min >= 10 ? min : '0' + min;
+        },
+        seconds: function() {
+            var lapsed = this.milliseconds;
+            var sec = Math.ceil((lapsed / 1000) % 60);
+            return sec >= 10 ? sec : '0' + sec;
+        },
+    },
+
     methods: {
+        pause(timerIndex) {
+            this.state = "paused";
+            this.pauseTime = this.internalCounter;
+            this.getTime(timerIndex);
+        },
+        resume(timerIndex) {
+            if (this.currentTime == this.startTime) {
+                this.currentTime += this.loaded;
+            }
+            this.state = "started";
+            this.timerIndex = timerIndex;
+            this.getTime(timerIndex);
+
+            // this.$parent.startTimer(this.index);
+        },
+        updateCurrentTime() {
+            if (this.state == "started") {
+                this.currentTime = this.currentTime + 1000;
+                this.autoSaveCounter = this.autoSaveCounter + 1000;
+            }
+            if(this.autoSaveCounter = 30000){
+                this.autoSaveCounter = 0;
+                // this.$parent.getTime(this.timerIndex);
+            }
+
+
+            this.internalCounter = this.internalCounter + 1000;
+        },
+
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
@@ -488,7 +562,7 @@ export default {
         updateGoalTitle(goal) {
             axios.defaults.withCredentials = true;
             this.updatedGoalTitle = '';
-            var goalTime = this.$refs.timercomponent[goal.goalNum - 1].milliseconds;
+            var goalTime = this.timer[goal.goalNum - 1].milliseconds;
             const payload = {
                 goalNum: goal.goalNum,
                 goalTitle: this.newGoalTitle,
@@ -567,7 +641,7 @@ export default {
             this.completeGoal(goal.goalID, this.currGoalTemplateID);
         },
         onDeleteGoal(goal) {
-            this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds);
+            this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.timer[goal.goalNum - 1].milliseconds);
         },
         onSwapGoal(currGoal, otherGoal) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
@@ -575,17 +649,11 @@ export default {
         onInProgGoal(index, goal) {
             if (goal.inProgress) {
                 goal.inProgress = false;
-                this.pauseTimer(index);
+                this.pause(index);
             } else {
                 goal.inProgress = true;
-                this.startTimer(index);
+                this.resume(index);
             }
-        },
-        startTimer(timerIndex) {
-            this.$refs.timercomponent[timerIndex].resume(timerIndex);
-        },
-        pauseTimer(timerIndex) {
-            this.$refs.timercomponent[timerIndex].pause(timerIndex);
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -649,7 +717,7 @@ export default {
         },
         getTime(timerIndex) {
             var goal = this.goals[timerIndex];
-            var time = this.$refs.timercomponent[timerIndex].milliseconds;
+            var time = this.timer[timerIndex].milliseconds;
             this.updateGoalTime(goal, time);
         },
     },
