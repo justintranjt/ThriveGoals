@@ -52,9 +52,9 @@ module.exports = {
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
         },
-         getIndex: function(){
-            return this.indexYeet;
-        }
+        //  getIndex: function(){
+        //     return this.indexYeet;
+        // }
     },
     methods: {
         reset: function() {
