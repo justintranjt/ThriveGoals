@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"></timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
