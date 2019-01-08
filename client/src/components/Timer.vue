@@ -52,17 +52,17 @@ module.exports = {
         },
     },
     methods: {
-        pause(nugget) {
+        pause(timerIndex) {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
-            this.$parent.getTime(nugget);
+            this.$parent.getTime(timerIndex);
         },
-        resume(nugget) {
+        resume(timerIndex) {
             if (this.currentTime == this.startTime) {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
-            this.$parent.getTime(nugget);
+            this.$parent.getTime(timerIndex);
             // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {

@@ -581,11 +581,11 @@ export default {
                 this.startTimer(index);
             }
         },
-        startTimer(nugget) {
-            this.$refs.timercomponent[nugget].resume(nugget);
+        startTimer(timerIndex) {
+            this.$refs.timercomponent[timerIndex].resume(timerIndex);
         },
-        pauseTimer(nugget) {
-            this.$refs.timercomponent[nugget].pause(nugget);
+        pauseTimer(timerIndex) {
+            this.$refs.timercomponent[timerIndex].pause(timerIndex);
         },
         onSubmit(evt) {
             evt.preventDefault();
@@ -647,9 +647,9 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
-        getTime(nugget) {
-            var goal = this.goals[nugget];
-            var time = this.$refs.timercomponent[nugget].milliseconds;
+        getTime(timerIndex) {
+            var goal = this.goals[timerIndex];
+            var time = this.$refs.timercomponent[timerIndex].milliseconds;
             this.updateGoalTime(goal, time);
         },
     },
