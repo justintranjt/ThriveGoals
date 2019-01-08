@@ -173,7 +173,7 @@
                              <div>
                             <span id="time" v-html="time"></span>
                             </div>
-                            <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
+                           <!-- <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)"  :key="goal.goalID"> </timer>
                                 </div>
@@ -187,8 +187,8 @@
                                 <div class="text-center">
                                     <timer v-bind:loaded="Number(goal.goalTime)"  :key="goal.goalID"></timer>
                                 </div>
-                            </td>
-                            <td v-else></td>
+                            </td>-->
+                            <!--<td v-else></td>-->
                             <!-- Buttons/ Col 6 -->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar justify-content-center">
