@@ -20,6 +20,7 @@ module.exports = {
     },
     props: {
         loaded: Number,
+        index: Number,
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -53,9 +54,9 @@ module.exports = {
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
         },
-        //  getIndex: function(){
-        //     return this.indexYeet;
-        // }
+         getIndex: function(){
+            return this.index;
+        }
     },
     methods: {
         reset: function() {
@@ -70,34 +71,35 @@ module.exports = {
             this.saveCounter= 0;
             this.$parent.getTime(this.index);
         },
-        pause(nugget) {
+        pause() {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
             console.log('\nYEET! We paused! Pause time was:'+this.pauseTime);
-            console.log('\nYEET! We paused! Pause yeet index was:'+nugget);
-            this.$parent.getTime(nugget);
+            console.log('\nYEET! We paused! Pause yeet index was:');
+            this.$parent.getTime(this.index);
         },
-        resume(nugget) {
-            console.log("\n\n\nresume function called!!!:\nyeet index was: "+nugget);
+        resume() {
+            console.log("\n\n\nresume function called!!!:\nyeet index was: ");
             if(this.currentTime == this.startTime) {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
             this.timerID = nugget; 
-            this.$parent.getTime(nugget);
+            this.$parent.getTime(this.index);
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
+                this.saveCounter = this.saveCounter + 1000;
             }
             if(this.saveCounter = 30000){
                 this.saveCounter = 0; 
-                this.$parent.getTime(this.timerID);
+                this.$parent.getTime(this.index);
             }
 
             this.internalCounter = this.internalCounter + 1000;
-            this.saveCounter = this.saveCounter + 1000;
+            
         },
         // getIndexYeet(){
         //     return this.indexYeet;

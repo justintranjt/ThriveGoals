@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-if="rerenderComponent" v-bind:loaded="Number(goal.goalTime)"ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer  v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-if="rerenderComponent" v-bind:loaded="Number(goal.goalTime)"ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer  v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-if="rerenderComponent" v-bind:loaded="Number(goal.goalTime)"ref="timercomponent" :key="goal.goalID"></timer>
+                                    <timer  v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -644,7 +644,7 @@ export default {
             }
 
 
-            this.$refs.timercomponent[nugget].resume(nugget);
+            this.$refs.timercomponent[nugget].resume();
             // for (let eachTimer of this.$refs.timercomponent){
             //     if (eachTimer.getIndexYeet() == nugget){
             //         eachTimer.resume();
@@ -662,7 +662,7 @@ export default {
                 counter += 1;
             }
 
-            this.$refs.timercomponent[nugget].pause(nugget);
+            this.$refs.timercomponent[nugget].pause();
         },
         onSubmit(evt) {
             evt.preventDefault();
