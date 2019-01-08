@@ -44,9 +44,9 @@
                     <b-button v-if="this.currGoalTemplateID==='Enter Your Template Title Here' || goalTemplateIDs.length===0" type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal disabled>Add Goal</b-button>
                     <b-button v-else type="b-button" class="btn btn-success btn-med" v-b-modal.goal-modal>Add Goal</b-button>
                     <br><br>
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover text-center">
                         <thead>
-                            <tr class="text-center">
+                            <tr>
                                 <th scope="col">Priority</th>
                                 <th scope="col">Goal</th>
                                 <th colspan=2>Subgoals</th>
@@ -61,10 +61,10 @@
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar justify-content-center">
                                     <b-button-group vertical>
-                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1], index, index-1)">
                                             <v-icon small>keyboard_arrow_up</v-icon>
                                         </b-button>
-                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1], index, index+1)">
                                             <v-icon small>keyboard_arrow_down</v-icon>
                                         </b-button>
                                     </b-button-group>
@@ -74,10 +74,10 @@
                             <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}" class="align-middle">
                                 <div class="btn-toolbar justify-content-center">
                                     <b-button-group vertical>
-                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1], index, index-1)">
                                             <v-icon small>keyboard_arrow_up</v-icon>
                                         </b-button>
-                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1], index, index+1)">
                                             <v-icon small>keyboard_arrow_down</v-icon>
                                         </b-button>
                                     </b-button-group>
@@ -87,10 +87,10 @@
                             <td v-else class="align-middle">
                                 <div class="btn-toolbar justify-content-center">
                                     <b-button-group vertical>
-                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1], index, index-1)">
                                             <v-icon small>keyboard_arrow_up</v-icon>
                                         </b-button>
-                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1], index, index+1)">
                                             <v-icon small>keyboard_arrow_down</v-icon>
                                         </b-button>
                                     </b-button-group>
@@ -111,9 +111,11 @@
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
                             <!-- progress color -->
-                            <td class="align-middle" v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
+                            <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td class="align-middle" v-else-if="goal.parentID != '' && goal.nestLevel == 2">
+                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 2">
+                            </td>
+                            <td v-else-if="goal.parentID != '' && goal.nestLevel == 3">
                             </td>
                             <!-- default title -->
                             <td class="align-middle" v-else @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
@@ -133,7 +135,7 @@
                             </td>
                             <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel == 3" v-bind:style="{backgroundColor: '#e0a800'}">
                             </td>
-                            <td class="align-middle" v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
+                            <td class="align-middle " v-else-if="goal.inProgress && goal.nestLevel == 2" v-bind:style="{backgroundColor: '#e0a800'}" @touchstart="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle" @dblclick="updatedGoalTitle=(goal); newGoalTitle=goal.goalTitle">
                                 <label v-b-tooltip.hover title="Double-click to edit" v-show="updatedGoalTitle!=(goal)"> {{ goal.goalTitle }} </label>
                                 <input v-if="updatedGoalTitle==(goal)" v-model="newGoalTitle" @keyup.enter="updateGoalTitle(goal);">
                             </td>
@@ -171,18 +173,18 @@
                             <td v-else></td>
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
-                                <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
+                                <div>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
-                                <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
+                                <div>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
-                                <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"></timer>
+                                <div>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -303,8 +305,6 @@ import timer from './Timer.vue';
 export default {
     data() {
         return {
-            renderComponent: true, 
-            componentKey: 0,
             netID: null,
             goalTemplateIDs: [],
             currGoalTemplateID: null, // Default template ID
@@ -341,24 +341,6 @@ export default {
         timer,
     },
     methods: {
-        destroyComponent: function () {
-        //Need to code for destroy tree-data component
-        this.destroyComponent = false;
-        },
-        forceRerender2() {
-          // Remove my-component from the DOM
-          this.renderComponent = false;
-
-          // If you like promises better you can
-          // also use nextTick this way
-          this.$nextTick().then(() => {
-            // Add the component back in
-            this.renderComponent = true;
-          });
-        },
-        forceRerender() {
-          this.componentKey += 1;  
-        },
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
@@ -371,7 +353,6 @@ export default {
                 });
         },
         getGoals(goalTemplateID) {
-            // this.forceRerender2();
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
             axios.get(path, { withCredentials: true, credentials: 'same-origin' })
@@ -381,7 +362,7 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-                
+
         },
         getNumCompleted(goalTemplateID) {
             axios.defaults.withCredentials = true;
@@ -581,12 +562,12 @@ export default {
             this.addGoalForm.goalNum = 0;
             this.addGoalForm.goalTitle = '';
             this.addGoalForm.completed = false;
-        
+
         },
         initSubgoalForm() {
             this.addSubgoalForm.goalTitle = '';
             this.addSubgoalForm.completed = 0;
-            
+
         },
         onCompleteGoal(goal) {
             this.completeGoal(goal.goalID, this.currGoalTemplateID);
@@ -594,91 +575,45 @@ export default {
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds);
         },
-        onSwapGoal(currGoal, otherGoal) {
-            // this.forceRerender2();
+        onSwapGoal(currGoal, otherGoal, currIndex, otherIndex) {
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
-            // this.forceRerender2();
+
+            currGoal.inProgress = false;
+            otherGoal.inProgress = false;
+            this.pauseTimer(currIndex, currGoal.goalID);
+            this.pauseTimer(otherIndex, otherGoal.goalID);
         },
         onInProgGoal(index, goal) {
-   
             if (goal.inProgress) {
                 goal.inProgress = false;
                 this.pauseTimer(index, goal.goalID);
-                console.log("Ro-shit is right. Now, index has value: " + index)
             } else {
-
-                console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
                 goal.inProgress = true;
                 this.startTimer(index, goal.goalID);
-                console.log("Ruh-ro is right. Now, index has value: " + index)
-                // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
-       },
+        },
         startTimer(index, goalIDKey) {
-            console.log("started, index was: " +index );
-            // console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[].milliseconds);
-
+            var timerIndex = -1;
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
-                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
-                counter += 1;
-            }
-
-
-            // this.$refs.timercomponent[nugget].resume();
-            var timerIndex = -1; 
-            var counter2 = 0; 
-            for (let eachTimer of this.$refs.timercomponent){
-                if (eachTimer.getKey == goalIDKey){
-                    timerIndex =  eachTimer.getIndex;  
+                if (eachTimer.getKey == goalIDKey) {
+                    timerIndex = eachTimer.getIndex;
                     break;
                 }
-                counter2 += 1; 
+                counter += 1;
             }
-            console.log("\n\nTimerIndex is: " +timerIndex);
-            this.$refs.timercomponent[counter2].resume(index, counter2);
-            
+            this.$refs.timercomponent[counter].resume(index, counter);
         },
         pauseTimer(index, goalIDKey) {
-            console.log("started, index was: " +index );
-            // console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[].milliseconds);
-
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
-                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
-                counter += 1;
-            }
-
-
-            // this.$refs.timercomponent[nugget].resume();
-            var timerIndex = -1; 
-            var counter2 = 0; 
-            for (let eachTimer of this.$refs.timercomponent){
-                if (eachTimer.getKey == goalIDKey){
-                    timerIndex =  eachTimer.getIndex;  
+                if (eachTimer.getKey == goalIDKey) {
                     break;
                 }
-                counter2 += 1; 
+                counter += 1;
             }
-            console.log("\n\nTimerIndex is: " +timerIndex);
-            this.$refs.timercomponent[counter2].pause(index, counter2);
-            
+            this.$refs.timercomponent[counter].pause(index, counter);
         },
-        // pauseTimer(nugget) {
-        //     console.log("paused, index was: " + nugget);
-        //     console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
-
-        //     var counter = 0;
-        //     for (let eachTimer of this.$refs.timercomponent) {
-        //         console.log("Current index :" + counter + "   Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded +"   KeyValue: "
-        //             + eachTimer.getKey);
-        //         counter += 1;
-        //     }
-
-        //     this.$refs.timercomponent[nugget].pause();
-        // },
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
@@ -704,7 +639,7 @@ export default {
             this.currGoalClicked = goal['goalID'];
             this.currGoalClickedNum = goal['goalNum'];
         },
-        onSubmitSubgoal(evt) {
+        async onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
             var goalParent = this.currGoalClicked;
@@ -728,6 +663,14 @@ export default {
                 parentID: goalParent,
             };
             this.addGoal(payload, this.currGoalTemplateID);
+
+            for (let i = 0; i < this.goals.length; i++) {
+                if (this.goals[i].inProgress == true) {
+                    this.goals[i].inProgress = false;
+                    await this.pauseTimer(i, this.goals[i].goalID);
+                }
+            }
+
             this.initSubgoalForm();
         },
         onReset(evt) {
@@ -739,8 +682,8 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
-        getTime(timerIndex) {
-            var goal = this.goals[timerIndex];
+        getTime(goalIndex, timerIndex) {
+            var goal = this.goals[goalIndex];
             var time = this.$refs.timercomponent[timerIndex].milliseconds;
             this.updateGoalTime(goal, time);
         },
@@ -748,7 +691,7 @@ export default {
             for (let i = 0; i < this.goals.length; i++) {
                 if (this.goals[i].inProgress == true) {
                     this.goals[i].inProgress = false;
-                    await this.pauseTimer(i);
+                    await this.pauseTimer(i, this.goals[i].goalID);
                 }
             }
         },
@@ -763,12 +706,4 @@ export default {
         window.addEventListener('beforeunload', this.saveTimerProgress)
     },
 };
-// var vm = new Vue({
-//   el: '#app',
-//   components: {
-//   'timer': MyComponent
-//   }
-// });
-
 </script>
-

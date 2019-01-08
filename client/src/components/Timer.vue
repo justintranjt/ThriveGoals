@@ -64,18 +64,17 @@ module.exports = {
         },
     },
     methods: {
-        pause(timerIndex) {
+        pause(goalIndex, timerIndex) {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
-            this.$parent.getTime(timerIndex);
+            this.$parent.getTime(goalIndex, timerIndex);
         },
-        resume(timerIndex) {
+        resume(goalIndex, timerIndex) {
             if (this.currentTime == this.startTime) {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
-            this.$parent.getTime(timerIndex);
-            // this.$parent.startTimer(this.index);
+            this.$parent.getTime(goalIndex, timerIndex);
         },
         updateCurrentTime() {
             if (this.state == "started") {
