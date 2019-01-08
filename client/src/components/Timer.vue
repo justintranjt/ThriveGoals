@@ -12,11 +12,14 @@ module.exports = {
             currentTime: 100000,
             interval: null,
             pauseTime: 100000,
-            internalCounter: 100000,
+            internalCounter:100000,
+            timerID: null
         }
     },
     props: {
         loaded: Number,
+        index: Number,
+        keyValue: String,
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -50,6 +53,15 @@ module.exports = {
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
         },
+        getIndex: function(){
+            return this.index;
+        },
+        getLoaded: function(){
+            return this.loaded;
+        },
+        getKey: function(){
+            return this.keyValue;
+        },
     },
     methods: {
         pause(timerIndex) {
@@ -69,8 +81,8 @@ module.exports = {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
             }
-
             this.internalCounter = this.internalCounter + 1000;
+            
         },
     },
 };

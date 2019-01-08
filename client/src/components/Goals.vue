@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"> </timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent" :key="goal.goalID"></timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -299,9 +299,12 @@ import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
 import timer from './Timer.vue';
+
 export default {
     data() {
         return {
+            renderComponent: true, 
+            componentKey: 0,
             netID: null,
             goalTemplateIDs: [],
             currGoalTemplateID: null, // Default template ID
@@ -338,6 +341,24 @@ export default {
         timer,
     },
     methods: {
+        destroyComponent: function () {
+        //Need to code for destroy tree-data component
+        this.destroyComponent = false;
+        },
+        forceRerender2() {
+          // Remove my-component from the DOM
+          this.renderComponent = false;
+
+          // If you like promises better you can
+          // also use nextTick this way
+          this.$nextTick().then(() => {
+            // Add the component back in
+            this.renderComponent = true;
+          });
+        },
+        forceRerender() {
+          this.componentKey += 1;  
+        },
         async getLoginNetID() {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/loginNetID';
@@ -350,6 +371,7 @@ export default {
                 });
         },
         getGoals(goalTemplateID) {
+            // this.forceRerender2();
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/modGoals/' + goalTemplateID;
             axios.get(path, { withCredentials: true, credentials: 'same-origin' })
@@ -359,6 +381,7 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
+                
         },
         getNumCompleted(goalTemplateID) {
             axios.defaults.withCredentials = true;
@@ -558,10 +581,12 @@ export default {
             this.addGoalForm.goalNum = 0;
             this.addGoalForm.goalTitle = '';
             this.addGoalForm.completed = false;
+        
         },
         initSubgoalForm() {
             this.addSubgoalForm.goalTitle = '';
             this.addSubgoalForm.completed = 0;
+            
         },
         onCompleteGoal(goal) {
             this.completeGoal(goal.goalID, this.currGoalTemplateID);
@@ -570,23 +595,90 @@ export default {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds);
         },
         onSwapGoal(currGoal, otherGoal) {
+            // this.forceRerender2();
             this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
+            // this.forceRerender2();
         },
         onInProgGoal(index, goal) {
+   
             if (goal.inProgress) {
                 goal.inProgress = false;
-                this.pauseTimer(index);
+                this.pauseTimer(index, goal.goalID);
+                console.log("Ro-shit is right. Now, index has value: " + index)
             } else {
+
+                console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
                 goal.inProgress = true;
-                this.startTimer(index);
+                this.startTimer(index, goal.goalID);
+                console.log("Ruh-ro is right. Now, index has value: " + index)
+                // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
+       },
+        startTimer(index, goalIDKey) {
+            console.log("started, index was: " +index );
+            // console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[].milliseconds);
+
+            var counter = 0;
+            for (let eachTimer of this.$refs.timercomponent) {
+                console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
+                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
+                counter += 1;
+            }
+
+
+            // this.$refs.timercomponent[nugget].resume();
+            var timerIndex = -1; 
+            var counter2 = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getKey == goalIDKey){
+                    timerIndex =  eachTimer.getIndex;  
+                    break;
+                }
+                counter2 += 1; 
+            }
+            console.log("\n\nTimerIndex is: " +timerIndex);
+            this.$refs.timercomponent[counter2].resume(index, counter2);
+            
         },
-        startTimer(timerIndex) {
-            this.$refs.timercomponent[timerIndex].resume(timerIndex);
+        pauseTimer(index, goalIDKey) {
+            console.log("started, index was: " +index );
+            // console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[].milliseconds);
+
+            var counter = 0;
+            for (let eachTimer of this.$refs.timercomponent) {
+                console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
+                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
+                counter += 1;
+            }
+
+
+            // this.$refs.timercomponent[nugget].resume();
+            var timerIndex = -1; 
+            var counter2 = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getKey == goalIDKey){
+                    timerIndex =  eachTimer.getIndex;  
+                    break;
+                }
+                counter2 += 1; 
+            }
+            console.log("\n\nTimerIndex is: " +timerIndex);
+            this.$refs.timercomponent[counter2].pause(index, counter2);
+            
         },
-        pauseTimer(timerIndex) {
-            this.$refs.timercomponent[timerIndex].pause(timerIndex);
-        },
+        // pauseTimer(nugget) {
+        //     console.log("paused, index was: " + nugget);
+        //     console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
+
+        //     var counter = 0;
+        //     for (let eachTimer of this.$refs.timercomponent) {
+        //         console.log("Current index :" + counter + "   Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded +"   KeyValue: "
+        //             + eachTimer.getKey);
+        //         counter += 1;
+        //     }
+
+        //     this.$refs.timercomponent[nugget].pause();
+        // },
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
@@ -671,4 +763,12 @@ export default {
         window.addEventListener('beforeunload', this.saveTimerProgress)
     },
 };
+// var vm = new Vue({
+//   el: '#app',
+//   components: {
+//   'timer': MyComponent
+//   }
+// });
+
 </script>
+
