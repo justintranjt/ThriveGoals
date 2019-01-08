@@ -60,23 +60,27 @@
                             <!-- completed color with goal # -->
                             <td v-if="goal.completed" v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="btn-toolbar justify-content-center">
-                                    <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                        <v-icon small>keyboard_arrow_up</v-icon>
-                                    </b-button>
-                                    <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                        <v-icon small>keyboard_arrow_down</v-icon>
-                                    </b-button>
+                                    <b-button-group vertical>
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                            <v-icon small>keyboard_arrow_up</v-icon>
+                                        </b-button>
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                            <v-icon small>keyboard_arrow_down</v-icon>
+                                        </b-button>
+                                    </b-button-group>
                                 </div>
                             </td>
                             <!-- progress color with # -->
                             <td v-else-if="goal.inProgress" v-bind:style="{backgroundColor: '#e0a800'}" class="align-middle">
                                 <div class="btn-toolbar justify-content-center">
-                                    <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
-                                        <v-icon small>keyboard_arrow_up</v-icon>
-                                    </b-button>
-                                    <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
-                                        <v-icon small>keyboard_arrow_down</v-icon>
-                                    </b-button>
+                                    <b-button-group vertical>
+                                        <b-button class="mr-1" v-if="index!=0" type="b-button" v-b-tooltip.hover title="Move Up" @click="onSwapGoal(goal, goals[index-1])">
+                                            <v-icon small>keyboard_arrow_up</v-icon>
+                                        </b-button>
+                                        <b-button class="mr-1" v-if="index!=goals.length-1" type="b-button" v-b-tooltip.hover title="Move Down" @click="onSwapGoal(goal, goals[index+1])">
+                                            <v-icon small>keyboard_arrow_down</v-icon>
+                                        </b-button>
+                                    </b-button-group>
                                 </div>
                             </td>
                             <!-- default: goal #-->
