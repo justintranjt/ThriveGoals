@@ -13,6 +13,8 @@ module.exports = {
             interval: null,
             pauseTime: 100000,
             internalCounter: 100000,
+            timerIndex: null,
+            autoSaveCounter: 0,
         }
     },
     props: {
@@ -62,14 +64,21 @@ module.exports = {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
+            this.timerIndex = timerIndex;
             this.$parent.getTime(timerIndex);
             // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {
             if (this.state == "started") {
                 this.currentTime = this.currentTime + 1000;
+                this.autoSaveCounter = this.autoSaveCounter + 1000;
+            }
+            if(this.autoSaveCounter = 30000){
+                this.autoSaveCounter = 0;
+                // this.$parent.getTime(this.timerIndex);
             }
 
+            
             this.internalCounter = this.internalCounter + 1000;
         },
     },
