@@ -21,6 +21,7 @@ module.exports = {
     props: {
         loaded: Number,
         index: Number,
+        keyValue: String
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -54,9 +55,15 @@ module.exports = {
             var sec = Math.ceil((lapsed / 1000) % 60);
             return sec >= 10 ? sec : '0' + sec;
         },
-         getIndex: function(){
+        getIndex: function(){
             return this.index;
-        }
+        },
+        getLoaded: function(){
+            return this.loaded;
+        },
+        getKey: function(){
+            return this.keyValue;
+        },
     },
     methods: {
         reset: function() {
@@ -78,14 +85,13 @@ module.exports = {
             console.log('\nYEET! We paused! Pause yeet index was:');
             this.$parent.getTime(this.index);
         },
-        resume() {
+        resume(timerIndex) {
             console.log("\n\n\nresume function called!!!:\nyeet index was: ");
             if(this.currentTime == this.startTime) {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
-            this.timerID = nugget; 
-            this.$parent.getTime(this.index);
+            this.$parent.getTime(timerIndex);
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {
@@ -95,7 +101,7 @@ module.exports = {
             }
             if(this.saveCounter = 30000){
                 this.saveCounter = 0; 
-                this.$parent.getTime(this.index);
+                // this.$parent.getTime(this.index);
             }
 
             this.internalCounter = this.internalCounter + 1000;
