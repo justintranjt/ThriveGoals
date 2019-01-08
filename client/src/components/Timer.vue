@@ -77,10 +77,10 @@ module.exports = {
         resume(nugget) {
             console.log("\n\n\nresume function called!!!:\nyeet index was: "+nugget);
             if(this.currentTime == this.startTime) {
-                this.currentTime = this.internalCounter + this.loaded;
+                this.currentTime += this.loaded;
             }
             this.state = "started";
-            // this.$parent.getTime(nugget);
+            this.$parent.getTime(nugget);
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {

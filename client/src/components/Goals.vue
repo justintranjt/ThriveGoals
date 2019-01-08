@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)" v-bind:indexYeet="index" ref="timercomponent"></timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -605,27 +605,20 @@ export default {
         },
         onInProgGoal(index, goal) {
             if (goal.inProgress) {
-                console.log("\n\n\n\n\n\ndilly dilly m'fucker, in other words we're about to pause in Goals.vue");
                 goal.inProgress = false;
                 this.pauseTimer(index);
-                console.log("after pause should be unreachable, right? Ro-shit");
                 console.log("Ro-shit is right. Now, index has value: " + index)
             } else {
 
                 console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
                 goal.inProgress = true;
                 this.startTimer(index);
-                console.log("technically, this should be unreachable, right? Ruh-ro");
                 console.log("Ruh-ro is right. Now, index has value: " + index)
-
                 // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
-
-
-        },
+       },
         startTimer(nugget) {
             console.log("started, index was: " + nugget);
-            console.log("Here art thou refs: " + String(this.$refs.timercomponent));
             console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
 
             var counter = 0;
@@ -645,9 +638,7 @@ export default {
         },
         pauseTimer(nugget) {
             console.log("paused, index was: " + nugget);
-            console.log("Here art thou refs: " + String(this.$refs.timercomponent));
             console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
-
 
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
@@ -656,12 +647,6 @@ export default {
             }
 
             this.$refs.timercomponent[nugget].pause(nugget);
-            //  for (let eachTimer of this.$refs.timercomponent){
-            //     if (eachTimer.getIndexYeet() == nugget){
-            //         eachTimer.pause();
-            //         break;
-            //     }
-            // }
         },
         onSubmit(evt) {
             evt.preventDefault();
