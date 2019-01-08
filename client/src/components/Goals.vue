@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID"> </timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID"> </timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)"  v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID"></timer>
+                                    <timer  v-if="renderComponent" v-bind:loaded="Number(goal.goalTime)" v-bind:index="index" ref="timercomponent" :key="goal.goalID" v-bind:keyValue="goal.goalID" v-bind:goalTitle="goal.goalTitle"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -624,7 +624,7 @@ export default {
    
             if (goal.inProgress) {
                 goal.inProgress = false;
-                this.pauseTimer(index);
+                this.pauseTimer(index, goal.goalID);
                 console.log("Ro-shit is right. Now, index has value: " + index)
             } else {
 
@@ -642,36 +642,64 @@ export default {
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
                 console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
-                    + eachTimer.getKey);
+                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
                 counter += 1;
             }
 
 
             // this.$refs.timercomponent[nugget].resume();
             var timerIndex = -1; 
+            var counter2 = 0; 
             for (let eachTimer of this.$refs.timercomponent){
                 if (eachTimer.getKey == goalIDKey){
                     timerIndex =  eachTimer.getIndex;  
                     break;
                 }
+                counter2 += 1; 
             }
             console.log("\n\nTimerIndex is: " +timerIndex);
-            this.$refs.timercomponent[timerIndex].resume(index);
+            this.$refs.timercomponent[counter2].resume(index, counter2);
             
         },
-        pauseTimer(nugget) {
-            console.log("paused, index was: " + nugget);
-            console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
+        pauseTimer(index, goalIDKey) {
+            console.log("started, index was: " +index );
+            // console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[].milliseconds);
 
             var counter = 0;
             for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + "   Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded +"   KeyValue: "
-                    + eachTimer.getKey);
+                console.log("Current index :" + counter + "  Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded + "   KeyValue: "
+                    + eachTimer.getKey + " goal: "+eachTimer.getTitle);
                 counter += 1;
             }
 
-            this.$refs.timercomponent[nugget].pause();
+
+            // this.$refs.timercomponent[nugget].resume();
+            var timerIndex = -1; 
+            var counter2 = 0; 
+            for (let eachTimer of this.$refs.timercomponent){
+                if (eachTimer.getKey == goalIDKey){
+                    timerIndex =  eachTimer.getIndex;  
+                    break;
+                }
+                counter2 += 1; 
+            }
+            console.log("\n\nTimerIndex is: " +timerIndex);
+            this.$refs.timercomponent[counter2].pause(index, counter2);
+            
         },
+        // pauseTimer(nugget) {
+        //     console.log("paused, index was: " + nugget);
+        //     console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
+
+        //     var counter = 0;
+        //     for (let eachTimer of this.$refs.timercomponent) {
+        //         console.log("Current index :" + counter + "   Timer Index: " + eachTimer.getIndex + "   Time: "+ eachTimer.getLoaded +"   KeyValue: "
+        //             + eachTimer.getKey);
+        //         counter += 1;
+        //     }
+
+        //     this.$refs.timercomponent[nugget].pause();
+        // },
         onSubmit(evt) {
             evt.preventDefault();
             this.$refs.addGoalModal.hide();
@@ -735,11 +763,11 @@ export default {
             this.getGoals(goalTemplateID);
             this.getNumCompleted(goalTemplateID);
         },
-        getTime(nugget) {
-            console.log("We're in get time, index is:  " + nugget);
-            var goal = this.goals[nugget];
+        getTime(goalIndex, timerIndex ) {
+            console.log("We're in get time, goalIndex is:"+goalIndex+ "  timerIndex is: "+ timerIndex);
+            var goal = this.goals[goalIndex];
             console.log("current goal is: " + goal.goalTitle);
-            var time = this.$refs.timercomponent[nugget].milliseconds;
+            var time = this.$refs.timercomponent[timerIndex].milliseconds;
             console.log("The time value for that goal is: " + time);
 
             this.updateGoalTime(goal, time);

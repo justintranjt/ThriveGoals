@@ -21,7 +21,8 @@ module.exports = {
     props: {
         loaded: Number,
         index: Number,
-        keyValue: String
+        keyValue: String,
+        goalTitle: String,
     },
     mounted: function() {
         this.interval = setInterval(this.updateCurrentTime, 1000);
@@ -64,6 +65,9 @@ module.exports = {
         getKey: function(){
             return this.keyValue;
         },
+         getTitle: function(){
+            return this.goalTitle;
+        },
     },
     methods: {
         reset: function() {
@@ -78,20 +82,20 @@ module.exports = {
             this.saveCounter= 0;
             this.$parent.getTime(this.index);
         },
-        pause() {
+        pause(goalIndex, timerIndex) {
             this.state = "paused";
             this.pauseTime = this.internalCounter;
             console.log('\nYEET! We paused! Pause time was:'+this.pauseTime);
             console.log('\nYEET! We paused! Pause yeet index was:');
-            this.$parent.getTime(this.index);
+            this.$parent.getTime(goalIndex, timerIndex);
         },
-        resume(timerIndex) {
-            console.log("\n\n\nresume function called!!!:\nyeet index was: ");
+        resume(goalIndex, timerIndex) {
+            console.log("\n\n\nresume function called!!!:\nyeet index was: " + timerIndex);
             if(this.currentTime == this.startTime) {
                 this.currentTime += this.loaded;
             }
             this.state = "started";
-            this.$parent.getTime(timerIndex);
+            this.$parent.getTime(goalIndex, timerIndex);
            // this.$parent.startTimer(this.index);
         },
         updateCurrentTime() {
