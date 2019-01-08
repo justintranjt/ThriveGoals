@@ -172,17 +172,17 @@
                             <!-- Added Col 5 for Timers-->
                             <td class="align-middle" v-if=goal.completed v-bind:style="{backgroundColor: '#28a745c4'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else-if=goal.inProgress v-bind:style="{backgroundColor: '#e0a800'}">
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"> </timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"> </timer>
                                 </div>
                             </td>
                             <td class="align-middle" v-else>
                                 <div class="text-center">
-                                    <timer v-bind:loaded="Number(goal.goalTime)"ref="timercomponent"></timer>
+                                    <timer v-bind:loaded="Number(goal.goalTime)" ref="timercomponent"></timer>
                                 </div>
                             </td>
                             <td v-else></td>
@@ -299,16 +299,6 @@ import axios from 'axios';
 import alert from './Alert';
 import prog from './Progress';
 import timer from './Timer.vue';
-// axios.defaults.withCredentials = true;
-/* name: 'goals',
-    props: {
-        time: {
-            type: Function,
-            default() {
-                return function () {};
-            }
-        }
-    }, */
 export default {
     data() {
         return {
@@ -335,7 +325,6 @@ export default {
             clientURI: process.env.URI_CLIENT_ROOT,
             // Double click to edit boolean and new entry fields
             updatedGoalTitle: null,
-            updatedGoalTime: 0,
             updatedTemplate: null,
             newGoalTitle: null,
             newTemplateID: null,
@@ -346,7 +335,7 @@ export default {
     components: {
         alert,
         prog,
-        timer
+        timer,
     },
     methods: {
         async getLoginNetID() {
@@ -485,20 +474,6 @@ export default {
                     console.log(error);
                 });
         },
-        // inProgGoal(goalID, goalTemplateID) {
-        //     axios.defaults.withCredentials = true;
-        //     const path = process.env.URI_SERVER_ROOT + '/inProgGoal/' + goalID + '/' + goalTemplateID;
-        //     axios.put(path, { withCredentials: true, credentials: 'same-origin' })
-        //         .then((res) => {
-        //             this.getGoals(goalTemplateID);
-        //             this.getNumCompleted(goalTemplateID);
-        //             this.message = res.data.message;
-        //             this.showMessage = true;
-        //         })
-        //         .catch((error) => {
-        //             console.log(error);
-        //         });
-        // },
         swapGoal(currGoalID, otherGoalID, goalTemplateID) {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/swapGoal/' + currGoalID + '/' + otherGoalID + '/' + goalTemplateID;
@@ -535,7 +510,6 @@ export default {
         },
         updateGoalTime(goal, newTime) {
             axios.defaults.withCredentials = true;
-            this.updatedGoalTime = 0;
             const payload = {
                 goalNum: goal.goalNum,
                 goalTitle: goal.goalTitle,
@@ -580,18 +554,13 @@ export default {
                     console.log(error);
                 });
         },
-        dialog() {
-            Vue.dialog.confirm('Please confirm to continue')
-        },
         initForm() {
             this.addGoalForm.goalNum = 0;
             this.addGoalForm.goalTitle = '';
             this.addGoalForm.completed = false;
         },
         initSubgoalForm() {
-            // this.addSubgoalForm.goalNum = null;
             this.addSubgoalForm.goalTitle = '';
-            // this.addSubgoalForm.nestLevel = null;
             this.addSubgoalForm.completed = 0;
         },
         onCompleteGoal(goal) {
@@ -607,45 +576,15 @@ export default {
             if (goal.inProgress) {
                 goal.inProgress = false;
                 this.pauseTimer(index);
-                console.log("Ro-shit is right. Now, index has value: " + index)
             } else {
-
-                console.log("\n\n\n\n\n\ngrade deflachioun in other words, we're about to resume in Goals.vue");
                 goal.inProgress = true;
                 this.startTimer(index);
-                console.log("Ruh-ro is right. Now, index has value: " + index)
-                // this.inProgGoal(goal.goalID, this.currGoalTemplateID);
             }
-       },
+        },
         startTimer(nugget) {
-            console.log("started, index was: " + nugget);
-            console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
-
-            var counter = 0;
-            for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + " Current IndexYeet: " + nugget);
-                counter += 1;
-            }
-
-
             this.$refs.timercomponent[nugget].resume(nugget);
-            // for (let eachTimer of this.$refs.timercomponent){
-            //     if (eachTimer.getIndexYeet() == nugget){
-            //         eachTimer.resume();
-            //         break;
-            //     }
-            // }
         },
         pauseTimer(nugget) {
-            console.log("paused, index was: " + nugget);
-            console.log("Here ist thee unique time identifer: " + this.$refs.timercomponent[nugget].milliseconds);
-
-            var counter = 0;
-            for (let eachTimer of this.$refs.timercomponent) {
-                console.log("Current index :" + counter + " Current IndexYeet: " + nugget);
-                counter += 1;
-            }
-
             this.$refs.timercomponent[nugget].pause(nugget);
         },
         onSubmit(evt) {
@@ -676,7 +615,6 @@ export default {
         onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
-            // TODO: Add logic that allows us to set the goalNum without user input
             var goalParent = this.currGoalClicked;
             var parentNum = this.currGoalClickedNum;
             var newNum = null;
@@ -690,12 +628,10 @@ export default {
             var newNestLevel = newNum - Math.floor(parentNum) * 10;
             const payload = {
                 goalID: '',
-                // goalNum: this.addSubgoalForm.goalNum,
                 goalNum: newNum, // gets rewritten by backend
                 goalTitle: this.addSubgoalForm.goalTitle,
                 completed: this.addSubgoalForm.completed,
                 isSubgoal: true,
-                // nestLevel: this.addSubgoalForm.nestLevel,
                 nestLevel: newNestLevel, // gets rewritten by backend
                 parentID: goalParent,
             };
@@ -712,31 +648,10 @@ export default {
             this.getNumCompleted(goalTemplateID);
         },
         getTime(nugget) {
-            console.log("We're in get time, index is:  " + nugget);
             var goal = this.goals[nugget];
-            console.log("current goal is: " + goal.goalTitle);
             var time = this.$refs.timercomponent[nugget].milliseconds;
-            console.log("The time value for that goal is: " + time);
             this.updateGoalTime(goal, time);
         },
-        // getTimeAllGoals() {
-        //     var i;
-        //     for (i = 0; i < this.goals.length; i++) {
-        //         this.getTime(i);
-        //     }
-        // },
-        // updateCurrentTime: function() {
-        //     // console.log("\n\n")
-        //     // console.log("updateCurrentTime in Goal.vue called");
-        //     this.currentTime = Date.now();
-        //     // console.log("\nthis.currentTime in updateCurrentTime before the if: "+ this.currentTime);
-        //     // console.log("this.startTime in updateCurrentTime before the if: "+ this.startTime);
-        //     if ((this.currentTime - this.startTime) >= 3000) {
-        //         this.startTime = this.currentTime
-        //         // console.log("ITS OVER 9000!!!")
-        //         this.getTimeAllGoals();
-        //     }
-        // },
     },
     async created() {
         await this.getLoginNetID();

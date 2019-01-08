@@ -286,9 +286,6 @@ def update_goal_time(goal_template_id, goal_ref, new_time):
 
 	return jsonify(response_object)
 
-
-
-
 # Get all existing template IDs
 @app.route('/getTemplates', methods=['GET'])
 def get_templates():
