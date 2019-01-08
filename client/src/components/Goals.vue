@@ -652,6 +652,14 @@ export default {
             var time = this.$refs.timercomponent[timerIndex].milliseconds;
             this.updateGoalTime(goal, time);
         },
+        async saveTimerProgress(event) {
+            for (let i = 0; i < this.goals.length; i++) {
+                if (this.goals[i].inProgress == true) {
+                    this.goals[i].inProgress = false;
+                    await this.pauseTimer(i);
+                }
+            }
+        },
     },
     async created() {
         await this.getLoginNetID();
@@ -660,6 +668,7 @@ export default {
         this.currGoalTemplateID = this.goalTemplateIDs[0];
         this.getGoals(this.currGoalTemplateID);
         this.getNumCompleted(this.currGoalTemplateID);
+        window.addEventListener('beforeunload', this.saveTimerProgress)
     },
 };
 </script>
