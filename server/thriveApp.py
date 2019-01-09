@@ -245,6 +245,11 @@ def swap_goal(curr_goal_id, other_goal_id, goal_template_id):
 			otherGoal = currGoal.getParent().getSubgoalAtIndex(currGoalIndex + 1)
 		else:
 			otherGoal = currGoal.getParent().getSubgoalAtIndex(currGoalIndex - 1)
+
+		# Prevent strange bug with starting timer and then swapping goals down
+		if (currGoal.getParent().getSubgoalList().index(otherGoal) == len(currGoal.getParent().getSubgoalList()) - 1 or
+			currGoal.getParent().getSubgoalList().index(currGoal) - 1 == currGoal.getParent().getSubgoalList().index(otherGoal)):
+			otherGoal = currGoal.getParent().getSubgoalAtIndex(currGoalIndex + 1)
 		
 	# Swap the two goals
 	currGoal.swapSubgoalsNested(otherGoal)
@@ -481,7 +486,6 @@ def getGoalUsingTime(curNode, var):
 	retNode = None
 
 	if (str(curNode.getUniqueID()).strip()) == (str(var).strip()):
-			# print("We found a matching node in getGoalUsingTime!!!")
 			retNode = curNode
 			return retNode
 	for eachNode in curNode.getSubgoalList():
