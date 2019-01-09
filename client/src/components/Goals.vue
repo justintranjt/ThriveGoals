@@ -576,12 +576,12 @@ export default {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds);
         },
         onSwapGoal(currGoal, otherGoal, currIndex, otherIndex) {
-            this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
-
             currGoal.inProgress = false;
             otherGoal.inProgress = false;
             this.pauseTimer(currIndex, currGoal.goalID);
             this.pauseTimer(otherIndex, otherGoal.goalID);
+            
+            this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(index, goal) {
             if (goal.inProgress) {
@@ -639,7 +639,7 @@ export default {
             this.currGoalClicked = goal['goalID'];
             this.currGoalClickedNum = goal['goalNum'];
         },
-        async onSubmitSubgoal(evt) {
+        onSubmitSubgoal(evt) {
             evt.preventDefault();
             this.$refs.addSubGoalModal.hide();
             var goalParent = this.currGoalClicked;
@@ -664,12 +664,12 @@ export default {
             };
             this.addGoal(payload, this.currGoalTemplateID);
 
-            for (let i = 0; i < this.goals.length; i++) {
-                if (this.goals[i].inProgress == true) {
-                    this.goals[i].inProgress = false;
-                    await this.pauseTimer(i, this.goals[i].goalID);
-                }
-            }
+            // for (let i = 0; i < this.goals.length; i++) {
+            //     if (this.goals[i].inProgress == true) {
+            //         this.goals[i].inProgress = false;
+            //         await this.pauseTimer(i, this.goals[i].goalID);
+            //     }
+            // }
 
             this.initSubgoalForm();
         },
