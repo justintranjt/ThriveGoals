@@ -478,10 +478,10 @@ export default {
                     console.log(error);
                 });
         },
-        swapGoal(currGoalID, otherGoalID, goalTemplateID) {
+        async swapGoal(currGoalID, otherGoalID, goalTemplateID) {
             axios.defaults.withCredentials = true;
             const path = process.env.URI_SERVER_ROOT + '/swapGoal/' + currGoalID + '/' + otherGoalID + '/' + goalTemplateID;
-            axios.put(path, { withCredentials: true, credentials: 'same-origin' })
+            await axios.put(path, { withCredentials: true, credentials: 'same-origin' })
                 .then((res) => {
                     this.getGoals(goalTemplateID);
                 })
@@ -575,13 +575,20 @@ export default {
         onDeleteGoal(goal) {
             this.deleteGoal(goal.goalNum, this.currGoalTemplateID, goal.goalID, this.$refs.timercomponent[goal.goalNum - 1].milliseconds);
         },
-        onSwapGoal(currGoal, otherGoal, currIndex, otherIndex) {
-            currGoal.inProgress = false;
-            otherGoal.inProgress = false;
-            this.pauseTimer(currIndex, currGoal.goalID);
-            this.pauseTimer(otherIndex, otherGoal.goalID);
+        async onSwapGoal(currGoal, otherGoal, currIndex, otherIndex) {
+            if (currGoal.inProgress == true)
+            {
+                currGoal.inProgress = false;
+                await this.pauseTimer(currIndex, currGoal.goalID);
+            }
             
-            this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
+            if (otherGoal.inProgress == true)
+            {
+                otherGoal.inProgress = false;
+                await this.pauseTimer(otherIndex, otherGoal.goalID);
+            }
+
+            await this.swapGoal(currGoal.goalID, otherGoal.goalID, this.currGoalTemplateID);
         },
         onInProgGoal(index, goal) {
             if (goal.inProgress) {
