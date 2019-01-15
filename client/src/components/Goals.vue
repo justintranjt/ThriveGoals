@@ -662,6 +662,7 @@ export default {
         onReset(evt) {
             evt.preventDefault();
             this.initForm();
+            this.initSubgoalForm();
         },
         onSetTemplate(goalTemplateID) {
             this.currGoalTemplateID = goalTemplateID;

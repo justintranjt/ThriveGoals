@@ -5,6 +5,7 @@
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-brand>Thrive</b-navbar-brand>
                 <b-navbar-nav class="ml-auto">
+                    <b-nav-item v-bind:href="clientURI + '/Goals'">Goals</b-nav-item>
                     <b-nav-item v-bind:href="clientURI">Home</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>
