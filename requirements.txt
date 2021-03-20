@@ -5,7 +5,7 @@ Flask-CAS-fork==1.0.1
 Flask-Cors==3.0.6
 flask-sslify==0.1.5
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 jsonpickle==1.0
 MarkupSafe==1.0
 psycopg2==2.7.6.1
