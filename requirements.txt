@@ -2,7 +2,7 @@ beaker==1.10.0
 Click==7.0
 Flask==1.0.2
 Flask-CAS-fork==1.0.1
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
 flask-sslify==0.1.5
 itsdangerous==0.24
 Jinja2==2.10
